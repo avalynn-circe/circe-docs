@@ -7,6 +7,9 @@
 - [Building a Weather-Aware AI Skill with Xweather + Claude](https://avalynn-circe.github.io/circe-docs/xweather-skill): A tutorial on the Model Context Protocol (MCP), Claude Skills, the Vaisala Xweather MCP server, and an activity-matrix parameter file.
 - [Reviewing the MCP server tutorial as the developer it was written for](https://avalynn-circe.github.io/circe-docs/mcp-tutorial-review): A review of the official "Build an MCP server" quickstart. Ten findings (R-01 to R-10), a rewritten Python section, and a test results table.
 
+- [A knowledge base that audits itself](https://avalynn-circe.github.io/circe-docs/quillon/): A sample knowledge base for a fictional litigation platform, with lifecycle front matter, change-driven staleness, and a human verification gate for AI drafts.
+- [Doc health](https://avalynn-circe.github.io/circe-docs/quillon/doc-health): The generated lifecycle state of every page in the sample knowledge base.
+
 ## Optional
 
 - [Circe Editorial Standard rules enforced on this site](https://github.com/avalynn-circe/circe-docs/tree/main/styles/Circe): Vale rule files, one per rule.

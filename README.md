@@ -8,8 +8,11 @@ Live site: https://avalynn-circe.github.io/circe-docs/
 
 | Trigger | Workflow | What happens |
 |---|---|---|
-| Pull request | `quality.yml` | Vale lints the prose. Docusaurus builds the site. lychee checks outbound links. No deploy. |
-| Push to `main` | `quality.yml` and `deploy.yml` | The same three checks, then a build and deploy to GitHub Pages. |
+| Pull request | `quality.yml` | Vale lints the prose. The knowledge base audit runs. Docusaurus builds the site. lychee checks outbound links. No deploy. |
+| Push to `main` | `quality.yml` and `deploy.yml` | The same four checks, then a build and deploy to GitHub Pages. |
+| Monday 13:17 UTC | `deploy.yml` | Rebuild and deploy, so the Doc health page shows the current date. |
+| Monday 13:23 UTC | `kb-review-queue.yml` | Open, update, or close the knowledge base review queue issue. |
+| Manual run with a change note | `kb-draft.yml` | Claude drafts a page; the workflow opens a pull request labeled `ai-draft`. |
 
 A failed check blocks the merge. A failed build on `main` leaves the last good deploy in place.
 
@@ -50,6 +53,22 @@ Two tools cover two kinds of link.
 - Docusaurus fails the build on any internal link or anchor that points nowhere. `docusaurus.config.ts` sets `onBrokenLinks`, `onBrokenAnchors`, and `onBrokenMarkdownLinks` to `throw`.
 - lychee requests every outbound URL in `docs/` and this README and fails the job on a dead one. `lychee.toml` holds the settings. The site's own URL is excluded, because the deploy job already confirms it is live and a fresh repository has no site until that first deploy.
 
+### Knowledge base lifecycle
+
+`docs/quillon/` is a sample knowledge base for a fictional litigation platform. Each page's front matter records its owner, audience, product areas, status, and review interval. `kb-changes/` holds one change note per product change.
+
+`scripts/kb/audit.mjs` reads both folders and gives each page a state: unverified AI draft, changed since review, overdue, due soon, current, or archived. A page is "changed since review" when a change note in one of its areas is dated after its last review.
+
+| Mode | Used by | Does |
+|---|---|---|
+| `--check` | `quality.yml` | Fails on schema errors, an `ai-draft` page, or a `TODO(verify)` marker left in a current page. |
+| `--report` | `prebuild`, `prestart` | Writes `docs/quillon/doc-health.md`. The file is generated and ignored by Git. |
+| `--issue` | `kb-review-queue.yml` | Prints the review queue, grouped by owner. |
+
+`scripts/kb/draft.mjs` sends a change note, the related current pages, and the rules in `scripts/kb/prompt.md` to Claude, and writes the result as an `ai-draft` page. `--dry-run` prints the prompt without calling the API. The audit blocks the draft until a reviewer sets `status: current`, `verified_by`, `verified_on`, and `last_reviewed`.
+
+`scripts/kb/audit.test.mjs` covers the states and schema rules. Run it with `npm run kb:test`.
+
 ### Agent-readable index
 
 `static/llms.txt` is served at the site root. It lists each page with a one-line description so an AI agent can find the docs without crawling.
@@ -68,15 +87,21 @@ npm start            # local preview with live reload
 npm run lint         # Vale, error level only (the CI gate)
 npm run lint:report  # Vale, every level
 npm run links        # lychee on docs/ and README.md
+npm run kb:check     # knowledge base audit (the CI gate)
+npm run kb:issue     # print the review queue
+npm run kb:test      # tests for the audit script
 npm run build        # production build into build/
-npm run check        # lint, typecheck, build
+npm run check        # lint, audit, tests, typecheck, build
 ```
 
 ## Layout
 
 ```
-.github/workflows/   deploy.yml and quality.yml
+.github/workflows/   deploy, quality, kb-review-queue, kb-draft
 docs/                one Markdown file per page
+docs/quillon/        sample knowledge base (doc-health.md is generated)
+kb-changes/          one change note per product change
+scripts/kb/          audit, draft, prompt, and tests
 styles/Circe/        one Vale rule per file
 static/llms.txt      agent-readable page index
 .vale.ini            Vale configuration

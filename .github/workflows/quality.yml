@@ -1,8 +1,10 @@
 # Quality gates. Runs on every pull request and every push to main.
-# Three jobs run in parallel; any one of them failing fails the check.
+# Four jobs run in parallel; any one of them failing fails the check.
 #
 #   prose  Vale with the custom Circe style. Error-level rules fail the job.
 #          Warning-level rules print in the log and do not fail it.
+#   kb     Knowledge base audit. Front matter schema errors, an unverified
+#          AI draft, or a leftover TODO(verify) marker fail it.
 #   build  Docusaurus build. Broken internal links and anchors fail it.
 #   links  lychee checks every outbound link in docs/ and the README.
 
@@ -38,6 +40,24 @@ jobs:
 
       - name: Fail on error-level alerts
         run: vale --minAlertLevel=error docs README.md
+
+  kb:
+    name: Knowledge base audit
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@v7
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: 22
+
+      - name: Test the audit script
+        run: node --test scripts/kb/audit.test.mjs
+
+      - name: Audit page lifecycle (fails on unverified AI drafts)
+        run: node scripts/kb/audit.mjs --check
 
   build:
     name: Build site

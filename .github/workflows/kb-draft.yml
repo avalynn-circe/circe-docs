@@ -1,0 +1,56 @@
+# Draft a knowledge base page from a change note with Claude, then open a pull request.
+# The page lands as status: ai-draft, so the "Knowledge base audit" check fails
+# on the pull request until a person verifies the page and marks it current.
+#
+# One-time setup:
+#   Settings > Secrets and variables > Actions > Secrets:   ANTHROPIC_API_KEY
+#   Settings > Secrets and variables > Actions > Variables: ANTHROPIC_MODEL (a Claude model ID)
+#   Settings > Actions > General: allow GitHub Actions to create pull requests.
+
+name: Draft KB page
+
+on:
+  workflow_dispatch:
+    inputs:
+      note:
+        description: Change note path, for example kb-changes/2026-09-08-redaction-sets.md
+        required: true
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  draft:
+    name: Draft and open a pull request
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@v7
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: 22
+
+      - name: Draft the page
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          ANTHROPIC_MODEL: ${{ vars.ANTHROPIC_MODEL }}
+          NOTE: ${{ inputs.note }}
+        run: node scripts/kb/draft.mjs "$NOTE"
+
+      - name: Open the pull request
+        uses: peter-evans/create-pull-request@v7
+        with:
+          branch: kb-draft/${{ github.run_id }}
+          title: "AI draft: ${{ inputs.note }}"
+          labels: ai-draft
+          commit-message: "AI draft from ${{ inputs.note }}"
+          body: |
+            Drafted by Claude from `${{ inputs.note }}`. The page is `status: ai-draft`, so the knowledge base audit fails until a reviewer verifies it.
+
+            Reviewer checklist:
+            - [ ] Every claim matches the change note or the product.
+            - [ ] Every `TODO(verify)` line is resolved and removed.
+            - [ ] Front matter set: `status: current`, `verified_by`, `verified_on`, `last_reviewed`.

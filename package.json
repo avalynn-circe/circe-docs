@@ -4,7 +4,9 @@
   "private": true,
   "scripts": {
     "docusaurus": "docusaurus",
+    "prestart": "node scripts/kb/audit.mjs --report",
     "start": "docusaurus start",
+    "prebuild": "node scripts/kb/audit.mjs --report",
     "build": "docusaurus build",
     "swizzle": "docusaurus swizzle",
     "deploy": "docusaurus deploy",
@@ -16,12 +18,17 @@
     "lint": "vale --minAlertLevel=error docs README.md",
     "lint:report": "vale --no-exit docs README.md",
     "links": "lychee --config lychee.toml \"docs/**/*.md\" README.md",
-    "check": "npm run lint && npm run typecheck && npm run build"
+    "check": "npm run lint && npm run kb:check && npm run kb:test && npm run typecheck && npm run build",
+    "kb:check": "node scripts/kb/audit.mjs --check",
+    "kb:report": "node scripts/kb/audit.mjs --report",
+    "kb:issue": "node scripts/kb/audit.mjs --issue",
+    "kb:test": "node --test scripts/kb/audit.test.mjs"
   },
   "dependencies": {
     "@docusaurus/core": "3.10.2",
     "@docusaurus/faster": "3.10.2",
     "@docusaurus/preset-classic": "3.10.2",
+    "@docusaurus/theme-mermaid": "3.10.2",
     "@mdx-js/react": "^3.0.0",
     "clsx": "^2.0.0",
     "prism-react-renderer": "^2.3.0",

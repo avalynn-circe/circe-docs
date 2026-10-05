@@ -29,10 +29,13 @@ const config: Config = {
   markdown: {
     // .md files are plain CommonMark; .mdx files get MDX. Keeps JSX syntax out of prose.
     format: 'detect',
+    mermaid: true,
     hooks: {
       onBrokenMarkdownLinks: 'throw',
     },
   },
+
+  themes: ['@docusaurus/theme-mermaid'],
 
   i18n: {
     defaultLocale: 'en',
@@ -85,6 +88,7 @@ const config: Config = {
           items: [
             {label: 'Weather-aware AI skill', to: '/xweather-skill'},
             {label: 'MCP tutorial review', to: '/mcp-tutorial-review'},
+            {label: 'Self-auditing knowledge base', to: '/quillon/'},
           ],
         },
         {

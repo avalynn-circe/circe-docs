@@ -12,6 +12,7 @@ Technical writing by Avalynn Circe, developer and documentation engineer. Every 
 
 - [Building a Weather-Aware AI Skill with Xweather + Claude](./xweather-skill.md). A tutorial on the Model Context Protocol (MCP), Claude Skills, the Vaisala Xweather MCP server, and an activity-matrix parameter file.
 - [Reviewing the MCP server tutorial as the developer it was written for](./mcp-tutorial-review.md). A technical accuracy and teaching review of the official "Build an MCP server" quickstart. Ten findings, a rewritten Python section, and a test results table.
+- [A knowledge base that audits itself](./quillon/index.md). A sample knowledge base for a fictional litigation platform. Each page records its owner and review date, product change notes flag the pages they affect, and AI-drafted pages cannot publish until a person verifies them. Includes a generated [Doc health](./quillon/doc-health.md) dashboard.
 
 ## How the site is checked
 
@@ -20,5 +21,6 @@ Technical writing by Avalynn Circe, developer and documentation engineer. Every 
 | Prose follows the Circe Editorial Standard | Vale, custom `Circe` style | Error-level rules fail the build. Warning-level rules report. |
 | Internal links and anchors resolve | Docusaurus `onBrokenLinks: 'throw'` | Build fails. |
 | Outbound links respond | lychee | Build fails. |
+| Knowledge base pages carry valid lifecycle front matter, and no AI draft is unverified | `scripts/kb/audit.mjs --check` | Build fails. |
 
 The source repository explains each rule and how to run the checks locally.

@@ -1,0 +1,48 @@
+# Weekly knowledge base review queue.
+# Runs the audit and keeps one open issue listing every page that is overdue,
+# due soon, or changed since its last review, grouped by owning team.
+# When nothing needs review, the workflow closes the issue.
+
+name: KB review queue
+
+on:
+  schedule:
+    - cron: '23 13 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  queue:
+    name: Update the review queue issue
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ github.token }}
+      TITLE: Knowledge base review queue
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@v7
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: 22
+
+      - name: Build the queue
+        run: node scripts/kb/audit.mjs --issue > queue.md
+
+      - name: Open, update, or close the issue
+        run: |
+          gh label create kb-review --color 5319e7 --description "Knowledge base review queue" 2>/dev/null || true
+          number=$(gh issue list --label kb-review --state open --json number --jq '.[0].number')
+          if [ -s queue.md ]; then
+            if [ -n "$number" ]; then
+              gh issue edit "$number" --body-file queue.md
+            else
+              gh issue create --title "$TITLE" --label kb-review --body-file queue.md
+            fi
+          elif [ -n "$number" ]; then
+            gh issue close "$number" --comment "Every page is current."
+          fi

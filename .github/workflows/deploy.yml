@@ -1,4 +1,5 @@
-# Builds the site and deploys it to GitHub Pages on every push to main.
+# Builds the site and deploys it to GitHub Pages on every push to main,
+# and every Monday so the generated Doc health page reflects the current date.
 # Pull requests never reach this workflow; quality.yml covers them.
 #
 # One-time setup in the repository: Settings > Pages > Source: "GitHub Actions".
@@ -8,6 +9,8 @@ name: Deploy to GitHub Pages
 on:
   push:
     branches: [main]
+  schedule:
+    - cron: '17 13 * * 1'
   workflow_dispatch:
 
 permissions:
