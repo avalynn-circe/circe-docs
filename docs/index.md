@@ -22,3 +22,5 @@ Technical writing by Avalynn Circe, developer and documentation engineer. Every 
 | Outbound links respond | lychee | Build fails. |
 
 The source repository explains each rule and how to run the checks locally.
+
+Every page is checked on every pull request. Nothing merges with a violation.
