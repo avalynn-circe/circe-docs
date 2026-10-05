@@ -48,7 +48,7 @@ Vale skips fenced code blocks in Markdown. Code comments are not linted.
 Two tools cover two kinds of link.
 
 - Docusaurus fails the build on any internal link or anchor that points nowhere. `docusaurus.config.ts` sets `onBrokenLinks`, `onBrokenAnchors`, and `onBrokenMarkdownLinks` to `throw`.
-- lychee requests every outbound URL in `docs/` and this README and fails the job on a dead one. `lychee.toml` holds the settings.
+- lychee requests every outbound URL in `docs/` and this README and fails the job on a dead one. `lychee.toml` holds the settings. The site's own URL is excluded, because the deploy job already confirms it is live and a fresh repository has no site until that first deploy.
 
 ### Agent-readable index
 
@@ -60,7 +60,7 @@ Five rules in the standard need human judgment and stay out of the linter: throa
 
 ## Run the checks locally
 
-Requirements: Node.js 20 or later, [Vale](https://vale.sh/docs/install), and [lychee](https://lychee.cli.rs/installation/).
+Requirements: Node.js 20 or later, [Vale](https://vale.sh/docs/install), and [lychee](https://github.com/lycheeverse/lychee#installation).
 
 ```bash
 npm install          # once
