@@ -43,7 +43,7 @@ The helper catches every exception and returns `None`. The tool then returns one
 
 The TypeScript tab rounds coordinates with `toFixed(4)` before calling `/points`. The Python tab passes them through unchanged. The HTTP client the Python tab uses does not follow redirects by default, so if the API answers a high-precision request with a redirect to the rounded URL, `raise_for_status()` raises, the helper returns `None`, and the learner sees "Unable to fetch forecast data for this location" for a valid US location.
 
-:::info To confirm
+:::info[To confirm]
 Tested: httpx2 2.13.0 defaults to `follow_redirects=False`, and a mocked 301 raises `HTTPStatusError`. To confirm against the live API: request `/points` with six decimal places and check the status code.
 :::
 
@@ -82,7 +82,7 @@ A team that follows two tabs gets two servers that answer the same question diff
 | Forecast periods | first 5 | all returned |
 | Forecast text | `detailedForecast` | `shortForecast` |
 
-:::info To confirm
+:::info[To confirm]
 Compare the two alert endpoints for the same state. The TypeScript endpoint is not filtered to active alerts by name, and its output is labeled as active.
 :::
 

@@ -10,7 +10,7 @@ A build walkthrough: connect Vaisala Xweather's live MCP server to Claude, then 
 
 *MCP · Xweather API · Claude Skills*
 
-:::note What you'll build
+:::note[What you'll build]
 A skill that answers "what can I do outside today?" (or "is it a good day for dirt-biking this weekend?") by pulling live weather from Xweather and matching it against a pre-defined activity matrix. The matrix is a plain text file you edit. The heart of the tutorial is showing you how to write it.
 :::
 
@@ -45,11 +45,11 @@ Claude reaches remote MCP servers through **Custom Connectors**. You give Claude
 3. **Click Connect.** Claude opens Xweather's authorization page. Sign in with your Xweather developer account and approve access. This is where your credentials live: on Xweather's side, tied to your account.
 4. **You're done.** Xweather's tools now appear in Claude's connected tools. Test it: *"What can I do outside today?"*
 
-:::tip Why there's no key field
+:::tip[Why there's no key field]
 Because authorization happens on Xweather's interface (an OAuth-style handoff), there's no secret to paste, no config file to leak, and nothing to rotate inside Claude. Revoke access any time from your Xweather account. If you ever see instructions telling you to paste a concatenated `client_id_client_secret` into the connector, that's the older local-bridge pattern. You don't need it for the hosted server.
 :::
 
-:::note Plan requirements
+:::note[Plan requirements]
 Custom Connectors require a Claude Pro, Max, Team, or Enterprise plan.
 :::
 
@@ -63,7 +63,7 @@ The Xweather server exposes a couple dozen tools. The activity skill leans on th
 | `xweather_get_forecast_weather` | Daily or day/night forecasts up to ~15 days out. Highs/lows, precip and probability, max wind, and a coded summary per period. This is what powers "this weekend" and "tomorrow" questions. |
 | `xweather_get_aggregated_weather_conditions` | Statistical roll-ups (sum/avg/min/max) over a time window, with optional filters. The skill uses it for backward-looking gates, such as "sum the precip over the previous 12 hours" to decide whether dirt-bike trails are too wet. |
 
-:::note Naming
+:::note[Naming]
 Tool names shown are the ones the server presents to the client. If your client lists them under a server prefix (like `Xweather:xweather_get_current_weather`), that prefix is the connector name. The tool is the same.
 :::
 
@@ -126,7 +126,7 @@ Notice kite flying *wants* wind: a gate can require a condition as well as cap o
 
 Most gates read the current snapshot. Dirt-biking needs *history*: trails ruined by last night's rain look fine on a sunny morning. That gate is powered by `xweather_get_aggregated_weather_conditions`. Sum `precip_in` from 12 hours ago to now and compare against the thresholds. For a forecast day, read the precip in the periods leading into it instead. This is the pattern to copy any time "what happened recently" matters as much as "what's happening now."
 
-:::note Two honest caveats to bake in
+:::note[Two honest caveats to bake in]
 The current-weather feed reports *falling* snow, not snowpack depth, so winter activities should state the assumption ("assuming snow on the ground"). And only name specific local spots for cities you know (St. Paul, here); for anywhere else, name a *type* of place ("a calm lake," "a river bluff") so the skill never invents a trailhead.
 :::
 
@@ -197,7 +197,7 @@ The folder you just wrote isn't live until it's in your Claude account. Installi
 3. **Upload it.** Go to **Customize → Skills**, click the upload / "+" option, and select your ZIP. On Pro, Max, and Free plans you upload to your own account; on Team and Enterprise, an owner enables Skills at the organization level first, then members upload their own. Toggle the skill on once it appears.
 4. **Confirm the Xweather connector is connected** (the [earlier step](#connect-xweather-to-claude)). The skill is instructions only. It calls Xweather's tools at run time, so it needs that connector live to do anything.
 
-:::tip Using it
+:::tip[Using it]
 Once it's toggled on you don't invoke it by hand. "What can I do outside today?" pulls it in automatically when the request matches the description. You can also force it: *"use my outdoor-activity skill for this weekend."* Full reference: [Use skills in Claude](https://support.claude.com/en/articles/12512180-use-skills-in-claude).
 :::
 
