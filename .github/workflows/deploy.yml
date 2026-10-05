@@ -1,0 +1,61 @@
+# Builds the site and deploys it to GitHub Pages on every push to main.
+# Pull requests never reach this workflow; quality.yml covers them.
+#
+# One-time setup in the repository: Settings > Pages > Source: "GitHub Actions".
+
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# One deploy at a time. A queued deploy waits for the running one to finish.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    name: Build site
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the repository with full history
+        uses: actions/checkout@v7
+        with:
+          # Full history so "last updated" dates on pages are correct.
+          fetch-depth: 0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build the site
+        run: npm run build
+
+      - name: Upload the build folder as the Pages artifact
+        uses: actions/upload-pages-artifact@v5
+        with:
+          path: build
+
+  deploy:
+    name: Deploy to Pages
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy the uploaded artifact
+        id: deployment
+        uses: actions/deploy-pages@v5

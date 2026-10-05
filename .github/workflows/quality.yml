@@ -1,0 +1,75 @@
+# Quality gates. Runs on every pull request and every push to main.
+# Three jobs run in parallel; any one of them failing fails the check.
+#
+#   prose  Vale with the custom Circe style. Error-level rules fail the job.
+#          Warning-level rules print in the log and do not fail it.
+#   build  Docusaurus build. Broken internal links and anchors fail it.
+#   links  lychee checks every outbound link in docs/ and the README.
+
+name: Quality checks
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+env:
+  VALE_VERSION: 3.24.0
+
+jobs:
+  prose:
+    name: Circe Editorial Standard (Vale)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@v7
+
+      - name: Install Vale
+        run: |
+          curl -sSL "https://github.com/vale-cli/vale/releases/download/v${VALE_VERSION}/vale_${VALE_VERSION}_Linux_64-bit.tar.gz" \
+            | sudo tar -xz -C /usr/local/bin vale
+          vale --version
+
+      - name: Report every alert (warnings and suggestions do not fail the job)
+        run: vale --no-exit docs README.md
+
+      - name: Fail on error-level alerts
+        run: vale --minAlertLevel=error docs README.md
+
+  build:
+    name: Build site
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@v7
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Type-check the config
+        run: npm run typecheck
+
+      - name: Build the site
+        run: npm run build
+
+  links:
+    name: Outbound links (lychee)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@v7
+
+      - name: Check links
+        uses: lycheeverse/lychee-action@v2
+        with:
+          args: --config lychee.toml 'docs/**/*.md' README.md
+          fail: true

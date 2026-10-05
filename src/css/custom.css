@@ -1,0 +1,24 @@
+/* Global styles. The classic preset bundles Infima; override its variables here. */
+
+:root {
+  --ifm-color-primary: #5b3a8c;
+  --ifm-color-primary-dark: #52347e;
+  --ifm-color-primary-darker: #4d3177;
+  --ifm-color-primary-darkest: #402962;
+  --ifm-color-primary-light: #64409a;
+  --ifm-color-primary-lighter: #6943a1;
+  --ifm-color-primary-lightest: #7a52b3;
+  --ifm-code-font-size: 95%;
+  --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.1);
+}
+
+[data-theme='dark'] {
+  --ifm-color-primary: #b79ce0;
+  --ifm-color-primary-dark: #a888d8;
+  --ifm-color-primary-darker: #a07dd4;
+  --ifm-color-primary-darkest: #885dc7;
+  --ifm-color-primary-light: #c6b0e8;
+  --ifm-color-primary-lighter: #ceb9ec;
+  --ifm-color-primary-lightest: #e4d8f5;
+  --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.3);
+}
