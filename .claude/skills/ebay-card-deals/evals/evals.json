@@ -1,0 +1,23 @@
+{
+  "skill_name": "ebay-card-deals",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "find me underpriced luka doncic silver prizm rookies on ebay, psa 10s. I've got about $1500 to spend",
+      "expected_output": "Runs comps for the 2018-19 Prizm Silver #280 in the PSA 10 bucket, scans live listings, runs at least two extra hunts (misspelling, card-number), and reports the best one or two listings with all-in price, percent under median, reason, verification steps, and URL, plus the comp summary and which hunts came up empty.",
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "what's a raw wemby prizm rookie going for right now? and is there anything on ebay that looks like a steal",
+      "expected_output": "Identifies the 2023-24 Prizm #136 base rookie, runs comps and shows the by-grade table (raw vs PSA 10), notes thin or wide comps if present, then scans raw listings and reports the ranked deals with reasons and cautions.",
+      "files": []
+    },
+    {
+      "id": 3,
+      "prompt": "I collect giannis. Can you look for listings where the seller misspelled his name or didn't put the parallel in the title? Mostly interested in his Prizm rookie and anything numbered",
+      "expected_output": "Uses the misspell command for Giannis Antetokounmpo, runs active searches on the typo variants and on card-number-only queries for 2013-14 Prizm #290, compares against comps from the clean query, and reports finds with what to verify in photos.",
+      "files": []
+    }
+  ]
+}
