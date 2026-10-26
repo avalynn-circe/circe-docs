@@ -91,3 +91,10 @@ sidebars.ts          page order
 2. Add the slug to `sidebars.ts`.
 3. Add a line to `static/llms.txt`.
 4. Open a pull request. The checks run on it.
+
+## Daily inventory project
+
+The `inventory/` folder holds a separate project: a scraper and static site
+that lists each day's reported events in Russia's war on Ukraine. It has its
+own README, tests and workflow, and is staged here until it moves to its own
+repository.
