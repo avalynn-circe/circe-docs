@@ -10,8 +10,8 @@ import requests
 log = logging.getLogger(__name__)
 
 USER_AGENT = (
-    "Mozilla/5.0 (compatible; war-inventory/0.1; "
-    "+https://github.com/avalynn-circe/circe-docs)"
+    "Mozilla/5.0 (compatible; war-ledger/0.1; "
+    "+https://github.com/avalynn-circe/war-ledger)"
 )
 EXT = {"telegram": "html", "rss": "xml", "html": "html"}
 

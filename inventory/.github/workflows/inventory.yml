@@ -5,7 +5,7 @@
 # One-time setup in the repository: Settings > Pages > Source: "GitHub Actions".
 # GitHub runs scheduled workflows from the default branch only.
 
-name: Daily inventory
+name: The Ukraine War Ledger
 
 on:
   schedule:

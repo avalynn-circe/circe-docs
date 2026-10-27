@@ -94,7 +94,6 @@ sidebars.ts          page order
 
 ## Daily inventory project
 
-The `inventory/` folder holds a separate project: a scraper and static site
-that lists each day's reported events in Russia's war on Ukraine. It has its
-own README, tests and workflow, and is staged here until it moves to its own
-repository.
+The `inventory/` folder is a staging copy of The Ukraine War Ledger, a scraper
+and static site that records each day's reported events in Russia's war on
+Ukraine. The project lives at https://github.com/avalynn-circe/war-ledger.

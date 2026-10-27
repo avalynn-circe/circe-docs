@@ -1,6 +1,6 @@
-# Daily inventory: Russia's war on Ukraine
+# The Ukraine War Ledger
 
-A static website that lists, day by day, what each side reported: air attacks
+A static website that records, day by day, what each side reported in Russia's war on Ukraine: air attacks
 and what was launched and intercepted, strikes inside Russia, front line
 changes, claimed losses, new air defence, field adaptations such as anti-drone
 netting, weapons deliveries, naval and infrastructure events. Every entry

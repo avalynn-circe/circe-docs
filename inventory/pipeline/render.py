@@ -91,7 +91,7 @@ def render(site_dir: pathlib.Path, days: dict[str, list[dict]], sources: list[di
     for i, d in enumerate(dates):
         evs = days[d]
         html = day_tpl.render(
-            title=f"{_longdate(d)} · Daily inventory",
+            title=f"{_longdate(d)} · The Ukraine War Ledger",
             day={"date": d, "groups": group(evs), "headline": headline(evs), "n": len(evs)},
             prev=dates[i + 1] if i + 1 < len(dates) else None,
             next=dates[i - 1] if i > 0 else None,
@@ -102,13 +102,13 @@ def render(site_dir: pathlib.Path, days: dict[str, list[dict]], sources: list[di
             (site_dir / "index.html").write_text(html, encoding="utf-8")
     if not dates:
         (site_dir / "index.html").write_text(
-            day_tpl.render(title="Daily inventory", day={"date": date.today().isoformat(), "groups": [], "headline": [], "n": 0}, prev=None, next=None, **base_ctx),
+            day_tpl.render(title="The Ukraine War Ledger", day={"date": date.today().isoformat(), "groups": [], "headline": [], "n": 0}, prev=None, next=None, **base_ctx),
             encoding="utf-8",
         )
 
     archive = [{"date": d, "n": len(days[d]), "headline": headline(days[d])} for d in dates]
     (site_dir / "archive.html").write_text(
-        env.get_template("archive.html").render(title="Archive · Daily inventory", days=archive, **base_ctx), encoding="utf-8"
+        env.get_template("archive.html").render(title="Archive · The Ukraine War Ledger", days=archive, **base_ctx), encoding="utf-8"
     )
 
     (site_dir / "events.json").write_text(
