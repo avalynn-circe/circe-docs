@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE topic PUBLIC "-//OASIS//DTD DITA Topic//EN" "topic.dtd">
+<!--
+  Warehouse topic. This file is never published on its own. It holds every
+  safety message once, and other topics pull each message in by conkeyref.
+  Edit a message here and every topic that uses it updates on the next build.
+  Messages that apply to one model only carry a @product value. Every
+  conkeyref that pulls one of them carries the same @product value, so the
+  DITAVAL file for the other model removes the reference along with the
+  message and the build never tries to resolve a filtered-out target.
+-->
+<topic id="warnings">
+  <title>Shared safety messages</title>
+  <body>
+
+    <hazardstatement id="w-injection" type="warning">
+      <messagepanel>
+        <typeofhazard>Injection hazard from high-pressure spray.</typeofhazard>
+        <consequence>The spray can cut skin and inject water and chemicals
+          into the body. An injection can look like a small cut but can
+          cause serious injury or loss of a limb.</consequence>
+        <howtoavoid>Never point the spray gun at yourself, other people or
+          animals.</howtoavoid>
+        <howtoavoid>Never put your hand or fingers in front of the nozzle.</howtoavoid>
+        <howtoavoid>Engage the trigger lock whenever you are not spraying.</howtoavoid>
+        <howtoavoid>If spray pierces the skin, get emergency medical care
+          right away. Tell the doctor it is an injection injury.</howtoavoid>
+      </messagepanel>
+    </hazardstatement>
+
+    <hazardstatement id="w-stored-pressure" type="warning">
+      <messagepanel>
+        <typeofhazard>Stored pressure.</typeofhazard>
+        <consequence>The hose and spray gun stay pressurized after you stop
+          the machine. Disconnecting a pressurized part can release a burst
+          of water and cause injury.</consequence>
+        <howtoavoid>Relieve pressure before you disconnect the hose, change a
+          nozzle, or service the machine.</howtoavoid>
+      </messagepanel>
+    </hazardstatement>
+
+    <hazardstatement id="w-electric-shock" type="warning" product="electric">
+      <messagepanel>
+        <typeofhazard>Electric shock.</typeofhazard>
+        <consequence>Water and electricity together can cause death or
+          serious injury.</consequence>
+        <howtoavoid>Plug the power cord only into a grounded outlet.</howtoavoid>
+        <howtoavoid>Keep the plug and the GFCI device on the cord out of
+          water.</howtoavoid>
+        <howtoavoid>Test the GFCI device before each use. Do not use the
+          machine if the test fails.</howtoavoid>
+        <howtoavoid>Do not use an extension cord.</howtoavoid>
+      </messagepanel>
+    </hazardstatement>
+
+    <hazardstatement id="w-carbon-monoxide" type="danger" product="gas">
+      <messagepanel>
+        <typeofhazard>Carbon monoxide.</typeofhazard>
+        <consequence>Engine exhaust contains carbon monoxide, a poisonous gas
+          you cannot see or smell. Breathing it can kill you in minutes.</consequence>
+        <howtoavoid>Run the engine outdoors only, at least 15 ft (4.6 m) from
+          windows, doors and vents.</howtoavoid>
+        <howtoavoid>Never run the engine in a garage, basement, shed or other
+          enclosed space, even with the door open.</howtoavoid>
+      </messagepanel>
+    </hazardstatement>
+
+    <hazardstatement id="w-fuel-fire" type="warning" product="gas">
+      <messagepanel>
+        <typeofhazard>Fire and explosion.</typeofhazard>
+        <consequence>Gasoline and its vapors are highly flammable. A spark or
+          hot surface can ignite spilled fuel.</consequence>
+        <howtoavoid>Stop the engine and let it cool for at least 2 minutes
+          before you add fuel.</howtoavoid>
+        <howtoavoid>Fill the tank outdoors, away from flames and sparks.</howtoavoid>
+        <howtoavoid>Wipe up spilled fuel before you start the engine.</howtoavoid>
+      </messagepanel>
+    </hazardstatement>
+
+    <hazardstatement id="n-freeze-damage" type="notice">
+      <messagepanel>
+        <typeofhazard>Freeze damage.</typeofhazard>
+        <consequence>Water left in the pump can freeze, crack the pump and
+          void the warranty.</consequence>
+        <howtoavoid>Drain all water and add pump protector before you store
+          the machine where temperatures can fall below 32 °F (0 °C).</howtoavoid>
+      </messagepanel>
+    </hazardstatement>
+
+    <hazardstatement id="n-run-dry" type="notice">
+      <messagepanel>
+        <typeofhazard>Pump damage.</typeofhazard>
+        <consequence>Running the pump without water overheats the seals in
+          seconds.</consequence>
+        <howtoavoid>Turn on the water supply and purge air from the system
+          before you start the machine.</howtoavoid>
+      </messagepanel>
+    </hazardstatement>
+
+  </body>
+</topic>

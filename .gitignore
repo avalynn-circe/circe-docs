@@ -21,3 +21,6 @@ yarn-error.log*
 
 # Generated at build time by scripts/kb/audit.mjs --report
 /docs/quillon/doc-health.md
+
+# DITA-OT build output. Published copies live under static/dita/.
+/dita-pressure-washer/out

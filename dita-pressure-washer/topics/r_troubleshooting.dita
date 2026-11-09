@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE reference PUBLIC "-//OASIS//DTD DITA Reference//EN" "reference.dtd">
+<reference id="r_troubleshooting">
+  <title>Troubleshooting</title>
+  <shortdesc>Find the symptom in the table, then try each solution in order.
+    If the problem continues, contact an authorized service center.</shortdesc>
+  <refbody>
+    <section id="before-you-start">
+      <hazardstatement conkeyref="warnings/w-stored-pressure"><messagepanel><typeofhazard/><consequence/><howtoavoid/></messagepanel></hazardstatement>
+      <p>Before you inspect or service any part, complete
+        <xref href="t_shut_down_and_store.dita"/> through the step that
+        relieves pressure.</p>
+    </section>
+    <table id="troubleshooting" frame="all" rowsep="1" colsep="1">
+      <title>Common problems and solutions</title>
+      <tgroup cols="3">
+        <colspec colname="problem" colwidth="2*"/>
+        <colspec colname="cause" colwidth="2*"/>
+        <colspec colname="solution" colwidth="3*"/>
+        <thead>
+          <row>
+            <entry>Problem</entry>
+            <entry>Possible cause</entry>
+            <entry>Solution</entry>
+          </row>
+        </thead>
+        <tbody>
+          <row product="electric">
+            <entry morerows="1">Motor does not start</entry>
+            <entry>GFCI device has tripped</entry>
+            <entry>Press <uicontrol>RESET</uicontrol> on the GFCI device. If it
+              trips again, stop using the machine and contact service.</entry>
+          </row>
+          <row product="electric">
+            <entry>Circuit breaker has tripped</entry>
+            <entry>Reset the breaker. Make sure no other devices run on the
+              same circuit.</entry>
+          </row>
+          <row product="gas">
+            <entry morerows="2">Engine does not start</entry>
+            <entry>Fuel valve or engine switch is off</entry>
+            <entry>Turn the fuel valve and engine switch to
+              <uicontrol>ON</uicontrol>.</entry>
+          </row>
+          <row product="gas">
+            <entry>Oil level is low</entry>
+            <entry>Add oil to the upper mark on the dipstick. The low-oil
+              shutdown prevents starting until the level is correct.</entry>
+          </row>
+          <row product="gas">
+            <entry>Pressure is trapped in the pump</entry>
+            <entry>Squeeze the spray gun trigger while you pull the starter
+              cord.</entry>
+          </row>
+          <row>
+            <entry morerows="2">Low or pulsing pressure</entry>
+            <entry>Not enough water supply</entry>
+            <entry>Open the water supply fully. Use a hose no longer than
+              50 ft (15 m) and check it for kinks.</entry>
+          </row>
+          <row>
+            <entry>Air in the system</entry>
+            <entry>Stop the machine and purge air as described in
+              <xref href="t_set_up_and_start.dita"/>.</entry>
+          </row>
+          <row>
+            <entry>Nozzle is worn or partly blocked</entry>
+            <entry>Clear the nozzle with the cleaning pin, or replace it.</entry>
+          </row>
+          <row>
+            <entry>Water leaks at a hose connection</entry>
+            <entry>Connection is loose or O-ring is damaged</entry>
+            <entry>Tighten the connection by hand. Replace the O-ring if the
+              leak continues.</entry>
+          </row>
+          <row>
+            <entry>Water drips from under the pump</entry>
+            <entry>Thermal relief valve is releasing hot water</entry>
+            <entry>This is normal after a long pause in bypass mode. Squeeze
+              the trigger more often, or stop the machine during long
+              breaks.</entry>
+          </row>
+          <row>
+            <entry>Detergent does not flow</entry>
+            <entry>High-pressure nozzle is installed</entry>
+            <entry>Install the black 65° soap nozzle. Detergent flows only at
+              low pressure.</entry>
+          </row>
+        </tbody>
+      </tgroup>
+    </table>
+  </refbody>
+</reference>

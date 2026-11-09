@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE task PUBLIC "-//OASIS//DTD DITA Task//EN" "task.dtd">
+<task id="t_set_up_and_start">
+  <title>Set up and start the pressure washer</title>
+  <shortdesc>Connect the water supply and hoses, purge air from the system,
+    and start the <keyword keyref="model"/>.</shortdesc>
+  <taskbody>
+    <prereq>
+      <p>You need:</p>
+      <ul>
+        <li>A garden hose no longer than 50 ft (15 m) and a water supply of
+          at least <ph product="electric">1.5 gal/min (5.7 L/min)</ph><ph
+          product="gas">3.0 gal/min (11.4 L/min)</ph></li>
+        <li product="electric">A grounded 120 V outlet on a 15 A circuit</li>
+        <li product="gas">Fresh unleaded gasoline, 87 octane or higher, with
+          no more than 10% ethanol</li>
+        <li>The personal protective equipment listed in
+          <xref href="c_safety_information.dita"/></li>
+      </ul>
+      <hazardstatement conkeyref="warnings/w-carbon-monoxide" product="gas"><messagepanel><typeofhazard/><consequence/><howtoavoid/></messagepanel></hazardstatement>
+      <hazardstatement conkeyref="warnings/w-electric-shock" product="electric"><messagepanel><typeofhazard/><consequence/><howtoavoid/></messagepanel></hazardstatement>
+    </prereq>
+    <context>
+      <p>Place the machine on a level surface outdoors, where spray and runoff
+        cannot reach electrical outlets or open drains.</p>
+    </context>
+    <steps>
+      <step>
+        <cmd>Check that the inlet screen is clean and seated in the garden
+          hose inlet.</cmd>
+        <info><p>Rinse the screen under running water if you see debris.</p></info>
+      </step>
+      <step product="gas">
+        <cmd>Check the engine oil level.</cmd>
+        <info><p>Remove the dipstick, wipe it, and reinsert it without
+          screwing it in. The oil should reach the upper mark. The engine
+          ships with oil, but the level can drop in transit.</p></info>
+      </step>
+      <step product="gas">
+        <hazardstatement conkeyref="warnings/w-fuel-fire" product="gas"><messagepanel><typeofhazard/><consequence/><howtoavoid/></messagepanel></hazardstatement>
+        <cmd>Fill the fuel tank to the bottom of the filler neck.</cmd>
+      </step>
+      <step>
+        <cmd>Connect the garden hose to the garden hose inlet and tighten it
+          by hand.</cmd>
+      </step>
+      <step>
+        <cmd>Connect the high-pressure hose to the pump outlet and to the
+          spray gun.</cmd>
+        <info><p>Pull back on each quick-connect fitting to confirm it is
+          locked.</p></info>
+      </step>
+      <step>
+        <cmd>Insert a nozzle into the end of the spray wand.</cmd>
+        <info><p>For a first test, use the white 40° nozzle. See
+          <xref href="c_how_it_works.dita#c_how_it_works/nozzles"/>.</p></info>
+      </step>
+      <step>
+        <hazardstatement conkeyref="warnings/n-run-dry"><messagepanel><typeofhazard/><consequence/><howtoavoid/></messagepanel></hazardstatement>
+        <cmd>Turn on the water supply fully. Release the trigger lock, point
+          the spray gun at the ground, and squeeze the trigger until a steady
+          stream of water flows with no air sputtering.</cmd>
+        <stepresult><p>Air is purged from the pump and hoses.</p></stepresult>
+      </step>
+      <step product="electric">
+        <cmd>Plug the power cord into the outlet and press
+          <uicontrol>TEST</uicontrol> and then <uicontrol>RESET</uicontrol>
+          on the GFCI device.</cmd>
+        <stepresult><p>The GFCI indicator light turns on.</p></stepresult>
+      </step>
+      <step product="electric">
+        <cmd>Turn the power switch to <uicontrol>ON</uicontrol>.</cmd>
+      </step>
+      <step product="gas">
+        <cmd>Prepare the engine to start.</cmd>
+        <substeps>
+          <substep><cmd>Turn the fuel valve to <uicontrol>ON</uicontrol>.</cmd></substep>
+          <substep><cmd>If the engine is cold, move the choke lever to
+            <uicontrol>CHOKE</uicontrol>.</cmd></substep>
+          <substep><cmd>Move the engine switch to <uicontrol>ON</uicontrol>.</cmd></substep>
+        </substeps>
+      </step>
+      <step product="gas">
+        <cmd>Squeeze the trigger and hold it, then pull the starter cord
+          slowly until you feel resistance, and pull it quickly.</cmd>
+        <info><p>Holding the trigger releases pressure in the pump so the
+          engine is easier to start.</p></info>
+      </step>
+      <step product="gas">
+        <cmd>After the engine warms up, slowly move the choke lever to
+          <uicontrol>RUN</uicontrol>.</cmd>
+      </step>
+      <step>
+        <hazardstatement conkeyref="warnings/w-injection"><messagepanel><typeofhazard/><consequence/><howtoavoid/></messagepanel></hazardstatement>
+        <cmd>Hold the spray gun with both hands and squeeze the trigger to
+          begin cleaning.</cmd>
+        <info><p>Start with the nozzle at least 24 in. (60 cm) from the surface
+          and move closer slowly. Engage the trigger lock whenever you
+          pause.</p></info>
+      </step>
+    </steps>
+    <result>
+      <p>The pressure washer is running and ready for use. When you finish,
+        follow <xref href="t_shut_down_and_store.dita"/>.</p>
+    </result>
+  </taskbody>
+</task>

@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE concept PUBLIC "-//OASIS//DTD DITA Concept//EN" "concept.dtd">
+<concept id="c_how_it_works">
+  <title>How the pressure washer works</title>
+  <shortdesc>The <keyword keyref="model"/> takes water from a standard garden
+    hose and uses a pump to raise its pressure to as much as
+    <keyword keyref="max-pressure"/>. The spray gun and nozzle turn that
+    pressure into a focused stream that removes dirt, mildew and loose
+    paint.</shortdesc>
+  <conbody>
+    <section id="water-path">
+      <title>The path water takes</title>
+      <p>Water enters the pump through the garden hose inlet. A screen in the
+        inlet catches debris that could damage the pump. The
+        <ph product="electric">electric motor</ph><ph product="gas">gasoline
+        engine</ph> drives the pump, which pushes the water through the
+        high-pressure hose to the spray gun. The nozzle on the end of the
+        spray wand narrows the stream and sets the spray pattern.</p>
+    </section>
+
+    <section id="unloader">
+      <title>What happens when you release the trigger</title>
+      <p>When you release the trigger, water has nowhere to go. An
+        <term>unloader valve</term> senses the rise in pressure and sends the
+        water back through the pump in a loop. This is called
+        <term>bypass mode</term>. <ph product="electric">On the electric model,
+        the motor also shuts off automatically after a few seconds in bypass
+        mode and restarts when you squeeze the trigger again.</ph><ph
+        product="gas">On the gas model, the engine keeps running in bypass
+        mode.</ph></p>
+      <p>Water that loops in bypass mode heats up. A <term>thermal relief
+        valve</term> releases hot water from the pump before it can damage
+        the seals. If you see water dripping from under the pump after a long
+        pause, the valve is working as designed.</p>
+    </section>
+
+    <section id="components">
+      <title>Main components</title>
+      <dl>
+        <dlentry>
+          <dt>Garden hose inlet</dt>
+          <dd>Connects the water supply. Contains the inlet screen.</dd>
+        </dlentry>
+        <dlentry>
+          <dt>Pump</dt>
+          <dd><ph product="electric">Axial cam pump, sealed and
+            maintenance-free.</ph><ph product="gas">Triplex plunger pump with
+            serviceable oil. Built for daily commercial use.</ph></dd>
+        </dlentry>
+        <dlentry product="electric">
+          <dt>Power cord with GFCI</dt>
+          <dd>A ground fault circuit interrupter on the cord cuts power if it
+            detects current leaking to ground.</dd>
+        </dlentry>
+        <dlentry product="gas">
+          <dt>Engine</dt>
+          <dd>212 cc overhead-valve engine with recoil start and low-oil
+            shutdown.</dd>
+        </dlentry>
+        <dlentry>
+          <dt>High-pressure hose</dt>
+          <dd>Carries pressurized water from the pump to the spray gun.</dd>
+        </dlentry>
+        <dlentry>
+          <dt>Spray gun and wand</dt>
+          <dd>The trigger starts and stops the spray. The trigger lock
+            prevents accidental spraying.</dd>
+        </dlentry>
+        <dlentry>
+          <dt>Quick-connect nozzles</dt>
+          <dd>Color-coded tips that set the spray angle.</dd>
+        </dlentry>
+      </dl>
+    </section>
+
+    <section id="nozzles">
+      <title>Choosing a nozzle</title>
+      <p>A narrower spray angle delivers more force to a smaller area. Start
+        with the widest nozzle that does the job, and move to a narrower one
+        only if needed.</p>
+      <simpletable relcolwidth="1* 1* 3*" id="nozzle-table">
+        <sthead>
+          <stentry>Color</stentry>
+          <stentry>Angle</stentry>
+          <stentry>Typical use</stentry>
+        </sthead>
+        <strow product="gas">
+          <stentry>Red</stentry>
+          <stentry>0°</stentry>
+          <stentry>Small, stubborn spots on concrete or metal. Never use on
+            wood, siding or vehicles.</stentry>
+        </strow>
+        <strow>
+          <stentry>Yellow</stentry>
+          <stentry>15°</stentry>
+          <stentry>Stripping loose paint and cleaning concrete.</stentry>
+        </strow>
+        <strow>
+          <stentry>Green</stentry>
+          <stentry>25°</stentry>
+          <stentry>General cleaning of decks, driveways and patio
+            furniture.</stentry>
+        </strow>
+        <strow>
+          <stentry>White</stentry>
+          <stentry>40°</stentry>
+          <stentry>Rinsing vehicles, windows and siding.</stentry>
+        </strow>
+        <strow>
+          <stentry>Black</stentry>
+          <stentry>65°</stentry>
+          <stentry>Applying detergent at low pressure.</stentry>
+        </strow>
+      </simpletable>
+    </section>
+  </conbody>
+</concept>

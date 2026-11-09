@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE reference PUBLIC "-//OASIS//DTD DITA Reference//EN" "reference.dtd">
+<reference id="r_specifications">
+  <title>Specifications</title>
+  <shortdesc>Technical data for the <keyword keyref="product-name"/>.</shortdesc>
+  <refbody>
+    <!-- One table holds both models. Each model-specific row carries a
+         @product value, so each built manual shows only its own data. -->
+    <table id="specs" frame="all" rowsep="1" colsep="1">
+      <title>Specifications for the <keyword keyref="model"/></title>
+      <tgroup cols="2">
+        <colspec colname="spec" colwidth="2*"/>
+        <colspec colname="value" colwidth="3*"/>
+        <thead>
+          <row>
+            <entry>Specification</entry>
+            <entry>Value</entry>
+          </row>
+        </thead>
+        <tbody>
+          <row>
+            <entry>Maximum pressure</entry>
+            <entry><keyword keyref="max-pressure"/></entry>
+          </row>
+          <row product="electric">
+            <entry>Flow rate</entry>
+            <entry>1.2 gal/min (4.5 L/min)</entry>
+          </row>
+          <row product="gas">
+            <entry>Flow rate</entry>
+            <entry>2.6 gal/min (9.8 L/min)</entry>
+          </row>
+          <row product="electric">
+            <entry>Power</entry>
+            <entry>120 V AC, 60 Hz, 13 A</entry>
+          </row>
+          <row product="gas">
+            <entry>Engine</entry>
+            <entry>212 cc OHV, recoil start, low-oil shutdown</entry>
+          </row>
+          <row product="gas">
+            <entry>Fuel tank capacity</entry>
+            <entry>0.95 gal (3.6 L)</entry>
+          </row>
+          <row product="gas">
+            <entry>Engine oil</entry>
+            <entry>SAE 10W-30, 20 oz (0.6 L)</entry>
+          </row>
+          <row product="electric">
+            <entry>Pump</entry>
+            <entry>Axial cam, sealed</entry>
+          </row>
+          <row product="gas">
+            <entry>Pump</entry>
+            <entry>Triplex plunger, 7 oz (0.2 L) pump oil</entry>
+          </row>
+          <row product="electric">
+            <entry>High-pressure hose</entry>
+            <entry>25 ft (7.6 m)</entry>
+          </row>
+          <row product="gas">
+            <entry>High-pressure hose</entry>
+            <entry>50 ft (15.2 m), steel-braided</entry>
+          </row>
+          <row product="electric">
+            <entry>Nozzles included</entry>
+            <entry>15°, 25°, 40°, 65° (soap)</entry>
+          </row>
+          <row product="gas">
+            <entry>Nozzles included</entry>
+            <entry>0°, 15°, 25°, 40°, 65° (soap)</entry>
+          </row>
+          <row>
+            <entry>Maximum inlet water temperature</entry>
+            <entry>104 °F (40 °C)</entry>
+          </row>
+          <row product="electric">
+            <entry>Weight</entry>
+            <entry>29 lb (13.2 kg)</entry>
+          </row>
+          <row product="gas">
+            <entry>Weight</entry>
+            <entry>74 lb (33.6 kg)</entry>
+          </row>
+        </tbody>
+      </tgroup>
+    </table>
+  </refbody>
+</reference>

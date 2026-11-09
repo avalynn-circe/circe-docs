@@ -7,6 +7,7 @@ const sidebars: SidebarsConfig = {
     'xweather-skill',
     'mcp-tutorial-review',
     'interactive-lessons',
+    'dita-pressure-washer',
     {
       type: 'category',
       label: 'Self-auditing knowledge base',

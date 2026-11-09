@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Builds the PW-3400G gas manual: drops all electric-only content. -->
+<val>
+  <prop att="product" val="gas" action="include"/>
+  <prop att="product" val="electric" action="exclude"/>
+</val>

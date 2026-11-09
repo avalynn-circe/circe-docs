@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE map PUBLIC "-//OASIS//DTD DITA Map//EN" "map.dtd">
+<!--
+  One source, two manuals. Build with ditaval/electric.ditaval for the
+  PW-1900E or ditaval/gas.ditaval for the PW-3400G. See README.md.
+-->
+<map xml:lang="en-US">
+  <title>Owner's Manual: <keyword keyref="product-name"/></title>
+
+  <topicmeta>
+    <author>Avalynn Circe</author>
+    <publisher>Northfen Outdoor Power (fictional company, portfolio sample)</publisher>
+    <critdates>
+      <created date="2026-11-09"/>
+    </critdates>
+  </topicmeta>
+
+  <!-- Subject scheme: limits @product to the two defined models. -->
+  <mapref href="subject-scheme.ditamap" format="ditamap"/>
+
+  <!-- ===== Key definitions ===== -->
+
+  <!-- Product names. Each key is defined once per model. After DITAVAL
+       filtering removes one definition, every keyref in the topics
+       resolves to the right model name. -->
+  <keydef keys="product-name" product="electric">
+    <topicmeta><keywords><keyword>Northfen PW-1900E Electric Pressure Washer</keyword></keywords></topicmeta>
+  </keydef>
+  <keydef keys="product-name" product="gas">
+    <topicmeta><keywords><keyword>Northfen PW-3400G Gas Pressure Washer</keyword></keywords></topicmeta>
+  </keydef>
+
+  <keydef keys="model" product="electric">
+    <topicmeta><keywords><keyword>PW-1900E</keyword></keywords></topicmeta>
+  </keydef>
+  <keydef keys="model" product="gas">
+    <topicmeta><keywords><keyword>PW-3400G</keyword></keywords></topicmeta>
+  </keydef>
+
+  <keydef keys="max-pressure" product="electric">
+    <topicmeta><keywords><keyword>1,900 psi (131 bar)</keyword></keywords></topicmeta>
+  </keydef>
+  <keydef keys="max-pressure" product="gas">
+    <topicmeta><keywords><keyword>3,400 psi (234 bar)</keyword></keywords></topicmeta>
+  </keydef>
+
+  <!-- Warehouse topic. resource-only keeps it out of the output while
+       its messages stay available to conkeyref. -->
+  <keydef keys="warnings" href="shared/warnings.dita" processing-role="resource-only"/>
+
+  <!-- ===== Navigation ===== -->
+
+  <topicref href="topics/c_safety_information.dita"/>
+  <topicref href="topics/c_how_it_works.dita"/>
+  <topicref href="topics/t_set_up_and_start.dita"/>
+  <topicref href="topics/t_shut_down_and_store.dita"/>
+  <topicref href="topics/r_specifications.dita"/>
+  <topicref href="topics/r_troubleshooting.dita"/>
+</map>

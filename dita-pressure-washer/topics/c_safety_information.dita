@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE concept PUBLIC "-//OASIS//DTD DITA Concept//EN" "concept.dtd">
+<concept id="c_safety_information">
+  <title>Important safety information</title>
+  <shortdesc>Read and understand every safety message before you set up or
+    operate the <keyword keyref="product-name"/>.</shortdesc>
+  <conbody>
+    <section id="signal-words">
+      <title>Signal words</title>
+      <p>Safety messages in this manual use these signal words:</p>
+      <dl>
+        <dlentry>
+          <dt>DANGER</dt>
+          <dd>A hazardous situation that, if not avoided, will cause death or
+            serious injury.</dd>
+        </dlentry>
+        <dlentry>
+          <dt>WARNING</dt>
+          <dd>A hazardous situation that, if not avoided, could cause death or
+            serious injury.</dd>
+        </dlentry>
+        <dlentry>
+          <dt>NOTICE</dt>
+          <dd>A situation that could damage the machine or other property but
+            will not cause injury.</dd>
+        </dlentry>
+      </dl>
+    </section>
+
+    <section id="messages">
+      <title>Safety messages for this machine</title>
+      <!-- Each message below is pulled from the warehouse topic.
+           References to model-specific messages carry a @product
+           value, so the DITAVAL filter removes them for the other model. -->
+      <hazardstatement conkeyref="warnings/w-carbon-monoxide" product="gas"><messagepanel><typeofhazard/><consequence/><howtoavoid/></messagepanel></hazardstatement>
+      <hazardstatement conkeyref="warnings/w-injection"><messagepanel><typeofhazard/><consequence/><howtoavoid/></messagepanel></hazardstatement>
+      <hazardstatement conkeyref="warnings/w-electric-shock" product="electric"><messagepanel><typeofhazard/><consequence/><howtoavoid/></messagepanel></hazardstatement>
+      <hazardstatement conkeyref="warnings/w-fuel-fire" product="gas"><messagepanel><typeofhazard/><consequence/><howtoavoid/></messagepanel></hazardstatement>
+      <hazardstatement conkeyref="warnings/w-stored-pressure"><messagepanel><typeofhazard/><consequence/><howtoavoid/></messagepanel></hazardstatement>
+    </section>
+
+    <section id="protective-equipment">
+      <title>Personal protective equipment</title>
+      <p>Wear this equipment every time you operate the machine:</p>
+      <ul>
+        <li>Safety glasses or goggles that meet ANSI Z87.1</li>
+        <li>Closed-toe, slip-resistant shoes</li>
+        <li>Long pants</li>
+        <li product="gas">Hearing protection</li>
+      </ul>
+    </section>
+  </conbody>
+</concept>

@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE task PUBLIC "-//OASIS//DTD DITA Task//EN" "task.dtd">
+<task id="t_shut_down_and_store">
+  <title>Shut down, relieve pressure and store the pressure washer</title>
+  <shortdesc>Stop the <keyword keyref="model"/>, release trapped pressure,
+    and drain the pump so the machine is safe to handle and ready for
+    storage.</shortdesc>
+  <taskbody>
+    <context>
+      <p>Follow these steps every time you finish using the machine, and
+        before you change a nozzle, clean the inlet screen, or perform any
+        maintenance.</p>
+      <note product="gas">If you plan to store the machine for more than 30
+        days, add fuel stabilizer at your last refill of the season, then run
+        the machine for at least 5 minutes so the treated fuel reaches the
+        carburetor.</note>
+      <hazardstatement conkeyref="warnings/w-stored-pressure"><messagepanel><typeofhazard/><consequence/><howtoavoid/></messagepanel></hazardstatement>
+    </context>
+    <steps>
+      <step>
+        <cmd>Engage the trigger lock on the spray gun.</cmd>
+      </step>
+      <step product="electric">
+        <cmd>Turn the power switch to <uicontrol>OFF</uicontrol> and unplug
+          the power cord.</cmd>
+      </step>
+      <step product="gas">
+        <cmd>Move the engine switch to <uicontrol>OFF</uicontrol> and turn
+          the fuel valve to <uicontrol>OFF</uicontrol>.</cmd>
+      </step>
+      <step>
+        <cmd>Turn off the water supply.</cmd>
+      </step>
+      <step>
+        <hazardstatement conkeyref="warnings/w-injection"><messagepanel><typeofhazard/><consequence/><howtoavoid/></messagepanel></hazardstatement>
+        <cmd>Point the spray gun at the ground, release the trigger lock, and
+          squeeze the trigger until water stops flowing.</cmd>
+        <stepresult><p>Pressure is relieved from the hose and spray gun.</p></stepresult>
+      </step>
+      <step>
+        <cmd>Engage the trigger lock again.</cmd>
+      </step>
+      <step>
+        <cmd>Disconnect the garden hose, the high-pressure hose, and the
+          spray gun.</cmd>
+      </step>
+      <step>
+        <cmd>Drain the water from the pump, hoses and spray gun.</cmd>
+        <info><p>Tip the machine so the pump outlet faces down, and hold each
+          hose vertically until it stops dripping.</p></info>
+      </step>
+      <step>
+        <hazardstatement conkeyref="warnings/n-freeze-damage"><messagepanel><typeofhazard/><consequence/><howtoavoid/></messagepanel></hazardstatement>
+        <cmd>If you will store the machine for more than 30 days or below
+          freezing, add pump protector.</cmd>
+        <info><p>Attach the pump protector bottle to the garden hose inlet and
+          squeeze until foam comes out of the pump outlet.</p></info>
+      </step>
+      <step>
+        <cmd>Store the machine and accessories indoors in a dry place.</cmd>
+      </step>
+    </steps>
+    <result>
+      <p>The machine is depressurized, drained and protected for storage.</p>
+    </result>
+  </taskbody>
+</task>

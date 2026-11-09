@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Builds the PW-1900E electric manual: drops all gas-only content. -->
+<val>
+  <prop att="product" val="electric" action="include"/>
+  <prop att="product" val="gas" action="exclude"/>
+</val>

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE subjectScheme PUBLIC "-//OASIS//DTD DITA Subject Scheme Map//EN" "subjectScheme.dtd">
+<!--
+  Controlled values for profiling. DITA-OT warns at build time if any
+  topic uses a @product value that is not listed here, which catches
+  typos such as product="eletric" before they ship.
+-->
+<subjectScheme>
+  <subjectdef keys="models">
+    <subjectdef keys="electric">
+      <topicmeta><navtitle>PW-1900E electric model</navtitle></topicmeta>
+    </subjectdef>
+    <subjectdef keys="gas">
+      <topicmeta><navtitle>PW-3400G gas model</navtitle></topicmeta>
+    </subjectdef>
+  </subjectdef>
+  <enumerationdef>
+    <attributedef name="product"/>
+    <subjectdef keyref="models"/>
+  </enumerationdef>
+</subjectScheme>
