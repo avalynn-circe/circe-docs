@@ -6,6 +6,7 @@ const sidebars: SidebarsConfig = {
     'index',
     'xweather-skill',
     'mcp-tutorial-review',
+    'interactive-lessons',
     {
       type: 'category',
       label: 'Self-auditing knowledge base',
