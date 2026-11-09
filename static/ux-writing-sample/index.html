@@ -1,0 +1,1090 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Ovenbird UX Writing</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="description" content="A UX writing sample by Avalynn Circe: six financial screens rewritten for investors, advisors and institutional clients, with redlines, rationale, accessibility notes and a voice and tone guide.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Bricolage+Grotesque:opsz,wght@12..96,500..800&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+/* Layout: a case-study page around a workbench. Device mockups on the left, the writer's reasoning on the right. */
+:root{
+  --paper:#F2F5EF; --panel:#FFFFFF; --ink:#16201A; --muted:#55625A; --line:#D3DACF;
+  --accent:#A9501A; --olive:#3E5A1E; --olive-soft:#E3EAD6; --focus:#2F6FD6;
+  --device:#1B231E; --device-edge:#36423A;
+  /* Ovenbird brand (inside the mockups, same in both themes, like a real app's light mode) */
+  --ob-bg:#FFFFFF; --ob-ink:#1D291F; --ob-muted:#556052; --ob-olive:#4E6A2A; --ob-olive-deep:#30431A;
+  --ob-soft:#EEF2E6; --ob-line:#DCE3D3; --ob-crown:#D7772A; --ob-down:#9A2B1E; --ob-lock:#22302A;
+  --del-bg:#FBE1DC; --del-fg:#80200F; --ins-bg:#DDF1E1; --ins-fg:#14542A; --ins-line:#2E8A4B;
+  --mk-bg:#A9501A; --mk-fg:#FFFFFF; --hl:#F2B33D;
+  --font-display:"Bricolage Grotesque", "Avenir Next", "Segoe UI", system-ui, sans-serif;
+  --font-body:"Atkinson Hyperlegible", "Verdana", "Segoe UI", system-ui, sans-serif;
+  --font-mono:"IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --paper:#111713; --panel:#19211C; --ink:#E5EBE2; --muted:#A2AFA5; --line:#2D3930;
+  --accent:#F0A06A; --olive:#B3CC84; --olive-soft:#26321F; --focus:#7FB0FF;
+  --device:#050806; --device-edge:#3A463E; color-scheme:dark } }
+:root[data-theme="dark"]{
+  --paper:#111713; --panel:#19211C; --ink:#E5EBE2; --muted:#A2AFA5; --line:#2D3930;
+  --accent:#F0A06A; --olive:#B3CC84; --olive-soft:#26321F; --focus:#7FB0FF;
+  --device:#050806; --device-edge:#3A463E; color-scheme:dark }
+
+*,*::before,*::after{box-sizing:border-box}
+[hidden]{display:none!important}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--paper);color:var(--ink);font:17px/1.6 var(--font-body)}
+a{color:var(--olive);text-underline-offset:3px;text-decoration-thickness:1.5px}
+a:hover{color:var(--accent)}
+:focus-visible{outline:3px solid var(--focus);outline-offset:3px;border-radius:4px}
+h1,h2,h3,h4{font-family:var(--font-display);line-height:1.12;text-wrap:balance;margin:0;font-weight:700;letter-spacing:-.01em}
+p{margin:0}
+.sr{position:absolute!important;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+.wrap{max-width:1180px;margin-inline:auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.eyebrow{font:600 .74rem/1.2 var(--font-mono);letter-spacing:.09em;text-transform:uppercase;color:var(--accent)}
+.skip{position:absolute;left:12px;top:-60px;background:var(--panel);color:var(--ink);padding:10px 14px;border:2px solid var(--focus);border-radius:8px;z-index:20}
+.skip:focus{top:12px}
+
+/* Top bar */
+.top{border-bottom:1px solid var(--line)}
+.top .wrap{display:flex;flex-wrap:wrap;gap:8px 24px;align-items:center;justify-content:space-between;padding-block:14px}
+.byline{font:600 .95rem/1.2 var(--font-display)}
+.byline span{color:var(--muted);font-weight:500}
+.top nav ul{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:4px 18px;font-size:.92rem}
+.top nav a{color:var(--ink);text-decoration:none;border-bottom:2px solid transparent;padding-block:4px}
+.top nav a:hover{border-color:var(--accent);color:var(--ink)}
+
+/* Hero */
+.hero .wrap{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);gap:40px;align-items:end;padding-block:56px 40px}
+.hero h1{font-size:clamp(2.1rem,5.2vw,3.7rem);font-weight:750;margin-top:14px;max-width:16ch}
+.hero h1 em{font-style:normal;color:var(--accent)}
+.hero .lede{margin-top:20px;max-width:60ch;font-size:1.08rem;color:var(--muted)}
+.hero .lede strong{color:var(--ink)}
+.flags{display:flex;flex-wrap:wrap;gap:8px;margin-top:22px}
+.flag{font:500 .78rem/1 var(--font-mono);padding:7px 10px;border:1px solid var(--line);border-radius:999px;color:var(--muted);background:var(--panel)}
+.score{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:22px 22px 18px}
+.score h2{font:600 .78rem/1.3 var(--font-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.score-row{display:flex;align-items:baseline;gap:14px;margin-top:10px;font-variant-numeric:tabular-nums}
+.score-num{font:700 3.4rem/1 var(--font-display)}
+.score-num.after{color:var(--olive)}
+.score-arrow{font:500 1.6rem/1 var(--font-mono);color:var(--muted)}
+.score-labels{display:flex;gap:14px;font:500 .78rem/1.3 var(--font-mono);color:var(--muted);margin-top:6px}
+.score-labels span{min-width:5.2em}
+.score p.fine{margin-top:14px;font-size:.86rem;color:var(--muted)}
+
+/* Section heads */
+section.block{padding-block:48px}
+section.block + section.block{border-top:1px solid var(--line)}
+.sec-head{display:grid;gap:10px;margin-bottom:26px;max-width:70ch}
+.sec-head h2{font-size:clamp(1.7rem,3.4vw,2.4rem)}
+.sec-head p{color:var(--muted)}
+
+/* Screen tabs */
+.tabs-scroll{overflow-x:auto;margin-inline:-4px;padding:4px 4px 10px;scrollbar-width:thin}
+.tabs{display:flex;gap:10px;min-width:max-content}
+.tab{all:unset;box-sizing:border-box;cursor:pointer;display:grid;gap:4px;width:172px;padding:12px 14px;border:1px solid var(--line);border-radius:14px;background:var(--panel);color:var(--ink);transition:border-color .15s, transform .15s}
+.tab:hover{border-color:var(--olive)}
+.tab:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+.tab[aria-selected="true"]{border-color:var(--ink);box-shadow:inset 0 -4px 0 var(--accent)}
+.tab-name{font:700 1rem/1.2 var(--font-display)}
+.tab-aud{font-size:.8rem;color:var(--muted)}
+.tab-g{font:500 .76rem/1.2 var(--font-mono);color:var(--muted);font-variant-numeric:tabular-nums}
+.tab-g b{color:var(--olive);font-weight:600}
+
+/* Workbench */
+.bench{display:grid;grid-template-columns:minmax(0,1.08fr) minmax(0,1fr);gap:36px;margin-top:22px;align-items:start}
+.stage{display:grid;gap:16px;min-width:0}
+.controls{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:12px;padding:3px;background:var(--panel)}
+.seg button{all:unset;box-sizing:border-box;cursor:pointer;padding:9px 14px;border-radius:9px;font:600 .9rem/1 var(--font-body);color:var(--muted);min-height:40px;display:inline-flex;align-items:center}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--paper)}
+.seg button:focus-visible{outline:3px solid var(--focus);outline-offset:1px}
+.seg button:disabled{opacity:.45;cursor:not-allowed}
+.toggle{all:unset;box-sizing:border-box;cursor:pointer;display:inline-flex;gap:8px;align-items:center;font:600 .88rem/1 var(--font-body);color:var(--ink);min-height:40px;padding:0 4px}
+.toggle .sw{width:34px;height:20px;border-radius:999px;background:var(--line);position:relative;transition:background .15s}
+.toggle .sw::after{content:"";position:absolute;top:3px;left:3px;width:14px;height:14px;border-radius:50%;background:var(--panel);transition:transform .15s}
+.toggle[aria-pressed="true"] .sw{background:var(--accent)}
+.toggle[aria-pressed="true"] .sw::after{transform:translateX(14px)}
+.toggle:focus-visible{outline:3px solid var(--focus);outline-offset:2px;border-radius:8px}
+.variant{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;font-size:.9rem}
+.variant .v-label{font:600 .74rem/1.2 var(--font-mono);letter-spacing:.07em;text-transform:uppercase;color:var(--muted)}
+.variant .v-note{font-size:.84rem;color:var(--muted);flex-basis:100%}
+.stage-caption{font:500 .8rem/1.4 var(--font-mono);color:var(--muted);text-align:center}
+.legend{display:flex;flex-wrap:wrap;gap:6px 14px;justify-content:center;font-size:.8rem;color:var(--muted)}
+.legend del,.legend ins{font-size:.8rem}
+
+/* Device frames */
+.device{display:flex;justify-content:center;min-width:0}
+.phone{width:min(100%,348px);background:var(--ob-bg);color:var(--ob-ink);border:11px solid var(--device);outline:1px solid var(--device-edge);border-radius:40px;padding:30px 18px 22px;position:relative;font:15px/1.5 var(--font-body);box-shadow:0 18px 40px -24px rgba(0,0,0,.45)}
+.phone::before{content:"";position:absolute;top:9px;left:50%;width:84px;height:18px;margin-left:-42px;border-radius:999px;background:var(--device)}
+.app{display:grid;gap:12px}
+.ob-bar{display:flex;align-items:center;gap:8px;padding-bottom:10px;border-bottom:1px solid var(--ob-line);margin-bottom:4px}
+.ob-logo{width:22px;height:22px;border-radius:50%;background:var(--ob-olive);position:relative;flex:none;overflow:hidden}
+.ob-logo::after{content:"";position:absolute;left:9px;top:-2px;width:5px;height:14px;border-radius:3px;background:var(--ob-crown)}
+.ob-logo.sm{width:16px;height:16px}
+.ob-logo.sm::after{left:6px;width:4px;height:10px}
+.ob-name{font:700 .95rem/1 var(--font-display);color:var(--ob-olive-deep);letter-spacing:.01em}
+.ob-step{font:600 .78rem/1.2 var(--font-mono);color:var(--ob-muted)}
+.ob-eyebrow{font:700 .8rem/1.2 var(--font-body);text-transform:uppercase;letter-spacing:.06em;color:var(--ob-olive)}
+.ob-q,.ob-h{font:700 1.22rem/1.3 var(--font-body);color:var(--ob-ink)}
+.ob-p{color:var(--ob-ink)}
+.ob-muted{color:var(--ob-muted);font-size:.88rem}
+.ob-opts{display:grid;gap:8px}
+.ob-opt{display:flex;gap:12px;align-items:flex-start;border:1.5px solid var(--ob-line);border-radius:12px;padding:12px;min-height:48px}
+.ob-opt:nth-child(2){border-color:var(--ob-olive);background:var(--ob-soft)}
+.ob-radio{flex:none;width:20px;height:20px;border-radius:50%;border:2px solid var(--ob-muted);margin-top:2px}
+.ob-opt:nth-child(2) .ob-radio{border-color:var(--ob-olive);box-shadow:inset 0 0 0 4px var(--ob-bg);background:var(--ob-olive)}
+.ob-opt-l{display:block;font-weight:700}
+.ob-opt-d{display:block;font-size:.88rem;color:var(--ob-muted)}
+.ob-help{font-size:.88rem;color:var(--ob-muted)}
+.ob-link{color:var(--ob-olive-deep);text-decoration:underline;text-underline-offset:3px;font-weight:700;font-size:.92rem}
+.ob-actions{display:grid;gap:8px;margin-top:4px}
+.ob-actions.row{display:flex;flex-wrap:wrap}
+.ob-btn{display:flex;justify-content:center;align-items:center;text-align:center;min-height:46px;padding:10px 16px;border-radius:12px;font-weight:700;background:var(--ob-olive);color:#fff}
+.ob-btn.secondary{background:var(--ob-bg);color:var(--ob-olive-deep);border:1.5px solid var(--ob-olive)}
+.ob-actions.row .ob-btn{flex:1 1 auto}
+.ob-chip{justify-self:start;font:700 .9rem/1 var(--font-mono);padding:8px 10px;border-radius:8px;background:var(--ob-soft);color:var(--ob-ink)}
+.ob-chip.bad{background:#FBE6E2;color:var(--ob-down)}
+.ob-fact{border-left:4px solid var(--ob-olive);background:var(--ob-soft);padding:10px 12px;border-radius:0 10px 10px 0;font-weight:700}
+.ob-alert-icon{width:44px;height:44px;border-radius:50%;background:#FBE6E2;color:var(--ob-down);display:grid;place-items:center;font:700 1.4rem/1 var(--font-display)}
+.ob-steps{margin:0;padding-left:20px;display:grid;gap:4px}
+.ob-small{font:500 .78rem/1.4 var(--font-mono);color:var(--ob-muted)}
+.lock{background:var(--ob-lock);margin:-30px -18px 14px;padding:34px 12px 16px;border-radius:29px 29px 0 0;color:#EEF2EA}
+.lock-time{text-align:center;font:600 2.1rem/1 var(--font-display);margin-bottom:12px;color:#F4F7F1}
+.lock-label,.app-label{font:600 .66rem/1 var(--font-mono);letter-spacing:.1em;text-transform:uppercase;color:#B9C6B7;margin-bottom:6px}
+.app-label{color:var(--ob-muted)}
+.push{background:rgba(255,255,255,.93);color:var(--ob-ink);border-radius:16px;padding:10px 12px}
+.push-top{display:flex;align-items:center;gap:6px;font:600 .7rem/1 var(--font-mono);color:var(--ob-muted);letter-spacing:.05em}
+.push-top .when{margin-left:auto;letter-spacing:0}
+.push-title{font-weight:700;margin-top:6px;line-height:1.3}
+.push-body{font-size:.88rem;line-height:1.4}
+
+.browser{width:100%;background:var(--ob-bg);color:var(--ob-ink);border:1px solid var(--device-edge);border-radius:14px;overflow:hidden;font:15px/1.55 var(--font-body);box-shadow:0 18px 40px -26px rgba(0,0,0,.45)}
+.chrome{background:#E7EBE3;border-bottom:1px solid var(--ob-line);padding:8px 10px;display:grid;gap:6px}
+.chrome-row{display:flex;align-items:center;gap:8px;min-width:0}
+.dots{display:flex;gap:5px;flex:none}
+.dots i{width:9px;height:9px;border-radius:50%;background:#B9C1B3;display:block}
+.tabchip{background:var(--ob-bg);border-radius:8px 8px 0 0;padding:5px 10px;font-size:.78rem;max-width:100%;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--ob-ink)}
+.url{flex:1;min-width:0;background:var(--ob-bg);border-radius:999px;padding:4px 12px;font:500 .74rem/1.4 var(--font-mono);color:var(--ob-muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.webpage{padding:20px 20px 24px;display:grid;gap:12px}
+.web-h1{font:700 1.45rem/1.2 var(--font-body)}
+.web-h2{font:700 1.08rem/1.3 var(--font-body);margin-top:6px}
+.web-brand{display:flex;align-items:center;gap:8px;padding-bottom:10px;border-bottom:1px solid var(--ob-line)}
+.web-brand .nav{margin-left:auto;font-size:.78rem;color:var(--ob-muted);display:flex;gap:12px}
+.chart{border:1px solid var(--ob-line);border-radius:10px;padding:10px;display:grid;gap:8px}
+.chart svg{width:100%;height:auto;display:block}
+.alt-chip{display:block;font:500 .74rem/1.45 var(--font-mono);background:#F4F1E4;color:#4A3F12;border:1px dashed #A8975A;border-radius:6px;padding:6px 8px}
+.alt-chip::before{content:"alt=";font-weight:600}
+.web-cta{justify-self:start}
+.dash{display:grid;grid-template-columns:120px minmax(0,1fr);min-height:330px}
+.dash-nav{background:var(--ob-soft);padding:14px 12px;display:grid;align-content:start;gap:10px;font-size:.82rem;color:var(--ob-muted)}
+.dash-nav b{color:var(--ob-ink)}
+.dash-main{padding:18px;display:grid;gap:12px;align-content:start;min-width:0}
+.dash-h{font:700 1.2rem/1.2 var(--font-body)}
+.empty{border:1.5px dashed var(--ob-line);border-radius:14px;padding:22px 18px;display:grid;gap:10px;justify-items:start}
+.empty-art{display:flex;gap:6px}
+.empty-art i{display:block;width:30px;height:40px;border-radius:6px;background:var(--ob-soft);border:1.5px solid var(--ob-line)}
+.empty-art i:nth-child(2){background:var(--ob-olive);border-color:var(--ob-olive);opacity:.85}
+.empty-t{font:700 1.05rem/1.3 var(--font-body)}
+
+.mail-head{padding:14px 18px;border-bottom:1px solid var(--ob-line);display:grid;gap:4px;background:#F7F8F4}
+.mail-from{display:flex;gap:8px;align-items:center;font-size:.82rem;color:var(--ob-muted)}
+.mail-subject{font:700 1.06rem/1.3 var(--font-body);color:var(--ob-ink)}
+.mail-pre{font-size:.88rem;color:var(--ob-muted)}
+.mail-body{padding:18px;display:grid;gap:12px}
+.mail-sign{color:var(--ob-muted);font-size:.9rem}
+
+/* Redline + markers + highlight */
+.device del{background:var(--del-bg);color:var(--del-fg);text-decoration:line-through;text-decoration-thickness:1.5px;border-radius:3px;padding:0 2px;box-decoration-break:clone;-webkit-box-decoration-break:clone}
+.device ins{background:var(--ins-bg);color:var(--ins-fg);text-decoration:none;border-bottom:2px solid var(--ins-line);border-radius:3px 3px 0 0;padding:0 2px;box-decoration-break:clone;-webkit-box-decoration-break:clone}
+.legend del{background:var(--del-bg);color:var(--del-fg);padding:0 4px;border-radius:3px}
+.legend ins{background:var(--ins-bg);color:var(--ins-fg);text-decoration:none;border-bottom:2px solid var(--ins-line);padding:0 4px}
+.mode-redline .ob-btn{background:var(--ob-bg);color:var(--ob-ink);border:1.5px dashed var(--ob-olive);display:block}
+.mode-redline .ob-btn del,.mode-redline .ob-btn ins{display:inline}
+.mk{display:inline-grid;place-items:center;min-width:19px;height:19px;padding:0 4px;margin-left:5px;border-radius:999px;background:var(--mk-bg);color:var(--mk-fg);font:600 .7rem/1 var(--font-mono);vertical-align:2px;text-transform:none;letter-spacing:0;text-decoration:none}
+.device .hl{outline:3px solid var(--hl);outline-offset:3px;border-radius:6px}
+
+/* Reasoning panel */
+.panel{display:grid;gap:22px;min-width:0}
+.p-head{display:grid;gap:6px}
+.p-head h3{font-size:clamp(1.4rem,2.6vw,1.85rem)}
+.p-meta{display:flex;flex-wrap:wrap;gap:6px}
+.pill{font:500 .76rem/1 var(--font-mono);padding:6px 9px;border-radius:999px;background:var(--olive-soft);color:var(--ink)}
+.moment{color:var(--muted)}
+.moment strong{color:var(--ink)}
+.grades{display:flex;align-items:center;gap:16px;flex-wrap:wrap;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px 16px;font-variant-numeric:tabular-nums}
+.grades .g{display:grid;gap:2px}
+.g-l{font:600 .7rem/1 var(--font-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.g-v{font:700 1.9rem/1 var(--font-display)}
+.g-v.after{color:var(--olive)}
+.g-s{font-size:.8rem;color:var(--muted)}
+.g-arrow{font:500 1.3rem/1 var(--font-mono);color:var(--muted)}
+.g-note{font-size:.84rem;color:var(--muted);margin-top:-12px}
+.panel h4{font-size:1.1rem}
+.notes{list-style:none;margin:0;padding:0;display:grid;gap:4px}
+.note{display:grid;grid-template-columns:28px minmax(0,1fr);gap:4px 12px;padding:12px 10px;border-radius:12px;transition:background .15s}
+.note:hover{background:var(--olive-soft)}
+.note .num{grid-row:span 3;display:grid;place-items:center;width:24px;height:24px;border-radius:999px;background:var(--mk-bg);color:var(--mk-fg);font:600 .78rem/1 var(--font-mono);margin-top:2px}
+.note .lbl{font-weight:700}
+.note p{font-size:.95rem}
+.note .was{color:var(--muted)}
+.note .tag{font:600 .66rem/1 var(--font-mono);letter-spacing:.08em;text-transform:uppercase;margin-right:6px}
+.note .was .tag{color:var(--muted)}
+.note .now .tag{color:var(--olive)}
+.tone-callout{background:var(--panel);border:1px solid var(--line);border-left:5px solid var(--accent);border-radius:12px;padding:12px 14px;font-size:.94rem}
+details.layer{border:1px solid var(--line);border-radius:14px;background:var(--panel)}
+details.layer summary{cursor:pointer;list-style:none;padding:14px 16px;font:700 1rem/1.3 var(--font-display);display:flex;justify-content:space-between;align-items:center;gap:12px;min-height:48px}
+details.layer summary::-webkit-details-marker{display:none}
+details.layer summary::after{content:"+";font:500 1.3rem/1 var(--font-mono);color:var(--accent)}
+details.layer[open] summary::after{content:"\2212"}
+details.layer summary:focus-visible{outline:3px solid var(--focus);outline-offset:2px;border-radius:12px}
+.layer-body{padding:0 16px 16px;display:grid;gap:12px}
+.layer-body ul{margin:0;padding-left:20px;display:grid;gap:8px;font-size:.95rem}
+.meta-row{display:grid;gap:6px;padding-top:12px;border-top:1px solid var(--line)}
+.meta-row:first-child{border-top:0;padding-top:0}
+.meta-label{font:600 .72rem/1.2 var(--font-mono);letter-spacing:.07em;text-transform:uppercase;color:var(--muted)}
+.meta-pair{display:grid;grid-template-columns:84px minmax(0,1fr);gap:4px 10px;font-size:.92rem}
+.meta-pair .which{font:500 .76rem/1.6 var(--font-mono);color:var(--muted)}
+.meta-pair .val{overflow-wrap:anywhere}
+.count{display:inline-block;font:500 .72rem/1 var(--font-mono);padding:3px 6px;border-radius:6px;margin-left:6px;background:var(--olive-soft);color:var(--ink);white-space:nowrap}
+.count.over{background:var(--del-bg);color:var(--del-fg)}
+.serp{display:grid;gap:10px}
+.serp-card{background:var(--ob-bg);color:var(--ob-ink);border:1px solid var(--line);border-radius:10px;padding:10px 12px;font-family:Arial,Helvetica,sans-serif}
+.serp-which{font:600 .66rem/1 var(--font-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--ob-muted);margin-bottom:6px}
+.serp-url{font-size:.76rem;color:#3F5F3A}
+.serp-title{font-size:1.05rem;color:#1F4FA8;line-height:1.3;margin:2px 0}
+.serp-desc{font-size:.84rem;color:#4A4F48;line-height:1.45}
+
+/* Voice guide */
+.voice-line{font:700 clamp(1.5rem,3.2vw,2.3rem)/1.2 var(--font-display);max-width:28ch;margin-bottom:28px}
+.voice-line span{color:var(--accent)}
+.principles{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.principle{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:18px;display:grid;gap:10px;align-content:start}
+.principle h3{font-size:1.15rem}
+.principle p{color:var(--muted);font-size:.96rem}
+.saynot{display:grid;gap:6px;font-size:.92rem}
+.saynot div{display:grid;grid-template-columns:44px minmax(0,1fr);gap:8px}
+.saynot b{font:600 .7rem/1.9 var(--font-mono);letter-spacing:.07em;text-transform:uppercase}
+.saynot .say b{color:var(--olive)}
+.saynot .not b{color:var(--muted)}
+.saynot .not span{color:var(--muted);text-decoration:line-through;text-decoration-color:var(--accent)}
+.sub-h{font-size:1.35rem;margin:40px 0 14px}
+.dial{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0;border:1px solid var(--line);border-radius:16px;overflow:hidden;background:var(--panel)}
+.dial > div{padding:18px;display:grid;gap:8px;align-content:start;border-left:1px solid var(--line)}
+.dial > div:first-child{border-left:0}
+.dial .lvl{display:flex;align-items:center;gap:10px;font:700 1.05rem/1.2 var(--font-display)}
+.bars{display:inline-flex;gap:3px;align-items:flex-end}
+.bars i{display:block;width:6px;border-radius:2px;background:var(--line)}
+.bars i:nth-child(1){height:8px}.bars i:nth-child(2){height:13px}.bars i:nth-child(3){height:18px}
+.bars.l1 i:nth-child(1),.bars.l2 i:nth-child(-n+2),.bars.l3 i{background:var(--accent)}
+.dial .use{font-size:.88rem;color:var(--muted)}
+.dial .ex{font-size:.96rem;border-top:1px dashed var(--line);padding-top:10px}
+.table-scroll{overflow-x:auto;border:1px solid var(--line);border-radius:16px;background:var(--panel)}
+table{border-collapse:collapse;width:100%;min-width:620px;font-size:.94rem}
+th,td{text-align:left;padding:12px 16px;vertical-align:top;border-top:1px solid var(--line)}
+thead th{border-top:0;font:600 .72rem/1.3 var(--font-mono);letter-spacing:.07em;text-transform:uppercase;color:var(--muted)}
+tbody th{font-family:var(--font-display);font-size:1rem}
+.two{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:24px}
+.words{list-style:none;margin:0;padding:0;border:1px solid var(--line);border-radius:16px;background:var(--panel)}
+.words li{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.2fr);gap:12px;padding:10px 16px;border-top:1px solid var(--line);font-size:.94rem}
+.words li:first-child{border-top:0;font:600 .72rem/1.3 var(--font-mono);letter-spacing:.07em;text-transform:uppercase;color:var(--muted)}
+.words .no{color:var(--muted)}
+.mech{margin:0;padding-left:20px;display:grid;gap:8px;font-size:.96rem}
+.std-note{margin-top:24px;font-size:.92rem;color:var(--muted);max-width:70ch}
+
+/* Critique */
+.crit{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:28px;align-items:start}
+.draft{background:var(--ob-bg);color:var(--ob-ink);border:1px solid var(--device-edge);border-radius:16px;padding:22px;display:grid;gap:14px;position:relative}
+.draft-tag{font:600 .7rem/1 var(--font-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--ob-muted)}
+.draft-h{font:700 1.6rem/1.2 var(--font-body)}
+.draft-img{border-radius:12px;height:120px;background:linear-gradient(160deg,#C9D7B0,#7F9A5A 60%,#4E6A2A);position:relative}
+.pin{display:inline-grid;place-items:center;width:22px;height:22px;border-radius:50%;background:var(--mk-bg);color:var(--mk-fg);font:600 .72rem/1 var(--font-mono);vertical-align:3px;margin-left:4px}
+.draft-img .pin{position:absolute;right:10px;top:10px}
+.draft mark{background:#FCEBC4;color:inherit;padding:0 2px;border-radius:3px}
+.comments{list-style:none;margin:0;padding:0;display:grid;gap:12px}
+.comment{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px 16px;display:grid;grid-template-columns:28px minmax(0,1fr);gap:6px 10px}
+.comment .pin{margin:0}
+.sev{font:600 .68rem/1 var(--font-mono);letter-spacing:.08em;text-transform:uppercase;padding:5px 7px;border-radius:6px;justify-self:start}
+.sev.must{background:var(--del-bg);color:var(--del-fg)}
+.sev.should{background:#FCEBC4;color:#5E4300}
+.sev.consider{background:var(--olive-soft);color:var(--ink)}
+.comment p{font-size:.95rem;grid-column:2}
+.comment .on{font-size:.84rem;color:var(--muted)}
+.revised{margin-top:28px;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:28px;align-items:start}
+.revised .draft{border-color:var(--ob-olive);border-width:2px}
+.howto{list-style:none;margin:0;padding:0;display:grid;gap:12px}
+.howto li{display:grid;gap:2px;padding-left:16px;border-left:3px solid var(--accent)}
+.howto b{font-family:var(--font-display);font-size:1.02rem}
+.howto span{color:var(--muted);font-size:.94rem}
+
+footer{border-top:1px solid var(--line);padding-block:32px 48px;color:var(--muted);font-size:.92rem}
+footer .wrap{display:grid;gap:10px}
+footer strong{color:var(--ink)}
+noscript p{background:var(--panel);border:1px solid var(--line);padding:14px;border-radius:12px}
+
+@media (max-width:960px){
+  .hero .wrap{grid-template-columns:1fr;align-items:start;padding-block:40px 32px}
+  .bench{grid-template-columns:1fr}
+  .crit,.revised,.two{grid-template-columns:1fr}
+}
+@media (max-width:640px){
+  body{font-size:16px}
+  .principles{grid-template-columns:1fr}
+  .dial{grid-template-columns:1fr}
+  .dial > div{border-left:0;border-top:1px solid var(--line)}
+  .dial > div:first-child{border-top:0}
+  .dash{grid-template-columns:1fr}
+  .dash-nav{grid-auto-flow:column;justify-content:start;gap:14px;padding:10px 12px}
+  .score-num{font-size:2.8rem}
+  .meta-pair{grid-template-columns:1fr}
+  .words li{grid-template-columns:1fr;gap:2px}
+}
+@media (prefers-reduced-motion: reduce){ *,*::before,*::after{transition:none!important;animation:none!important;scroll-behavior:auto!important} }
+</style>
+</head>
+<body>
+<a class="skip" href="#screens">Skip to the screens</a>
+<header class="top">
+  <div class="wrap">
+    <p class="byline">Avalynn Circe <span>UX writing sample</span></p>
+    <nav aria-label="On this page">
+      <ul>
+        <li><a href="#screens">Screens</a></li>
+        <li><a href="#voice">Voice guide</a></li>
+        <li><a href="#feedback">Feedback</a></li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <section class="hero" aria-labelledby="hero-title">
+    <div class="wrap">
+      <div>
+        <p class="eyebrow">Case study for Ovenbird Asset Management</p>
+        <h1 id="hero-title">Money copy is read by someone who is <em>a little worried.</em></h1>
+        <p class="lede">I rewrote six screens for <strong>Ovenbird</strong>, an asset manager I invented for this sample, across its three audiences: individual investors, financial advisors and institutional clients. Switch any screen between my rewrite, the original and a redline. Every change has a numbered note that says why I made it.</p>
+        <div class="flags" aria-label="About this sample">
+          <span class="flag">Fictional company</span>
+          <span class="flag">Invented figures</span>
+          <span class="flag">Not financial advice</span>
+        </div>
+      </div>
+      <aside class="score" aria-labelledby="score-title">
+        <h2 id="score-title">Reading grade across all six screens</h2>
+        <div class="score-row" aria-hidden="true">
+          <span class="score-num" id="score-before">--</span>
+          <span class="score-arrow">&rarr;</span>
+          <span class="score-num after" id="score-after">--</span>
+        </div>
+        <div class="score-labels" aria-hidden="true"><span>Original</span><span>&nbsp;&nbsp;&nbsp;</span><span>Rewrite</span></div>
+        <p class="sr" id="score-sr"></p>
+        <p class="fine">Flesch-Kincaid grade level, calculated in your browser from the copy on this page. Lower means easier to read. Short sentences and everyday words score low, which is the goal, and every fact from the originals is still there.</p>
+      </aside>
+    </div>
+  </section>
+
+  <section class="block" id="screens" aria-labelledby="screens-title">
+    <div class="wrap">
+      <div class="sec-head">
+        <p class="eyebrow">The workbench</p>
+        <h2 id="screens-title">Six screens, before and after</h2>
+        <p>Pick a screen. Two of them change with the situation: the market alert shifts tone with the size of the drop, and the fee notice is written three ways for three audiences.</p>
+      </div>
+
+      <div class="tabs-scroll">
+        <div class="tabs" role="tablist" aria-label="Screens" id="tablist"></div>
+      </div>
+
+      <div class="bench" role="tabpanel" id="studio-panel" tabindex="-1">
+        <div class="stage">
+          <div class="controls">
+            <div class="seg" role="group" aria-label="Copy version" id="modes">
+              <button type="button" data-mode="after" aria-pressed="true">Rewrite</button>
+              <button type="button" data-mode="redline" aria-pressed="false">Redline</button>
+              <button type="button" data-mode="before" aria-pressed="false">Original</button>
+            </div>
+            <button type="button" class="toggle" id="markers" aria-pressed="true"><span class="sw" aria-hidden="true"></span>Note markers</button>
+          </div>
+          <div class="variant" id="variant" hidden></div>
+          <figure class="device" id="device" aria-describedby="stage-caption"></figure>
+          <p class="stage-caption" id="stage-caption" aria-live="polite"></p>
+          <p class="legend" id="legend" hidden><span><del>Deleted</del></span><span><ins>Added</ins></span></p>
+        </div>
+        <div class="panel" id="panel"></div>
+      </div>
+      <noscript><p>The workbench needs JavaScript to switch between versions. The voice guide and feedback sections below work without it.</p></noscript>
+    </div>
+  </section>
+
+  <section class="block" id="voice" aria-labelledby="voice-title">
+    <div class="wrap">
+      <div class="sec-head">
+        <p class="eyebrow">Style system</p>
+        <h2 id="voice-title">Ovenbird voice and tone</h2>
+        <p>A one-page guide for the fictional brand. Every rewrite above follows it.</p>
+      </div>
+      <p class="voice-line">A calm expert <span>beside you</span>, not across the desk.</p>
+
+      <div class="principles">
+        <article class="principle">
+          <h3>Lead with what it means for you</h3>
+          <p>Start with what happened and how it affects the reader. Terms of art come second and get defined once.</p>
+          <div class="saynot">
+            <div class="say"><b>Say</b><span>Your fund’s fee drops to 0.35% on May 1.</span></div>
+            <div class="not"><b>Not</b><span>Effective 05/01, the Board has approved a revision to the expense ratio.</span></div>
+          </div>
+        </article>
+        <article class="principle">
+          <h3>Calm, not cheerful</h3>
+          <p>Money news is rarely exciting and rarely an emergency. We report, explain and offer a next step.</p>
+          <div class="saynot">
+            <div class="say"><b>Say</b><span>Your balance is down 8% this week.</span></div>
+            <div class="not"><b>Not</b><span>ALERT: Market Volatility</span></div>
+          </div>
+        </article>
+        <article class="principle">
+          <h3>Specific beats soothing</h3>
+          <p>A fact reassures more than a feeling does. Tell people what is true, and they can decide how to feel.</p>
+          <div class="saynot">
+            <div class="say"><b>Say</b><span>Your money is still invested. Nothing has been sold.</span></div>
+            <div class="not"><b>Not</b><span>Don’t worry! Markets go up and down.</span></div>
+          </div>
+        </article>
+        <article class="principle">
+          <h3>Never a dead end</h3>
+          <p>Every message ends with something to do: a button, a phone number, a date.</p>
+          <div class="saynot">
+            <div class="say"><b>Say</b><span>Try again, or use another account.</span></div>
+            <div class="not"><b>Not</b><span>Please contact your financial institution.</span></div>
+          </div>
+        </article>
+      </div>
+
+      <h3 class="sub-h">The tone dial: same voice, different volume</h3>
+      <div class="dial">
+        <div>
+          <p class="lvl"><span class="bars l1" aria-hidden="true"><i></i><i></i><i></i></span>Routine</p>
+          <p class="use">Confirmations, statements, settings. Brief and warm.</p>
+          <p class="ex">Your $500 is on its way. It should arrive by March 5.</p>
+        </div>
+        <div>
+          <p class="lvl"><span class="bars l2" aria-hidden="true"><i></i><i></i><i></i></span>Watchful</p>
+          <p class="use">Market moves, fee changes, tax season. Steady, with context.</p>
+          <p class="ex">Your balance is down 8% this week. Here’s what that means for your plan.</p>
+        </div>
+        <div>
+          <p class="lvl"><span class="bars l3" aria-hidden="true"><i></i><i></i><i></i></span>Urgent</p>
+          <p class="use">Failed payments, deadlines, security. Direct. The first sentence says what to do.</p>
+          <p class="ex">Set up your RMD by December 31 to avoid an IRS penalty.</p>
+        </div>
+      </div>
+
+      <h3 class="sub-h">One voice, three audiences</h3>
+      <div class="table-scroll">
+        <table>
+          <caption class="sr">How Ovenbird writes for each audience</caption>
+          <thead><tr><th scope="col">Audience</th><th scope="col">Reading level</th><th scope="col">Vocabulary</th><th scope="col">What they need next</th></tr></thead>
+          <tbody>
+            <tr><th scope="row">Individual investors</th><td>Grade 8 or lower</td><td>Plain word first, term of art in parentheses: fee (expense ratio)</td><td>What this means for my money</td></tr>
+            <tr><th scope="row">Financial advisors</th><td>Grade 11 or lower</td><td>Terms of art welcome: basis points, model drift, RMDs</td><td>What to tell my clients</td></tr>
+            <tr><th scope="row">Institutional clients</th><td>Grade 12 or lower</td><td>Exact terms, dates and document names</td><td>A record for the file</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="two">
+        <div>
+          <h3 class="sub-h">Words we use</h3>
+          <ul class="words">
+            <li><span>Say</span><span>Instead of</span></li>
+            <li><span>money</span><span class="no">assets (on investor screens)</span></li>
+            <li><span>fee</span><span class="no">expense ratio, at first mention</span></li>
+            <li><span>move money</span><span class="no">execute a transfer</span></li>
+            <li><span>We couldn’t move your $500</span><span class="no">Transaction failed</span></li>
+            <li><span>market drop</span><span class="no">volatility event</span></li>
+            <li><span>May 1</span><span class="no">05/01</span></li>
+            <li><span>Read the IRS rules on RMDs</span><span class="no">Click here</span></li>
+          </ul>
+        </div>
+        <div>
+          <h3 class="sub-h">Mechanics</h3>
+          <ul class="mech">
+            <li>Sentence case for headings and buttons.</li>
+            <li>Buttons start with a verb and say what happens: Import clients, not Submit.</li>
+            <li>No exclamation points in money messages.</li>
+            <li>Round to whole dollars in summaries. Show cents on statements and receipts.</li>
+            <li>Write “down 8%,” not “−8%,” so it reads correctly aloud.</li>
+            <li>Link text names its destination.</li>
+            <li>Push notifications: title under 40 characters, body under 110.</li>
+            <li>Email: subject under 50 characters, preview text under 90.</li>
+          </ul>
+        </div>
+      </div>
+      <p class="std-note">This guide sits on top of my <a href="https://avalynn-circe.github.io/circe-docs/">Circe Language Standard</a>, the 28-rule style system I use for plain technical writing.</p>
+    </div>
+  </section>
+
+  <section class="block" id="feedback" aria-labelledby="feedback-title">
+    <div class="wrap">
+      <div class="sec-head">
+        <p class="eyebrow">Content critique</p>
+        <h2 id="feedback-title">How I give feedback</h2>
+        <p>A teammate’s first draft of a landing page hero, with the comments I’d leave. Each comment names the problem, says why it matters to the reader, suggests a fix and is labeled by how much it matters.</p>
+      </div>
+
+      <div class="crit">
+        <div class="draft" aria-label="Draft landing page hero">
+          <p class="draft-tag">Draft 1 &middot; Rollovers landing page</p>
+          <p class="draft-h">Unlock Your Financial Future with <mark>Seamless</mark> Rollovers<mark>!</mark><span class="pin" aria-hidden="true">1</span><span class="pin" aria-hidden="true">3</span></p>
+          <p>Leverage Ovenbird’s <mark>best-in-class</mark> platform to consolidate your retirement assets and optimize your journey toward financial freedom.<span class="pin" aria-hidden="true">2</span></p>
+          <div class="draft-img" role="img" aria-label="Placeholder for a photo. Draft alt text: Happy retired couple on beach."><span class="pin" aria-hidden="true">5</span></div>
+          <p class="ob-small">alt="Happy retired couple on beach"</p>
+          <p><span class="ob-btn" style="display:inline-flex">Learn More</span><span class="pin" aria-hidden="true">4</span></p>
+        </div>
+        <ol class="comments">
+          <li class="comment"><span class="pin" aria-hidden="true">1</span><span class="sev should">Should fix</span>
+            <p class="on">On the headline</p>
+            <p>This headline could sit on any bank’s homepage. Someone landing here wants to know whether moving an old 401(k) is a hassle. Can the headline answer that? For example: “Move an old 401(k) without chasing paperwork.”</p></li>
+          <li class="comment"><span class="pin" aria-hidden="true">2</span><span class="sev must">Must fix</span>
+            <p class="on">On “seamless” and “best-in-class”</p>
+            <p>Readers can’t check these claims, and Compliance will likely ask us to prove “best-in-class.” What can we say that’s true and specific? “We contact your old plan for you” does more work than “seamless.”</p></li>
+          <li class="comment"><span class="pin" aria-hidden="true">3</span><span class="sev consider">Consider</span>
+            <p class="on">On the exclamation point</p>
+            <p>Our voice guide skips exclamation points in money messages. The calm version reads as more confident, not less excited.</p></li>
+          <li class="comment"><span class="pin" aria-hidden="true">4</span><span class="sev must">Must fix</span>
+            <p class="on">On the button</p>
+            <p>“Learn more” doesn’t say what happens next. If it starts the rollover, try “Start my rollover.” If it opens an explainer, try “See how rollovers work.” We could test both.</p></li>
+          <li class="comment"><span class="pin" aria-hidden="true">5</span><span class="sev should">Should fix</span>
+            <p class="on">On the image’s alt text</p>
+            <p>This describes the photo but not why it’s there. If the image is decorative, use empty alt text. If it carries meaning, say what we want readers to take from it.</p></li>
+        </ol>
+      </div>
+
+      <div class="revised">
+        <div class="draft" aria-label="Revised landing page hero">
+          <p class="draft-tag">Draft 2 &middot; After our review</p>
+          <p class="draft-h">Move an old 401(k) without chasing paperwork</p>
+          <p>Tell us where your old account is. We’ll contact your former plan, handle the forms and let you know when your money arrives. Ovenbird charges no fee to move it.</p>
+          <div class="ob-actions row"><span class="ob-btn">Start my rollover</span><span class="ob-btn secondary">See how rollovers work</span></div>
+          <p class="ob-small">Image set to decorative: alt=""</p>
+        </div>
+        <div>
+          <h3 class="sub-h" style="margin-top:0">What I hold to in every review</h3>
+          <ul class="howto">
+            <li><b>Start from the reader’s question.</b><span>Every note ties back to what the person on the page is trying to find out.</span></li>
+            <li><b>Name the problem, not the person.</b><span>“This headline could sit anywhere,” never “you made it generic.”</span></li>
+            <li><b>Pair every note with a suggestion.</b><span>And label it Must fix, Should fix or Consider, so the writer knows where to spend time.</span></li>
+            <li><b>Bring Legal and Compliance in early.</b><span>Claims like “best-in-class” get flagged in the draft, not the week before launch.</span></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <p><strong>Avalynn Circe</strong>, technical writer and instructional designer. More of my work is on <a href="https://avalynn-circe.github.io/circe-docs/">Circe Docs</a>.</p>
+    <p>Ovenbird is a fictional company invented for this sample. Fund names, balances, phone numbers and figures are made up. Nothing on this page is investment, tax or legal advice.</p>
+  </div>
+</footer>
+
+<script>
+(function(){
+"use strict";
+
+/* ---------- Content ---------- */
+var TARGETS = {
+  investor:{label:"Individual investor", target:"grade 8 or lower"},
+  advisor:{label:"Financial advisor", target:"grade 11 or lower"},
+  institutional:{label:"Institutional client", target:"grade 12 or lower"}
+};
+
+var SCREENS = [
+{
+  id:"onboarding", short:"Onboarding", name:"First-time investor onboarding", aud:"investor", channel:"Mobile app",
+  moment:"Someone is opening their first investment account. They picked a goal on the last step. Now we ask how much risk they can live with, and many of them have never been asked that before.",
+  meta:["navTitle"],
+  copy:{
+    navTitle:["RTA Step 3", "Step 3 of 5: Your comfort with risk"],
+    step:["Step 3/5", "Step 3 of 5"],
+    title:["Risk Tolerance Assessment", ""],
+    q:["Please indicate your risk tolerance profile to enable optimal portfolio allocation.", "Say your $10,000 dropped to $8,000 in a bad month. What would you do?"],
+    o1:["Conservative", "Move it somewhere safer"],
+    o1d:["Capital preservation", "I’d rather grow slowly than watch big drops."],
+    o2:["Moderate", "Wait it out"],
+    o2d:["Balanced growth", "Drops make me uneasy, but I’d stay invested."],
+    o3:["Aggressive", "Invest more while prices are low"],
+    o3d:["Maximum appreciation", "I’m fine with big swings for a shot at more growth."],
+    help:["Selection is required to proceed. Risk tolerance determines asset allocation per our methodology.", "There’s no wrong answer. Your choice helps us suggest a mix of investments, and you can change it any time in Settings."],
+    link:["See Disclosures", "How we use your answer"],
+    btn:["Submit", "Continue"]
+  },
+  notes:[
+    {k:"step", label:"Progress", was:"“3/5” can be read aloud as “three fifths.” It also looks like a date to some readers.", now:"“Step 3 of 5” sounds the same aloud as it reads on screen."},
+    {k:"q", label:"The question", was:"“Risk tolerance profile” asks people to rate themselves with a term many first-time investors have never used. The title above it said the same thing in different jargon.", now:"I replaced both with one scenario that uses real dollar amounts. Most people can predict what they’d do in a bad month more easily than they can rate an abstract trait."},
+    {k:"o1", label:"The answers", was:"Conservative, Moderate and Aggressive read like personality grades. Nobody wants to call themselves aggressive about their own savings.", now:"Each answer is an action, with a first-person line underneath. Readers recognize themselves instead of labeling themselves."},
+    {k:"help", label:"Helper text", was:"“Selection is required to proceed” sounds like a warning before anyone has done anything wrong.", now:"It says there’s no wrong answer, why we ask and that the choice can change later. A choice that can be undone is easier to make."},
+    {k:"link", label:"The link", was:"“See Disclosures” names a document, not a question the reader has.", now:"The link text says what they’ll learn."},
+    {k:"btn", label:"The button", was:"“Submit” feels final and formal in the middle of a five-step flow.", now:"“Continue” matches where they are, with two steps still to go."}
+  ],
+  a11y:[
+    "The question is the legend of a radio group, so a screen reader announces it with each option: “Wait it out, radio button, 2 of 3.”",
+    "Each description is tied to its option with aria-describedby, so it’s read with the label instead of as stray text.",
+    "Continue is never disabled. If someone presses it without choosing, an inline message says “Choose an answer to continue” and moves focus to the group.",
+    "Each whole option row is a tap target at least 48 pixels tall, not just the small circle."
+  ],
+  metaItems:[{label:"Screen title announced on load", k:"navTitle"}],
+  render:function(T){
+    return '<div class="phone"><div class="app">'+appbar()+
+      T("step","p","ob-step")+T("title","p","ob-eyebrow")+T("q","p","ob-q")+
+      '<div class="ob-opts">'+[1,2,3].map(function(i){return '<div class="ob-opt"><span class="ob-radio" aria-hidden="true"></span><span>'+T("o"+i,"span","ob-opt-l")+T("o"+i+"d","span","ob-opt-d")+'</span></div>';}).join("")+'</div>'+
+      T("help","p","ob-help")+T("link","p","ob-link")+
+      '<div class="ob-actions">'+T("btn","span","ob-btn")+'</div></div></div>';
+  }
+},
+{
+  id:"market-drop", short:"Market alert", name:"Market drop alert", aud:"investor", channel:"Push notification and app",
+  moment:"Markets fell and an investor’s phone lights up. They may read only the lock screen. Whatever they read, they’re deciding in a few seconds whether to panic.",
+  variants:{label:"Size of the drop", def:"mid", opts:[["low","3%"],["mid","8%"],["high","20%"]], originalNote:"The original sent the same alarm for every drop."},
+  meta:["channelName","figure"],
+  copy:{
+    channelName:["Alerts", "Market updates"],
+    pushTitle:["ALERT: Market Volatility", {low:"A small dip this week", mid:"Markets fell this week", high:"A steep market drop"}],
+    pushBody:["Your portfolio has experienced a significant decline. Tap to review your holdings and consider rebalancing options.", {low:"Your balance is down 3% ($1,504). Moves this size are common. No action needed.", mid:"Your balance is down 8% ($4,212). Here’s what it means for your plan.", high:"Your balance is down 20% ($10,029). Nothing has been sold. Read this before you make changes."}],
+    heading:["Portfolio Decline Notification", {low:"Your balance dipped 3% this week", mid:"Your balance is down 8% this week", high:"Your balance is down 20% this month"}],
+    figure:["▼ −8.4%", {low:"Down 3%", mid:"Down 8%", high:"Down 20%"}],
+    body:["Due to elevated market volatility, your portfolio value has decreased by 8.4% ($4,212.37) over the trailing 5-day period. Please review your allocation and consider whether your current investments remain suitable.", {low:"That’s $1,504 since Monday. Dips this size happen several times in a typical year, and your plan already expects them.", mid:"That’s $4,212 since Monday. Most of it came from US stocks, which fell across the market. Your plan is built for long stretches that include drops like this.", high:"That’s $10,029 since March 1. Big drops are hard to watch. If you sell now, the loss becomes final, so many people find it helps to wait a day before deciding."}],
+    legal:["Past performance does not guarantee future results.", ""],
+    fact:["", {low:"Your money is still invested in the same funds.", mid:"You don’t need to do anything. If your goals have changed, you can review your mix.", high:"Your money is still invested. Nothing has been sold."}],
+    btn1:["Rebalance Now", {low:"See what changed", mid:"Review my mix", high:"Talk to an advisor"}],
+    btn2:["Dismiss", {low:"Close", mid:"Talk to someone", high:"See what changed"}],
+    phone:["", {low:"", mid:"", high:"Advisors are available until 8 p.m. CT at 1-800-555-0142."}],
+    details:["", "Details and disclosures"]
+  },
+  notes:[
+    {k:"pushTitle", label:"Push title", was:"“ALERT” in capitals is how we’d announce a security problem. A market move isn’t one, and a lock screen gets about two seconds of attention.", now:"The title names the event in plain words, and its weight grows with the size of the drop."},
+    {k:"pushBody", label:"Push body", was:"It says “significant” without a number and suggests rebalancing at the moment people are most likely to make a rushed trade.", now:"The number comes first. When no action is needed, the copy says so. I keep push bodies under 110 characters so they survive a lock screen preview."},
+    {k:"heading", label:"Heading", was:"“Portfolio Decline Notification” names the type of message instead of the news.", now:"The heading is the news itself: their balance, the change and the time frame."},
+    {k:"figure", label:"The number", was:"A red triangle and a minus sign carried the meaning. Neither works for everyone.", now:"The word “down” carries it, so color is a bonus instead of a requirement."},
+    {k:"body", label:"Body", was:"“Trailing 5-day period” and cents ($4,212.37) add precision nobody needs in a summary, and “elevated market volatility” explains nothing.", now:"I round to dollars, say “since Monday” and name where the drop came from. At 20%, the body slows the reader down instead of hurrying them."},
+    {k:"legal", label:"Disclaimer", was:"“Past performance does not guarantee future results” sat in the middle of the message, where it reads like a brush-off.", now:"I’d move it to the details page linked at the bottom, and confirm that placement with Legal before launch."},
+    {k:"fact", label:"Reassurance", was:"Nothing answered the question underneath every market alert: is my money gone?", now:"One plain line says the money is still invested and nothing was sold."},
+    {k:"btn1", label:"Buttons", was:"“Rebalance Now” pushes a trade, and “Dismiss” dismisses the worry along with the message.", now:"The main action changes with the size of the drop. At 20%, it offers a person to talk to."}
+  ],
+  callout:"Switch between 3%, 8% and 20% to see the tone dial from the voice guide at work. The voice stays the same. The volume, the main action and the amount of context change.",
+  a11y:[
+    "The change is written as “down 8%,” not “−8%.” Screen readers can read the minus sign as “dash” or skip it, which flips the meaning.",
+    "Red is never the only signal. The word “down” carries the meaning for people who can’t tell red from green.",
+    "The push title and body make sense on their own, because many people never open the app.",
+    "The phone number is written out in full so it can be read aloud, copied or tapped."
+  ],
+  metaItems:[
+    {label:"Push title", k:"pushTitle", limit:40},
+    {label:"Push body", k:"pushBody", limit:110},
+    {label:"Notification channel in Settings", k:"channelName", note:"A separate channel from Security alerts, so people can mute market news without muting fraud warnings."}
+  ],
+  render:function(T, has){
+    var chipCls = state.mode==="before" ? "ob-chip bad" : "ob-chip";
+    return '<div class="phone"><div class="lock"><p class="lock-time" aria-hidden="true">9:41</p><p class="lock-label">Lock screen</p>'+
+      '<div class="push"><div class="push-top"><span class="ob-logo sm" aria-hidden="true"></span>OVENBIRD<span class="when">now</span></div>'+
+      T("pushTitle","p","push-title")+T("pushBody","p","push-body")+'</div></div>'+
+      '<div class="app"><p class="app-label">In the app</p>'+appbar()+T("heading","p","ob-h")+T("figure","span",chipCls)+
+      T("body","p","ob-p")+T("legal","p","ob-muted")+T("fact","p","ob-fact")+
+      '<div class="ob-actions">'+T("btn1","span","ob-btn")+T("btn2","span","ob-btn secondary")+'</div>'+
+      T("phone","p","ob-muted")+T("details","p","ob-link")+'</div></div>';
+  }
+},
+{
+  id:"transfer-error", short:"Transfer error", name:"Failed transfer error", aud:"investor", channel:"Mobile app",
+  moment:"Someone tried to move $500 from their bank into their account, and it didn’t go through. Their first thoughts are about their own money: is it gone, and will this cost me?",
+  meta:["navTitle","ref"],
+  copy:{
+    navTitle:["Error", "Transfer didn’t go through"],
+    title:["Transaction Failed", "We couldn’t move your $500"],
+    body:["Error 4012: ACH transfer could not be completed due to NSF or account verification failure. Please contact your financial institution.", "Your bank turned down the transfer from Checking ••4417 on March 3. This usually means the account was short that day, or the bank needs to confirm the link."],
+    status:["", "No money left your bank, and we didn’t charge a fee."],
+    stepsH:["", "What you can do"],
+    s1:["", "Try again once your balance covers $500"],
+    s2:["", "Send it from a different bank account"],
+    btn1:["OK", "Try again"],
+    btn2:["", "Use another account"],
+    help:["", "Questions? Call 1-800-555-0142, 7 a.m. to 8 p.m. CT."],
+    ref:["", "Reference code 4012. Share it if you call, and we’ll find your transfer faster."]
+  },
+  notes:[
+    {k:"title", label:"Title", was:"“Transaction Failed” says something went wrong but not what. It sounds like the system reporting on itself.", now:"The title says exactly what didn’t happen, with the amount, from the person’s side of the screen."},
+    {k:"body", label:"Explanation", was:"It opens with an error code and uses “ACH” and “NSF,” bank shorthand for an electronic transfer and not enough money. “NSF” can also feel like an accusation.", now:"I name the two likely causes in plain words, without assuming which one it was."},
+    {k:"status", label:"Status line", was:"Nothing answered the first worry after a failed payment: did money leave my account, and will I be charged?", now:"One line answers both, right under the explanation."},
+    {k:"stepsH", label:"Next steps", was:"“Contact your financial institution” is a dead end that sends people out of the app to solve it alone.", now:"Two concrete paths inside the app, one for each likely cause."},
+    {k:"btn1", label:"Buttons", was:"“OK” acknowledges the failure and does nothing about it.", now:"The buttons are the two fixes, so the next step is one tap away."},
+    {k:"ref", label:"Error code", was:"The code was the first thing people read.", now:"It’s now the last line, framed as something useful when they call."}
+  ],
+  a11y:[
+    "The message is announced with role=\"alert\" when it appears, and focus moves to the title so keyboard users land on it.",
+    "“••4417” has screen reader text that says “ending in 4417,” so it isn’t read as “bullet bullet 4417.”",
+    "The steps are a real list, so screen readers say “list, 2 items” before reading them.",
+    "The screen title changes to “Transfer didn’t go through,” so the problem is clear from the app switcher or browser tab too."
+  ],
+  metaItems:[{label:"Screen title announced on load", k:"navTitle"}],
+  render:function(T, has){
+    return '<div class="phone"><div class="app">'+appbar()+
+      '<span class="ob-alert-icon" aria-hidden="true">!</span>'+T("title","p","ob-h")+T("body","p","ob-p")+T("status","p","ob-fact")+
+      T("stepsH","p","ob-opt-l")+(has("s1")?'<ul class="ob-steps">'+T("s1","li")+T("s2","li")+'</ul>':'')+
+      '<div class="ob-actions">'+T("btn1","span","ob-btn")+T("btn2","span","ob-btn secondary")+'</div>'+
+      T("help","p","ob-muted")+T("ref","p","ob-small")+'</div></div>';
+  }
+},
+{
+  id:"advisor-empty", short:"Advisor dashboard", name:"Advisor dashboard, empty state", aud:"advisor", channel:"Web app",
+  moment:"A financial advisor logs in to Ovenbird’s advisor platform for the first time. They’re deciding whether this tool is worth learning, and the first thing they see is an empty client list.",
+  meta:["tab"],
+  copy:{
+    tab:["Dashboard - Home", "Client book | Ovenbird Advisor"],
+    h:["Client Book", "Client book"],
+    emptyTitle:["No data available.", "Add your first client to see their accounts here"],
+    emptyBody:["0 records found.", "Once a client is linked, you’ll see balances, model drift and upcoming RMDs in one view. Import a spreadsheet from your CRM, or add clients one at a time."],
+    btn1:["+ Add", "Import clients from CSV"],
+    btn2:["", "Add one client"],
+    sample:["", "Preview a sample client book"],
+    trust:["", "Clients don’t get an invitation until you send one."]
+  },
+  notes:[
+    {k:"h", label:"Heading", was:"“Client Book” in title case reads like a product name.", now:"Sentence case across headings and buttons, per the voice guide. It reads faster and translates more cleanly."},
+    {k:"emptyTitle", label:"Empty state title", was:"“No data available” sounds like an error, on the day the advisor decides whether the tool is worth learning.", now:"The empty state becomes onboarding. It says what to do and what they’ll get."},
+    {k:"emptyBody", label:"Supporting text", was:"“0 records found” repeats the problem.", now:"It names the payoff in advisors’ own terms. “Model drift” and “RMDs” are right here; advisors use them daily. The voice guide keeps jargon off investor screens, not expert ones."},
+    {k:"btn1", label:"Buttons", was:"“+ Add” doesn’t say add what, or how.", now:"Two buttons for the two ways advisors actually bring clients in."},
+    {k:"sample", label:"Sample link", was:"There was no way to see the value before doing the work of an import.", now:"A sample client book with fictional data lets advisors explore first."},
+    {k:"trust", label:"Trust line", was:"Advisors worry that a new tool will email their clients without warning.", now:"One line answers that worry before they import a single record."}
+  ],
+  a11y:[
+    "The illustration has empty alt text (alt=\"\"). The heading already carries the meaning, so a description would only add noise.",
+    "The plus icon is hidden from screen readers, so the old button wasn’t read as “plus Add.” The new labels need no icon.",
+    "The heading is a real h2 under the page’s h1, so the outline stays intact for people who navigate by headings.",
+    "Both buttons have visible labels that match their accessible names, which helps voice control users say “click Import clients.”"
+  ],
+  metaItems:[{label:"Browser tab title", k:"tab", limit:60}],
+  render:function(T, has){
+    return '<div class="browser"><div class="chrome"><div class="chrome-row"><span class="dots" aria-hidden="true"><i></i><i></i><i></i></span>'+T("tab","span","tabchip")+'</div>'+
+      '<div class="chrome-row"><span class="url">advisor.ovenbird.example/clients</span></div></div>'+
+      '<div class="dash"><div class="dash-nav"><span class="ob-logo" aria-hidden="true"></span><b>Clients</b><span>Models</span><span>Reports</span><span>Resources</span></div>'+
+      '<div class="dash-main">'+T("h","p","dash-h")+'<div class="empty"><span class="empty-art" aria-hidden="true"><i></i><i></i><i></i></span>'+
+      T("emptyTitle","p","empty-t")+T("emptyBody","p","ob-muted")+
+      '<div class="ob-actions row">'+T("btn1","span","ob-btn")+T("btn2","span","ob-btn secondary")+'</div>'+
+      T("sample","p","ob-link")+T("trust","p","ob-small")+'</div></div></div></div>';
+  }
+},
+{
+  id:"rmd-explainer", short:"RMD explainer", name:"Required minimum distribution explainer", aud:"investor", channel:"Public web page",
+  moment:"Someone in their early 70s searches “when do I have to take RMDs.” They land on this page from a search result or an AI answer, and they want the answer before they want the rules.",
+  meta:["seoTitle","meta","url","alt"],
+  serp:true,
+  copy:{
+    seoTitle:["RMD Information | Ovenbird", "RMDs: when they start and how much to take | Ovenbird"],
+    meta:["Information regarding Required Minimum Distributions from qualified retirement accounts pursuant to IRS regulations.", "Learn when your required minimum distributions start, how the amount is figured, and how to set up automatic yearly withdrawals."],
+    url:["ovenbird.example/rmd-info.aspx", "ovenbird.example/learn/required-minimum-distributions"],
+    h1:["Required Minimum Distributions", "Required minimum distributions (RMDs), explained"],
+    lead:["Pursuant to IRS regulations, owners of qualified retirement plans must commence distributions upon attaining the applicable age, with the RMD amount calculated based on the prior year-end fair market value and the applicable distribution period.", "Once you reach a certain age, the IRS requires you to take some money out of most retirement accounts each year. That yearly withdrawal is your required minimum distribution, or RMD."],
+    h2a:["", "When do RMDs start?"],
+    pa:["", "For most people, at age 73. If you were born in 1960 or later, they start at 75."],
+    h2b:["", "How much do I have to take?"],
+    pb:["", "Take your account balance from December 31 of last year and divide it by a number from the IRS life expectancy table. We do the math and show your amount on your dashboard."],
+    alt:["chart.png", "Bar chart of a sample $500,000 IRA. If the balance stayed the same, the yearly RMD would rise from $18,868 at age 73 to $24,752 at age 80, because the IRS divisor shrinks each year."],
+    tablelink:["", "Show the chart as a table"],
+    h2c:["", "What if I miss one?"],
+    pc:["Failure to take the RMD may result in excise taxes.", "The IRS can charge a penalty on the amount you didn’t take. Automatic withdrawals are the easiest way to stay on track."],
+    cta:["", "Set up automatic RMDs"],
+    link:["Click here for more information.", "Read the IRS rules on RMDs"],
+    disclaimer:["", "General information, not tax advice. Rules change, so confirm your situation with a tax professional."]
+  },
+  notes:[
+    {k:"seoTitle", label:"Page title", was:"“RMD Information” matches no question anyone types into a search box.", now:"The title leads with the term people search for and the two questions they have, short enough that results pages won’t cut it off."},
+    {k:"h1", label:"Headings", was:"One heading over one dense paragraph. Readers can’t scan it, and search engines and AI answer tools can’t tell which sentence answers which question.", now:"Each subheading is a question people ask, followed by a short, direct answer. A heading and its answer can be quoted on their own."},
+    {k:"lead", label:"Opening paragraph", was:"“Pursuant to,” “commence” and “attaining the applicable age” are legal register, in one 38-word sentence.", now:"Every fact survives, in short sentences. The term RMD is defined once, the first time it appears."},
+    {k:"alt", label:"Alt text", was:"“chart.png” is a file name. A screen reader user learns nothing from it.", now:"The alt text gives the takeaway, not every bar. The full numbers are one tap away in a table."},
+    {k:"cta", label:"Call to action", was:"The page explained a rule and then left people to act on their own.", now:"It ends with the one action that keeps them from missing an RMD."},
+    {k:"link", label:"Link text", was:"“Click here” means nothing out of context. Many screen reader users move through a page by its list of links, where every “click here” sounds the same.", now:"The link names its destination."},
+    {k:"meta", label:"Meta description (see Metadata below)", was:"It restated the title in legal terms.", now:"It promises the three answers on the page, in the words people search with."}
+  ],
+  a11y:[
+    "The chart is an SVG with role=\"img\" and the alt text as its accessible name, plus a table version for anyone who wants every number.",
+    "Headings run h1, then h2, with no skipped levels. The outline doubles as the page’s table of contents.",
+    "Every link makes sense out of context.",
+    "Body text is 18 pixels with lines near 65 characters, and nothing breaks at 200% zoom."
+  ],
+  metaItems:[
+    {label:"Title tag", k:"seoTitle", limit:60},
+    {label:"Meta description", k:"meta", limit:155},
+    {label:"URL", k:"url"},
+    {label:"Structured data", v:["None", "FAQPage markup on the three question headings, so each answer can appear directly in search and AI results"]}
+  ],
+  render:function(T, has){
+    var alt = state.mode==="before" ? before(this,"alt") : after(this,"alt");
+    return '<div class="browser"><div class="chrome"><div class="chrome-row"><span class="dots" aria-hidden="true"><i></i><i></i><i></i></span>'+T("seoTitle","span","tabchip")+'</div>'+
+      '<div class="chrome-row">'+T("url","span","url")+'</div></div>'+
+      '<div class="webpage"><div class="web-brand"><span class="ob-logo" aria-hidden="true"></span><span class="ob-name">Ovenbird</span><span class="nav" aria-hidden="true"><span>Invest</span><span>Retire</span><span>Learn</span></span></div>'+
+      T("h1","p","web-h1")+T("lead","p","ob-p")+T("h2a","p","web-h2")+T("pa","p","ob-p")+T("h2b","p","web-h2")+T("pb","p","ob-p")+
+      '<div class="chart">'+rmdChart(alt)+T("alt","span","alt-chip")+T("tablelink","p","ob-link")+'</div>'+
+      T("h2c","p","web-h2")+T("pc","p","ob-p")+(has("cta")?'<div>'+T("cta","span","ob-btn web-cta")+'</div>':'')+
+      T("link","p","ob-link")+T("disclaimer","p","ob-small")+'</div></div>';
+  }
+},
+{
+  id:"fee-notice", short:"Fee notice", name:"Fund fee change notice", aud:"investor", channel:"Email",
+  moment:"A fund’s yearly fee is going down. The original email went to every audience at once. Investors, advisors and institutional clients each need something different from the same news.",
+  variants:{label:"Audience", def:"investor", opts:[["investor","Investor"],["advisor","Advisor"],["institutional","Institutional"]], originalNote:"The original sent one email to everyone."},
+  meta:["subject","preheader","sign"],
+  copy:{
+    subject:["Important Notice Regarding Changes to Fund Expenses", {investor:"Your Steady Income Fund fee drops May 1", advisor:"OSIFX expense ratio drops to 0.35% on May 1", institutional:"OSIFX net expense ratio cut to 0.35%, May 1"}],
+    preheader:["Please read this notice carefully.", {investor:"You’ll pay $7 less a year for every $10,000 invested. Nothing to do.", advisor:"A 7 basis point cut. A client letter is ready to send.", institutional:"Prospectus supplement and updated fee tables attached."}],
+    greet:["Dear Valued Shareholder,", {investor:"Hi Jordan,", advisor:"Hi Priya,", institutional:"Hello,"}],
+    body:["Effective 05/01, the Board of Trustees has approved a revision to the expense ratio of the Ovenbird Steady Income Fund (OSIFX) from 0.42% to 0.35%. Shareholders are not required to take any action. Please refer to the supplement to the prospectus dated 03/15 for additional information.", {investor:"Starting May 1, the yearly fee for the Ovenbird Steady Income Fund drops from 0.42% to 0.35%.", advisor:"The Board approved a 7 basis point cut to the OSIFX net expense ratio, from 0.42% to 0.35%, effective May 1.", institutional:"Effective May 1, the net expense ratio of the Ovenbird Steady Income Fund (OSIFX) decreases from 0.42% to 0.35% following Board approval."}],
+    body2:["", {investor:"On a $10,000 balance, that’s $35 a year instead of $42. The lower fee is applied automatically, so you don’t need to do anything.", advisor:"No client action is required. A plain-language client letter and an updated fact sheet are ready in your Resource Center.", institutional:"Updated fee tables and the March 15 prospectus supplement are attached for your due diligence files. No action is required."}],
+    cta:["View Supplement", {investor:"See your fund details", advisor:"Get the client letter", institutional:"Download the supplement (PDF, 2 pages)"}],
+    sign:["Ovenbird Shareholder Services", {investor:"Ovenbird Funds", advisor:"Your Ovenbird advisor team", institutional:"Ovenbird Institutional Services"}]
+  },
+  notes:[
+    {k:"subject", label:"Subject line", was:"It sounds like bad news and hides good news. The fee is going down.", now:"Each subject leads with the change itself, in the terms that audience uses."},
+    {k:"preheader", label:"Preview text", was:"“Please read this notice carefully” spends the inbox’s second most-read line on nothing.", now:"The preview carries the payoff, so many people get the point without opening the email."},
+    {k:"body", label:"Body", was:"One email went to everyone, so it served no one well. Investors got legal phrasing, and advisors had to dig for what to tell clients.", now:"Investors see the change in dollars on a balance they can picture. Advisors get basis points and the client letter they’ll need next. Institutional readers get exact terms and documents for their files."},
+    {k:"body", label:"Dates", was:"“05/01” and “03/15” are ambiguous for readers outside the US.", now:"Dates are written out: May 1, March 15."},
+    {k:"cta", label:"Button", was:"“View Supplement” assumes everyone knows what a prospectus supplement is.", now:"Each button names what you get. The institutional link names the format and length, so nobody opens a PDF by surprise."}
+  ],
+  a11y:[
+    "All text is live HTML, not an image, so it reflows, translates and reads aloud.",
+    "The button is a real link with descriptive text, and a plain-text version of the email goes out with it.",
+    "The layout is a single column, so zooming to 200% doesn’t cause sideways scrolling.",
+    "Percentages sit next to the plain-language meaning, so “0.35%” never has to stand alone."
+  ],
+  metaItems:[
+    {label:"Subject line", k:"subject", limit:50},
+    {label:"Preview text", k:"preheader", limit:90},
+    {label:"Sender name", k:"sign"}
+  ],
+  render:function(T){
+    return '<div class="browser"><div class="mail-head"><p class="mail-from"><span class="ob-logo sm" aria-hidden="true"></span>'+T("sign","span")+'</p>'+
+      T("subject","p","mail-subject")+T("preheader","p","mail-pre")+'</div>'+
+      '<div class="mail-body">'+T("greet","p","ob-p")+T("body","p","ob-p")+T("body2","p","ob-p")+
+      '<div>'+T("cta","span","ob-btn web-cta")+'</div><p class="mail-sign">'+(state.mode==="before"?"Sincerely,":"Thanks,")+'</p></div></div>';
+  }
+}
+];
+
+/* ---------- Helpers ---------- */
+function esc(s){return String(s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[c];});}
+function appbar(){return '<div class="ob-bar"><span class="ob-logo" aria-hidden="true"></span><span class="ob-name">Ovenbird</span></div>';}
+function variantOf(sc, v){ return v || (sc.variants ? (state.variant[sc.id] || sc.variants.def) : null); }
+function before(sc,k){ var c=sc.copy[k]; return c ? (c[0]||"") : ""; }
+function after(sc,k,v){ var c=sc.copy[k]; if(!c) return ""; var a=c[1]; if(a && typeof a==="object") a=a[variantOf(sc,v)]; return a||""; }
+function audOf(sc, v){ return sc.id==="fee-notice" ? variantOf(sc,v) : sc.aud; }
+
+function rmdChart(alt){
+  var div=[26.5,25.5,24.6,23.7,22.9,22.0,21.1,20.2], ages=[73,74,75,76,77,78,79,80], max=26000, W=320, H=150, base=122, top=18, bw=26, gap=(W-30-bw*8)/7;
+  var bars=div.map(function(d,i){
+    var v=Math.round(500000/d), h=(v/max)*(base-top), x=24+i*(bw+gap), y=base-h;
+    var lab=(i===0||i===7)?'<text x="'+(x+bw/2)+'" y="'+(y-5)+'" text-anchor="middle" font-size="9.5" fill="#1D291F" font-family="IBM Plex Mono, monospace">$'+v.toLocaleString("en-US")+'</text>':'';
+    return '<rect x="'+x+'" y="'+y.toFixed(1)+'" width="'+bw+'" height="'+h.toFixed(1)+'" rx="3" fill="'+(i===7?"#30431A":"#4E6A2A")+'"/>'+lab+
+      '<text x="'+(x+bw/2)+'" y="'+(base+14)+'" text-anchor="middle" font-size="10" fill="#556052" font-family="IBM Plex Mono, monospace">'+ages[i]+'</text>';
+  }).join("");
+  return '<svg viewBox="0 0 '+W+' '+H+'" role="img" aria-label="'+esc(alt)+'"><line x1="16" y1="'+base+'" x2="'+(W-4)+'" y2="'+base+'" stroke="#DCE3D3" stroke-width="1"/>'+bars+
+    '<text x="16" y="'+(H-2)+'" font-size="9" fill="#556052" font-family="IBM Plex Mono, monospace">Age</text></svg>';
+}
+
+/* Flesch-Kincaid grade level */
+function syllables(w){
+  w=w.toLowerCase().replace(/[^a-z]/g,"");
+  if(!w) return 1;
+  if(w.length<=3) return 1;
+  w=w.replace(/(?:[^laeiouy]es|ed|[^laeiouy]e)$/,"").replace(/^y/,"");
+  var m=w.match(/[aeiouy]{1,2}/g);
+  return m ? m.length : 1;
+}
+function measure(list){
+  var words=0, sents=0, syl=0;
+  list.forEach(function(s){
+    var parts=s.split(/[.!?]+(?=\s|$)/).filter(function(p){return /[A-Za-z0-9]/.test(p);});
+    sents+=Math.max(1,parts.length);
+    var toks=s.match(/[A-Za-z0-9$][A-Za-z0-9'’$,.%\/-]*[A-Za-z0-9%]|[A-Za-z0-9]/g)||[];
+    words+=toks.length;
+    toks.forEach(function(t){ syl += /[0-9]/.test(t) ? 1 : syllables(t); });
+  });
+  var g = words ? 0.39*(words/sents) + 11.8*(syl/words) - 15.59 : 0;
+  return {words:words, grade:Math.max(0,g)};
+}
+function proseKeys(sc){ return Object.keys(sc.copy).filter(function(k){ return (sc.meta||[]).indexOf(k)<0; }); }
+function isSentence(t){ return /[.!?]["”’)]?$/.test(t.trim()); }
+function gradeOf(sc, v){
+  var keys=proseKeys(sc);
+  var b=measure(keys.map(function(k){return before(sc,k);}).filter(isSentence));
+  var a=measure(keys.map(function(k){return after(sc,k,v);}).filter(isSentence));
+  return {b:b, a:a};
+}
+function fmt(n){ return n.toFixed(1); }
+
+/* ---------- State ---------- */
+var state={screen:SCREENS[0].id, mode:"after", markers:true, variant:{}, open:{}};
+try{ var saved=JSON.parse(localStorage.getItem("ovenbird-ux-state")||"null"); if(saved && typeof saved==="object"){ ["mode","markers","variant","open","screen"].forEach(function(k){ if(saved[k]!==undefined) state[k]=saved[k]; }); } }catch(e){}
+if(["after","before","redline"].indexOf(state.mode)<0) state.mode="after";
+var fromHash=location.hash.replace("#","");
+if(SCREENS.some(function(s){return s.id===fromHash;})) state.screen=fromHash;
+if(!SCREENS.some(function(s){return s.id===state.screen;})) state.screen=SCREENS[0].id;
+function save(){ try{ localStorage.setItem("ovenbird-ux-state", JSON.stringify(state)); }catch(e){} }
+function cur(){ return SCREENS.filter(function(s){return s.id===state.screen;})[0]; }
+
+/* ---------- Rendering ---------- */
+var tablist=document.getElementById("tablist"), device=document.getElementById("device"), panel=document.getElementById("panel"),
+    variantBox=document.getElementById("variant"), caption=document.getElementById("stage-caption"), legend=document.getElementById("legend"),
+    benchEl=document.getElementById("studio-panel");
+
+function makeT(sc){
+  var marks={};
+  sc.notes.forEach(function(n,i){ (marks[n.k]=marks[n.k]||[]).push(i+1); });
+  return function(k, tag, cls){
+    tag=tag||"span"; cls=cls||"";
+    var b=before(sc,k), a=after(sc,k), inner="";
+    if(state.mode==="before"){ if(!b) return ""; inner=esc(b); }
+    else if(state.mode==="after"){ if(!a) return ""; inner=esc(a); }
+    else {
+      if(!a && !b) return "";
+      if(a===b) inner=esc(a);
+      else inner=(b?'<del><span class="sr">Deleted: </span>'+esc(b)+'</del>':'')+(b&&a?' ':'')+(a?'<ins><span class="sr">Added: </span>'+esc(a)+'</ins>':'');
+    }
+    if(k==="body" && sc.id==="transfer-error") inner=inner.replace(/••4417/g,'<span aria-hidden="true">••4417</span><span class="sr">ending in 4417</span>');
+    var mk=(state.markers && marks[k]) ? marks[k].map(function(n){return '<span class="mk" aria-hidden="true">'+n+'</span>';}).join("") : "";
+    return '<'+tag+(cls?' class="'+cls+'"':'')+' data-k="'+k+'">'+inner+mk+'</'+tag+'>';
+  };
+}
+function hasFn(sc){
+  return function(k){ var b=before(sc,k), a=after(sc,k); return state.mode==="before" ? !!b : state.mode==="after" ? !!a : !!(a||b); };
+}
+
+function renderTabs(){
+  tablist.innerHTML=SCREENS.map(function(s){
+    var g=gradeOf(s, s.variants ? s.variants.def : null), sel=s.id===state.screen;
+    return '<button type="button" class="tab" role="tab" id="tab-'+s.id+'" aria-controls="studio-panel" aria-selected="'+sel+'" tabindex="'+(sel?0:-1)+'" data-id="'+s.id+'">'+
+      '<span class="tab-name">'+esc(s.short)+'</span><span class="tab-aud">'+esc(s.variants&&s.id==="fee-notice"?"Three audiences":TARGETS[s.aud].label)+'</span>'+
+      '<span class="tab-g"><span class="sr">Reading grade </span>'+fmt(g.b.grade)+'<span aria-hidden="true"> &rarr; </span><span class="sr"> to </span><b>'+fmt(g.a.grade)+'</b></span></button>';
+  }).join("");
+  benchEl.setAttribute("aria-labelledby","tab-"+state.screen);
+}
+
+function renderModes(){
+  document.querySelectorAll("#modes button").forEach(function(b){ b.setAttribute("aria-pressed", String(b.dataset.mode===state.mode)); });
+  document.getElementById("markers").setAttribute("aria-pressed", String(state.markers));
+  legend.hidden = state.mode!=="redline";
+}
+
+function renderVariant(){
+  var sc=cur();
+  if(!sc.variants){ variantBox.hidden=true; variantBox.innerHTML=""; return; }
+  variantBox.hidden=false;
+  var v=variantOf(sc), dis=state.mode==="before";
+  variantBox.innerHTML='<span class="v-label" id="v-label">'+esc(sc.variants.label)+'</span><div class="seg" role="group" aria-labelledby="v-label">'+
+    sc.variants.opts.map(function(o){ return '<button type="button" data-v="'+o[0]+'" aria-pressed="'+(o[0]===v)+'"'+(dis?' disabled':'')+'>'+esc(o[1])+'</button>'; }).join("")+'</div>'+
+    (dis?'<span class="v-note">'+esc(sc.variants.originalNote)+'</span>':'');
+}
+
+function modeName(){ return state.mode==="after"?"Rewrite":state.mode==="before"?"Original":"Redline"; }
+
+function renderDevice(){
+  var sc=cur();
+  device.innerHTML=sc.render.call(sc, makeT(sc), hasFn(sc));
+  device.className="device mode-"+state.mode;
+  var vlab="";
+  if(sc.variants && state.mode!=="before"){ var v=variantOf(sc); vlab=", "+sc.variants.opts.filter(function(o){return o[0]===v;})[0][1]+(sc.id==="market-drop"?" drop":" version"); }
+  caption.textContent="Showing: "+modeName()+vlab+". "+sc.name+" ("+sc.channel+")";
+  device.setAttribute("aria-label","Mockup of the "+sc.name.toLowerCase()+" screen");
+}
+
+function countChip(str, limit){
+  var n=Array.from(str).length;
+  if(!limit) return '<span class="count">'+n+' chars</span>';
+  return '<span class="count'+(n>limit?' over':'')+'">'+n+'/'+limit+(n>limit?' over':'')+'</span>';
+}
+
+function renderPanel(){
+  var sc=cur(), g=gradeOf(sc), aud=audOf(sc), t=TARGETS[aud];
+  var notes=sc.notes.map(function(n,i){
+    return '<li class="note" data-k="'+n.k+'"><span class="num" aria-hidden="true">'+(i+1)+'</span><span class="lbl"><span class="sr">Note '+(i+1)+': </span>'+esc(n.label)+'</span>'+
+      '<p class="was"><span class="tag">Was</span>'+esc(n.was)+'</p><p class="now"><span class="tag">Now</span>'+esc(n.now)+'</p></li>';
+  }).join("");
+  var metaRows=(sc.metaItems||[]).map(function(m){
+    var b=m.k?before(sc,m.k):m.v[0], a=m.k?after(sc,m.k):m.v[1];
+    return '<div class="meta-row"><span class="meta-label">'+esc(m.label)+'</span><div class="meta-pair">'+
+      '<span class="which">Original</span><span class="val">'+(b?esc(b)+(m.k?countChip(b,m.limit):''):'<em>None</em>')+'</span>'+
+      '<span class="which">Rewrite</span><span class="val">'+esc(a)+(m.k?countChip(a,m.limit):'')+'</span></div>'+
+      (m.note?'<p class="g-note" style="margin:0">'+esc(m.note)+'</p>':'')+'</div>';
+  }).join("");
+  var serp="";
+  if(sc.serp){
+    var card=function(which, title, url, desc){ return '<div class="serp-card"><p class="serp-which">'+which+'</p><p class="serp-url">'+esc(url)+'</p><p class="serp-title">'+esc(title)+'</p><p class="serp-desc">'+esc(desc)+'</p></div>'; };
+    serp='<div class="meta-row"><span class="meta-label">Search result preview</span><div class="serp">'+
+      card("Original", before(sc,"seoTitle"), before(sc,"url"), before(sc,"meta"))+card("Rewrite", after(sc,"seoTitle"), after(sc,"url"), after(sc,"meta"))+'</div></div>';
+  }
+  panel.innerHTML=
+    '<div class="p-head"><p class="eyebrow">'+esc(sc.channel)+'</p><h3>'+esc(sc.name)+'</h3><div class="p-meta"><span class="pill">For: '+esc(t.label)+'</span><span class="pill">Reading level: '+t.target+'</span></div></div>'+
+    '<p class="moment"><strong>The moment.</strong> '+esc(sc.moment)+'</p>'+
+    '<div><div class="grades" role="group" aria-label="Reading level"><div class="g"><span class="g-l">Original</span><span class="g-v">'+fmt(g.b.grade)+'</span><span class="g-s">grade, '+g.b.words+' words</span></div>'+
+    '<span class="g-arrow" aria-hidden="true">&rarr;</span><div class="g"><span class="g-l">Rewrite</span><span class="g-v after">'+fmt(g.a.grade)+'</span><span class="g-s">grade, '+g.a.words+' words</span></div></div>'+
+    '<p class="g-note" style="margin-top:8px">Flesch-Kincaid grade of the full sentences on screen'+(sc.variants?' for the version selected':'')+'. Word count can go up when a rewrite adds the next step the original left out.</p></div>'+
+    (sc.callout?'<p class="tone-callout">'+esc(sc.callout)+'</p>':'')+
+    '<div><h4>Why I changed it</h4><ol class="notes" style="margin-top:8px">'+notes+'</ol></div>'+
+    '<details class="layer" data-d="a11y"'+(state.open.a11y?' open':'')+'><summary>Accessibility notes</summary><div class="layer-body"><ul>'+sc.a11y.map(function(x){return '<li>'+esc(x)+'</li>';}).join("")+'</ul></div></details>'+
+    '<details class="layer" data-d="meta"'+(state.open.meta?' open':'')+'><summary>Metadata and character counts</summary><div class="layer-body">'+metaRows+serp+'</div></details>';
+  panel.querySelectorAll("details.layer").forEach(function(d){ d.addEventListener("toggle", function(){ state.open[d.dataset.d]=d.open; save(); }); });
+  panel.querySelectorAll(".note").forEach(function(li){
+    li.addEventListener("mouseenter", function(){ device.querySelectorAll('[data-k="'+li.dataset.k+'"]').forEach(function(el){el.classList.add("hl");}); });
+    li.addEventListener("mouseleave", function(){ device.querySelectorAll(".hl").forEach(function(el){el.classList.remove("hl");}); });
+  });
+}
+
+function renderScore(){
+  var bs=0, as=0;
+  SCREENS.forEach(function(s){ var g=gradeOf(s, s.variants?s.variants.def:null); bs+=g.b.grade; as+=g.a.grade; });
+  var b=bs/SCREENS.length, a=as/SCREENS.length;
+  document.getElementById("score-before").textContent=fmt(b);
+  document.getElementById("score-after").textContent=fmt(a);
+  document.getElementById("score-sr").textContent="Average reading grade: original "+fmt(b)+", rewrite "+fmt(a)+".";
+}
+
+function renderAll(){ renderTabs(); renderModes(); renderVariant(); renderDevice(); renderPanel(); }
+
+/* ---------- Events ---------- */
+function selectScreen(id, focus){
+  state.screen=id; save();
+  try{ history.replaceState(null,"","#"+id); }catch(e){ location.hash=id; }
+  renderAll();
+  if(focus){ var t=document.getElementById("tab-"+id); if(t) t.focus(); }
+}
+tablist.addEventListener("click", function(e){ var b=e.target.closest(".tab"); if(b) selectScreen(b.dataset.id, false); });
+tablist.addEventListener("keydown", function(e){
+  var ids=SCREENS.map(function(s){return s.id;}), i=ids.indexOf(state.screen), n=null;
+  if(e.key==="ArrowRight") n=(i+1)%ids.length; else if(e.key==="ArrowLeft") n=(i-1+ids.length)%ids.length;
+  else if(e.key==="Home") n=0; else if(e.key==="End") n=ids.length-1;
+  if(n!==null){ e.preventDefault(); selectScreen(ids[n], true); }
+});
+document.getElementById("modes").addEventListener("click", function(e){
+  var b=e.target.closest("button"); if(!b) return;
+  state.mode=b.dataset.mode; save(); renderModes(); renderVariant(); renderDevice();
+});
+document.getElementById("markers").addEventListener("click", function(){ state.markers=!state.markers; save(); renderModes(); renderDevice(); });
+variantBox.addEventListener("click", function(e){
+  var b=e.target.closest("button[data-v]"); if(!b) return;
+  state.variant[state.screen]=b.dataset.v; save();
+  variantBox.querySelectorAll("button[data-v]").forEach(function(x){ x.setAttribute("aria-pressed", String(x===b)); });
+  renderDevice(); renderPanel();
+});
+window.addEventListener("hashchange", function(){ var h=location.hash.replace("#",""); if(SCREENS.some(function(s){return s.id===h;}) && h!==state.screen) selectScreen(h,false); });
+
+SCREENS.forEach(function(s){ if(s.variants && !state.variant[s.id]) state.variant[s.id]=s.variants.def; });
+renderScore();
+renderAll();
+})();
+</script>
+</body>
+</html>

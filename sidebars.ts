@@ -8,6 +8,7 @@ const sidebars: SidebarsConfig = {
     'mcp-tutorial-review',
     'interactive-lessons',
     'dita-pressure-washer',
+    'ux-writing',
     {
       type: 'category',
       label: 'Self-auditing knowledge base',
