@@ -1,0 +1,868 @@
+<!doctype html><html><head><meta charset="utf-8"><title>Larkspur in Layers</title><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: one narrow column; a sticky strip of stops on top; every mission is a city map with transparent service layers stacked on it. */
+:root {
+  --bg: #EDF0F5; --surface: #FAFBFD; --ink: #1A2133; --muted: #556079; --line: #CBD1DD;
+  --accent: #3346A8; --on-accent: #FFFFFF; --accent-soft: #E1E5F7;
+  --hi: #A6D96A; --hi-soft: #EAF5DC; --hi-ink: #3D6B12; --hi-on: #19300A;
+  --good: #1E7A55; --good-soft: #D8EEE4; --danger: #BD3A2A; --danger-soft: #F7DFDA;
+  --land: #E2E6EE; --land-line: #D3D8E2; --water: #8FC3DC;
+  --svc-patrol: #D9561B; --svc-lab: #7442C2; --svc-flood: #1A7FA8; --svc-back: #2E9C6B;
+  --font-display: "Bricolage Grotesque", "Avenir Next", "Segoe UI", system-ui, sans-serif;
+  --font-body: "Atkinson Hyperlegible", Verdana, system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #10141E; --surface: #171D2A; --ink: #E3E7F0; --muted: #9AA4BA; --line: #2C3548;
+    --accent: #8C9CF2; --on-accent: #10141E; --accent-soft: #232B4A;
+    --hi: #A6D96A; --hi-soft: #24321A; --hi-ink: #B9E585; --hi-on: #19300A;
+    --good: #5CC796; --good-soft: #163428; --danger: #F2836F; --danger-soft: #3A1E1A;
+    --land: #1E2534; --land-line: #29324A; --water: #2C6884;
+    --svc-patrol: #FF8A4F; --svc-lab: #B48CF5; --svc-flood: #5BC0E6; --svc-back: #5CC796;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #10141E; --surface: #171D2A; --ink: #E3E7F0; --muted: #9AA4BA; --line: #2C3548;
+  --accent: #8C9CF2; --on-accent: #10141E; --accent-soft: #232B4A;
+  --hi: #A6D96A; --hi-soft: #24321A; --hi-ink: #B9E585; --hi-on: #19300A;
+  --good: #5CC796; --good-soft: #163428; --danger: #F2836F; --danger-soft: #3A1E1A;
+  --land: #1E2534; --land-line: #29324A; --water: #2C6884;
+  --svc-patrol: #FF8A4F; --svc-lab: #B48CF5; --svc-flood: #5BC0E6; --svc-back: #5CC796;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body {
+  background: var(--bg); color: var(--ink);
+  font-family: var(--font-body); font-size: 17px; line-height: 1.55;
+  -webkit-text-size-adjust: 100%;
+}
+body::before {
+  content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px);
+  z-index: 10; background: var(--bg);
+}
+.gutter {
+  max-width: 800px; margin: 0 auto;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+h1, h2, h3 { font-family: var(--font-display); text-wrap: balance; margin: 0; }
+p { margin: 0; }
+button { font: inherit; color: inherit; }
+:focus-visible { outline: 3px solid var(--hi); outline-offset: 2px; border-radius: 6px; }
+.mono { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+.kicker { font-family: var(--font-mono); font-size: 0.74rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+
+.masthead { padding-block: 36px 18px; display: grid; gap: 10px; }
+.masthead h1 { font-size: clamp(2.4rem, 8.6vw, 4.2rem); font-weight: 800; line-height: 0.95; letter-spacing: -0.03em; font-variation-settings: "opsz" 96; }
+.masthead h1 span { color: var(--accent); }
+.masthead .sub { color: var(--muted); max-width: 60ch; }
+
+.strip { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: var(--bg); border-bottom: 1px solid var(--line); }
+.strip .gutter { padding-block: 10px; display: grid; gap: 6px; }
+.strip-row { display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; padding: 3px 2px; }
+.strip-row::-webkit-scrollbar { display: none; }
+.chip {
+  flex: 0 0 auto; min-width: 40px; height: 40px; padding: 0 12px; border-radius: 999px;
+  border: 1.5px solid var(--line); background: var(--surface); font-family: var(--font-mono);
+  font-size: 0.85rem; font-weight: 500; color: var(--muted); cursor: pointer;
+  display: inline-flex; align-items: center; justify-content: center;
+}
+.chip:hover { border-color: var(--accent); color: var(--ink); }
+.chip.done { background: var(--hi); border-color: var(--hi); color: var(--hi-on); }
+.chip.current { border-color: var(--accent); border-width: 2.5px; color: var(--ink); }
+.chip.done.current { color: var(--hi-on); box-shadow: 0 0 0 2px var(--bg), 0 0 0 4px var(--accent); }
+.strip-meta { font-size: 0.82rem; color: var(--muted); display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+
+main { padding-block: 26px 40px; }
+.view { display: grid; gap: 22px; }
+.view h2 { font-size: clamp(1.7rem, 5.4vw, 2.4rem); font-weight: 700; line-height: 1.05; letter-spacing: -0.02em; }
+.view h2:focus { outline: none; }
+.lede { font-size: 1.08rem; max-width: 62ch; }
+.prose { display: grid; gap: 12px; max-width: 64ch; }
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 18px; display: grid; gap: 14px; min-width: 0; }
+.muted { color: var(--muted); }
+.small { font-size: 0.88rem; }
+
+.btn { border: 1.5px solid var(--accent); background: var(--surface); color: var(--ink); border-radius: 10px; padding: 10px 16px; cursor: pointer; font-weight: 700; min-height: 44px; }
+.btn:hover { background: var(--accent-soft); }
+.btn.primary { background: var(--accent); color: var(--on-accent); border-color: var(--accent); }
+.btn.primary:hover { filter: brightness(1.08); }
+.btn.quiet { border-color: var(--line); font-weight: 400; }
+.btn small { font-weight: 400; opacity: 0.8; }
+.btn:disabled { opacity: 0.45; cursor: not-allowed; }
+.choices { display: flex; flex-wrap: wrap; gap: 8px; }
+.log { min-height: 3.2em; }
+.debrief { border-top: 1px dashed var(--line); padding-top: 16px; display: grid; gap: 12px; }
+.debrief h3 { font-size: 1.5rem; color: var(--danger); }
+details.how { border: 1px solid var(--line); border-radius: 12px; padding: 10px 14px; background: var(--surface); }
+details.how summary { cursor: pointer; font-weight: 700; }
+details.how p { margin-top: 8px; color: var(--muted); max-width: 64ch; }
+
+.parts { display: flex; flex-wrap: wrap; gap: 6px; list-style: none; padding: 0; margin: 0; }
+.parts li { font-size: 0.78rem; padding: 4px 9px; border-radius: 999px; border: 1px solid var(--line); color: var(--muted); display: inline-flex; gap: 6px; align-items: center; }
+.parts li b { font-family: var(--font-mono); font-weight: 500; }
+.parts li.on { border-color: var(--ink); color: var(--ink); }
+.parts li.now { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+.step-label { display: flex; gap: 10px; align-items: center; }
+.step-label .letter { font-family: var(--font-mono); font-weight: 500; width: 28px; height: 28px; border-radius: 50%; background: var(--ink); color: var(--bg); display: inline-flex; align-items: center; justify-content: center; font-size: 0.85rem; flex: 0 0 auto; }
+.step-label .name { font-family: var(--font-display); font-weight: 700; font-size: 1.1rem; }
+
+.options { display: grid; gap: 8px; }
+.opt { text-align: left; border: 1.5px solid var(--line); background: var(--surface); border-radius: 12px; padding: 13px 15px; cursor: pointer; display: grid; grid-template-columns: auto 1fr; gap: 12px; align-items: start; }
+.opt:hover:not(:disabled) { border-color: var(--accent); }
+.opt .key { font-family: var(--font-mono); font-weight: 500; color: var(--muted); padding-top: 1px; }
+.opt.tried { border-style: dashed; }
+.opt.picked { border-color: var(--ink); border-width: 2px; }
+.opt.win { border-color: var(--good); background: var(--good-soft); }
+.opt:disabled { cursor: default; }
+
+.controls { display: grid; gap: 16px; }
+.control { display: grid; gap: 6px; min-width: 0; }
+.control-label { font-weight: 700; display: flex; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
+.control-label small { font-weight: 400; color: var(--muted); }
+.seg { display: flex; flex-wrap: wrap; border: 1.5px solid var(--line); border-radius: 10px; overflow: hidden; width: max-content; max-width: 100%; }
+.seg label { position: relative; flex: 1 0 auto; }
+.seg input { position: absolute; opacity: 0; inset: 0; margin: 0; cursor: pointer; }
+.seg span { display: block; padding: 8px 13px; font-size: 0.88rem; border-right: 1px solid var(--line); text-align: center; height: 100%; }
+.seg label:last-child span { border-right: 0; }
+.seg input:checked + span { background: var(--ink); color: var(--bg); }
+.seg input:focus-visible + span { outline: 3px solid var(--hi); outline-offset: -3px; }
+.seg input:disabled + span { opacity: 0.4; }
+.toggle { display: grid; grid-template-columns: auto 1fr; gap: 12px; align-items: start; padding: 12px 14px; border: 1.5px solid var(--line); border-radius: 12px; cursor: pointer; }
+.toggle:has(input:checked) { border-color: var(--accent); background: var(--accent-soft); }
+.toggle input { width: 22px; height: 22px; margin: 2px 0 0; accent-color: var(--accent); }
+.toggle b { display: block; }
+.toggle small { color: var(--muted); font-size: 0.86rem; display: block; }
+.range { width: 100%; accent-color: var(--accent); min-height: 32px; }
+
+.v-win { --v: var(--good); --v-soft: var(--good-soft); }
+.v-partial { --v: var(--hi-ink); --v-soft: var(--hi-soft); }
+.v-fail { --v: var(--danger); --v-soft: var(--danger-soft); }
+.verdict { display: inline-flex; align-items: center; gap: 8px; font-weight: 700; color: var(--v); }
+.verdict::before { content: ""; width: 10px; height: 10px; border-radius: 50%; background: var(--v); }
+.feedback { background: var(--v-soft); border-radius: 10px; padding: 12px 14px; display: grid; gap: 8px; }
+.meters { display: grid; gap: 12px; }
+.meter { display: grid; gap: 5px; }
+.meter-top { display: flex; justify-content: space-between; gap: 10px; font-size: 0.92rem; }
+.meter-top .val { font-family: var(--font-mono); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.meter-top .val small { color: var(--muted); }
+.meter .bar { position: relative; height: 10px; border-radius: 5px; background: var(--line); }
+.meter .bar i { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 5px; background: var(--mv); transition: width .6s ease; }
+.meter .bar b { position: absolute; top: -4px; bottom: -4px; width: 2px; background: var(--ink); }
+.meter.pass { --mv: var(--good); }
+.meter.miss { --mv: var(--danger); }
+.meter.idle { --mv: var(--muted); }
+.meter .why { font-size: 0.86rem; color: var(--muted); }
+
+.term { border: 2px dashed var(--hi); border-radius: 16px; padding: 20px; background: var(--hi-soft); display: grid; gap: 10px; }
+.term .num { font-family: var(--font-display); font-weight: 800; font-size: 3rem; line-height: 0.8; color: var(--hi-ink); }
+.term h3 { font-size: clamp(1.4rem, 4.6vw, 1.9rem); line-height: 1.1; letter-spacing: -0.01em; }
+.term .line { font-size: 1.05rem; }
+.syntax { border-top: 1px solid var(--line); padding-top: 14px; display: grid; gap: 10px; }
+.pattern { font-family: var(--font-display); font-weight: 500; font-size: 1.15rem; line-height: 1.35; }
+.field { color: var(--muted); font-size: 0.95rem; }
+.field b { color: var(--ink); }
+.nav-row { display: flex; flex-wrap: wrap; gap: 8px; justify-content: space-between; }
+
+.recap { list-style: none; padding: 0; margin: 0; display: grid; gap: 8px; }
+.recap li { display: grid; grid-template-columns: 34px 1fr; gap: 12px; align-items: start; padding: 10px 0; border-bottom: 1px solid var(--line); }
+.recap li:last-child { border-bottom: 0; }
+.recap .n { width: 34px; height: 34px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-family: var(--font-mono); font-weight: 500; border: 1.5px solid var(--line); color: var(--muted); }
+.recap li.found .n { background: var(--hi); border-color: var(--hi); color: var(--hi-on); }
+.recap .t { font-weight: 700; }
+.recap .d { color: var(--muted); font-size: 0.95rem; }
+footer { border-top: 1px solid var(--line); padding-block: 22px 40px; color: var(--muted); font-size: 0.88rem; display: grid; gap: 6px; }
+footer b { color: var(--ink); }
+footer ul { margin: 0; padding-left: 1.1em; display: grid; gap: 3px; }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+@media (min-width: 640px) { .panel { padding: 22px; } }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+
+.map-wrap { display: grid; gap: 10px; }
+.map { width: 100%; max-width: 420px; height: auto; display: block; margin: 0 auto; }
+.map .land { fill: var(--land); }
+.map .cell { fill: none; stroke: var(--land-line); stroke-width: 1; }
+.map .river { fill: none; stroke: var(--water); stroke-width: 11; stroke-linecap: round; stroke-linejoin: round; }
+.map .lyr { fill: none; stroke-width: 2.2; }
+.map .lyr.patrol { stroke: var(--svc-patrol); }
+.map .lyr.lab { stroke: var(--svc-lab); stroke-dasharray: 6 4; }
+.map .lyr.flood { stroke: var(--svc-flood); stroke-dasharray: 2 3; }
+.map .lyr.back { stroke: var(--svc-back); stroke-dasharray: 10 4; }
+.map .rv { fill: var(--svc-flood); fill-opacity: 0.22; stroke: var(--svc-flood); stroke-width: 1.2; }
+.map .ev { transition: opacity .25s; }
+.map .ok { fill: var(--good); }
+.map .bad { fill: var(--danger); }
+.map .hot { fill: var(--danger); fill-opacity: 0.35; }
+.map .cool { fill: var(--good); fill-opacity: 0.3; }
+.map .station { fill: var(--ink); }
+.map .yr { fill: var(--ink); font-family: var(--font-mono); font-size: 12px; }
+.key { display: flex; flex-wrap: wrap; gap: 8px 16px; font-size: 0.84rem; color: var(--muted); justify-content: center; }
+.key span { display: inline-flex; align-items: center; gap: 6px; }
+.key i { display: inline-block; width: 22px; height: 0; border-top: 2.5px solid currentColor; }
+.key .patrol i { color: var(--svc-patrol); }
+.key .lab i { color: var(--svc-lab); border-top-style: dashed; }
+.key .flood i { color: var(--svc-flood); border-top-style: dotted; }
+.key .back i { color: var(--svc-back); border-top-style: dashed; }
+.key .dot i { width: 10px; height: 10px; border: 0; border-radius: 50%; }
+.key .dot.ok i { background: var(--good); }
+.key .dot.bad i { background: var(--danger); }
+.twin { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+.twin .card { border: 1px solid var(--line); border-radius: 12px; padding: 10px 12px; display: grid; gap: 4px; min-width: 0; }
+.twin .card h4 { margin: 0; font-family: var(--font-display); font-size: 1rem; }
+.twin .row { display: flex; justify-content: space-between; gap: 8px; font-size: 0.86rem; }
+.twin .row b { font-family: var(--font-mono); font-weight: 500; }
+.twin .card.empty { color: var(--muted); font-size: 0.88rem; }
+.layers-out { background: var(--accent-soft); border-radius: 10px; padding: 12px 14px; }
+.svc-row { display: grid; gap: 6px; padding-block: 8px; border-bottom: 1px solid var(--line); }
+.svc-row:last-child { border-bottom: 0; }
+@media (max-width: 420px) { .seg span { padding: 8px 9px; font-size: 0.82rem; } }
+</style>
+
+<header class="masthead gutter">
+  <p class="kicker">An interactive lesson · Vincent and Elinor Ostrom on polycentric governance</p>
+  <h1>Larkspur in <span>Layers</span></h1>
+  <p class="sub">One metro area, 64 city blocks, and an old argument: should one big government run everything, or many small ones? Draw the layers yourself, run a year, and find out why the Ostroms said the answer is both at once.</p>
+</header>
+
+<nav class="strip" aria-label="Lesson progress">
+  <div class="gutter">
+    <div class="strip-row" id="strip"></div>
+    <div class="strip-meta"><span id="strip-count">Ideas found: 0 of 5</span><span>Structured with the PARTS Method</span></div>
+  </div>
+</nav>
+
+<main class="gutter" id="main">
+  <section class="view" id="view-start" aria-labelledby="h-start">
+    <div class="prose">
+      <p class="kicker">Round zero · Big or small?</p>
+      <h2 id="h-start" tabindex="-1">One night in Larkspur</h2>
+      <p class="lede">Larkspur is a metro area of 64 blocks with a river running through it. Reformers want one big police department. A rival group wants every block to run its own. Run one night of calls under each plan.</p>
+    </div>
+    <div class="panel">
+      <div class="map-wrap"><svg class="map" id="map-start" viewBox="0 0 324 324" role="img" aria-label="Map of Larkspur's 64 blocks"></svg>
+        <div class="key"><span class="dot ok"><i></i>Answered within 10 minutes</span><span class="dot bad"><i></i>Slow or no answer</span></div></div>
+      <div class="choices">
+        <button class="btn" id="run-big">Run the night with one big department</button>
+        <button class="btn" id="run-tiny">Run the night with 64 block departments</button>
+      </div>
+      <p class="log" id="start-log" aria-live="polite">Pick a plan to see how the night goes.</p>
+      <div class="twin" id="start-results"></div>
+      <div class="debrief" id="start-debrief" hidden>
+        <h3>Both plans fail, in opposite ways</h3>
+        <p>The big department is slow at the edges and doesn't know any street well, but it can afford a real crime lab. The block departments know every porch, but nobody is on duty at 3 a.m., and no block can afford a lab. Each plan is good at exactly what the other is bad at.</p>
+        <p>In the 1960s, reformers called metro areas with dozens of overlapping governments "fragmented" and pushed to merge them. Vincent Ostrom, Charles Tiebout and Robert Warren (1961) argued that many governments could work together as a <b>polycentric</b> system. In the 1970s Elinor Ostrom and her colleagues tested the claim on police, in Indianapolis, Chicago, St. Louis and eventually 80 metro areas, and the evidence did not favor simple consolidation.</p>
+        <p><b>Your job: design Larkspur's layers.</b> Each mission brings a new problem. Change the layers, run a year, and see the results. The name of each idea comes only after you find it.</p>
+        <div class="choices"><button class="btn primary" data-go="m1">Start mission 1</button></div>
+      </div>
+    </div>
+    <details class="how">
+      <summary>How Larkspur works</summary>
+      <p>Every service in Larkspur can be run at one of four sizes: a single block (64 units), a neighborhood of four blocks (16 units), a district of sixteen blocks (4 units), or the whole metro (1 unit). Each service has a size it does best at, based on the patterns the Ostroms' studies reported: street patrol works best close to residents, and costly specialist work like a crime lab works best at a large scale. The scores are a simplified teaching model. They follow the direction of the research findings, not their exact numbers.</p>
+    </details>
+  </section>
+
+  <section class="view" id="view-mission" hidden></section>
+  <section class="view" id="view-wrap" hidden></section>
+</main>
+
+<footer class="gutter">
+  <p>Instructional design by <b>Avalynn Circe</b>.</p>
+  <p>Larkspur is fictional. Ideas are paraphrased from these sources:</p>
+  <ul>
+    <li>Vincent Ostrom, Charles Tiebout and Robert Warren, "The Organization of Government in Metropolitan Areas," <i>American Political Science Review</i> (1961).</li>
+    <li>Elinor Ostrom and Gordon Whitaker, "Does Local Community Control of Police Make a Difference?" <i>American Journal of Political Science</i> (1973).</li>
+    <li>Elinor Ostrom, Roger Parks and Gordon Whitaker, <i>Patterns of Metropolitan Policing</i> (1978).</li>
+    <li>Elinor Ostrom, "Public Entrepreneurship: A Case Study in Ground Water Basin Management," PhD dissertation, UCLA (1965).</li>
+    <li>Martin Landau, "Redundancy, Rationality, and the Problem of Duplication and Overlap," <i>Public Administration Review</i> (1969).</li>
+    <li>Elinor Ostrom, "Beyond Markets and States: Polycentric Governance of Complex Economic Systems," Nobel lecture (2009), <i>American Economic Review</i> (2010).</li>
+  </ul>
+</footer>
+
+<script>
+const $ = (s, el = document) => el.querySelector(s);
+const $$ = (s, el = document) => Array.from(el.querySelectorAll(s));
+const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+const r0 = (n) => Math.round(n);
+const reduceMotion = () => window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+function makeStore(key, init) {
+  let s = init;
+  try { const v = JSON.parse(localStorage.getItem(key) || "null"); if (v && typeof v === "object") s = Object.assign(init, v); } catch (e) {}
+  return { s, save() { try { localStorage.setItem(key, JSON.stringify(s)); } catch (e) {} } };
+}
+const PARTS = [["P", "Problem"], ["A", "Answer"], ["R", "Reasoning"], ["T", "Terms"], ["S", "Syntax"]];
+function partsRail(stage) {
+  return `<ol class="parts" aria-label="PARTS steps">${PARTS.map(([l, n], i) => `<li class="${i < stage ? "on" : ""}${i === stage ? " now" : ""}"${i === stage ? ' aria-current="step"' : ""}><b>${l}</b>${n}</li>`).join("")}</ol>`;
+}
+const stepLabel = (l, name) => `<div class="step-label"><span class="letter">${l}</span><span class="name">${name}</span></div>`;
+function termCard(n, p, fieldLabel) {
+  return `<div class="term">
+    ${stepLabel("T", "Terms: the idea you just found")}
+    <div class="num" aria-hidden="true">${n}</div>
+    <h3>${esc(p.name)}</h3>
+    <p class="line">${esc(p.line)}</p>
+    <div class="syntax">
+      ${stepLabel("S", "Syntax: the pattern to reuse")}
+      <p class="pattern">${esc(p.pattern)}</p>
+      <p class="field"><b>${esc(fieldLabel)}</b> ${esc(p.field)}</p>
+    </div>
+  </div>`;
+}
+/* m: {label, value, unit, target, better: "high"|"low", max, why} ; value null = not run yet */
+function meterHTML(m) {
+  const max = m.max == null ? 100 : m.max, min = m.min || 0, run = m.value != null;
+  const pass = run && (m.better === "low" ? m.value <= m.target : m.value >= m.target);
+  const pct = (v) => Math.max(0, Math.min(100, (v - min) / (max - min) * 100));
+  const w = run ? pct(m.value) : 0;
+  const tgt = (m.better === "low" ? "at most " : "at least ") + m.target + (m.unit || "");
+  return `<div class="meter ${run ? (pass ? "pass" : "miss") : "idle"}">
+    <div class="meter-top"><span>${esc(m.label)}</span><span class="val">${run ? r0(m.value) + (m.unit || "") : "·"} <small>goal ${tgt}</small></span></div>
+    <div class="bar" role="img" aria-label="${esc(m.label)}: ${run ? r0(m.value) + (m.unit || "") : "not run yet"}, goal ${tgt}"><i style="width:${w}%"></i><b style="left:calc(${pct(m.target)}% - 1px)"></b></div>
+    ${run && !pass && m.why ? `<div class="why">${esc(m.why)}</div>` : ""}
+  </div>`;
+}
+const meterPass = (m) => m.value != null && (m.better === "low" ? m.value <= m.target : m.value >= m.target);
+function segHTML(name, opts, value, disabled) {
+  return `<div class="seg" role="radiogroup">${opts.map(([v, label]) => `<label><input type="radio" id="${name}-${v}" name="${name}" value="${v}"${String(value) === String(v) ? " checked" : ""}${disabled ? " disabled" : ""}><span>${esc(label)}</span></label>`).join("")}</div>`;
+}
+function toggleHTML(id, title, sub, checked) {
+  return `<label class="toggle" for="${id}"><input type="checkbox" id="${id}"${checked ? " checked" : ""}><span><b>${esc(title)}</b>${sub ? `<small>${esc(sub)}</small>` : ""}</span></label>`;
+}
+function renderStrip(items, current, countText) {
+  const row = $("#strip");
+  row.innerHTML = items.map((it) => `<button class="chip${it.done ? " done" : ""}${it.id === current ? " current" : ""}" data-go="${it.id}" aria-label="${esc(it.aria)}"${it.id === current ? ' aria-current="step"' : ""}>${esc(it.label)}</button>`).join("");
+  $("#strip-count").textContent = countText;
+  const cur = row.querySelector(".current"); if (cur) cur.scrollIntoView({ block: "nearest", inline: "nearest" });
+}
+function go(id) { if (location.hash.slice(1) === id) window.dispatchEvent(new HashChangeEvent("hashchange")); else location.hash = id; }
+document.addEventListener("click", (e) => { const b = e.target.closest("[data-go]"); if (b) go(b.dataset.go); });
+let firstRoute = true;
+function afterRoute() {
+  if (!firstRoute) {
+    const top = $("#main").getBoundingClientRect().top + window.scrollY - 90;
+    window.scrollTo({ top: Math.max(0, top), behavior: reduceMotion() ? "auto" : "smooth" });
+    const hd = document.querySelector("main .view:not([hidden]) h2"); if (hd) hd.focus({ preventScroll: true });
+  }
+  firstRoute = false;
+}
+function showView(id) { $$("main > .view").forEach((v) => { v.hidden = v.id !== id; }); }
+const sleep = (ms) => new Promise((r) => setTimeout(r, reduceMotion() ? 0 : ms));
+
+/* ---------- map geometry ---------- */
+const O = 10, C = 38, G = 8;
+const SIZES = [
+  { name: "Block", side: 1, n: 64 }, { name: "Neighborhood", side: 2, n: 16 },
+  { name: "District", side: 4, n: 4 }, { name: "Whole metro", side: 8, n: 1 },
+  { name: "Shaped to the river", side: 0, n: 1 }
+];
+const RIVER_PTS = [[1.3, 0], [1.4, 1.6], [2.6, 2.7], [3.5, 3.6], [4.4, 4.5], [4.6, 5.6], [5.6, 6.6], [6.4, 8]];
+const RIVER = (() => {
+  const set = new Set();
+  for (let i = 0; i < RIVER_PTS.length - 1; i++) {
+    const [x1, y1] = RIVER_PTS[i], [x2, y2] = RIVER_PTS[i + 1];
+    for (let t = 0; t <= 1; t += 0.02) { const x = x1 + (x2 - x1) * t, y = y1 + (y2 - y1) * t; set.add(Math.min(7, Math.floor(y)) * 8 + Math.min(7, Math.floor(x))); }
+  }
+  return Array.from(set).sort((a, b) => a - b);
+})();
+const nbOf = (cell) => ((cell >> 3) >> 1) * 4 + ((cell & 7) >> 1);
+function rng(seed) { return () => { seed |= 0; seed = seed + 0x6D2B79F5 | 0; let t = Math.imul(seed ^ seed >>> 15, 1 | seed); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+const cx = (col) => O + col * C + C / 2, cy = (row) => O + row * C + C / 2;
+
+function baseMap() {
+  let s = `<rect class="land" x="${O}" y="${O}" width="${G * C}" height="${G * C}" rx="6"/>`;
+  for (let r = 0; r < G; r++) for (let c = 0; c < G; c++) s += `<rect class="cell" x="${O + c * C}" y="${O + r * C}" width="${C}" height="${C}"/>`;
+  s += `<path class="river" d="${RIVER_PTS.map(([x, y], i) => (i ? "L" : "M") + (O + x * C).toFixed(1) + " " + (O + y * C).toFixed(1)).join(" ")}"/>`;
+  return s;
+}
+function layer(cls, size, inset) {
+  if (size === 4) return RIVER.map((cell) => `<rect class="rv" x="${O + (cell & 7) * C + 2}" y="${O + (cell >> 3) * C + 2}" width="${C - 4}" height="${C - 4}" rx="3"/>`).join("");
+  const side = SIZES[size].side; let s = "";
+  for (let r = 0; r < G; r += side) for (let c = 0; c < G; c += side)
+    s += `<rect class="lyr ${cls}" x="${O + c * C + inset}" y="${O + r * C + inset}" width="${side * C - inset * 2}" height="${side * C - inset * 2}" rx="3"/>`;
+  return s;
+}
+function drawMap(svg, layers, overlay) {
+  svg.innerHTML = baseMap() + layers.map((l) => layer(l.cls, l.size, l.inset)).join("") + `<g id="${svg.id}-ev">${overlay || ""}</g>`;
+}
+function keyHTML(layers) {
+  return `<div class="key">${layers.map((l) => `<span class="${l.cls}"><i></i>${esc(l.label)}: ${esc(SIZES[l.size].name)}${l.size < 4 ? " (" + SIZES[l.size].n + ")" : ""}</span>`).join("")}</div>`;
+}
+async function playDots(svg, dots, ms) {
+  const g = $("#" + svg.id + "-ev"), h = location.hash; g.innerHTML = "";
+  for (let i = 0; i < dots.length; i++) {
+    if (location.hash !== h) return false;
+    g.insertAdjacentHTML("beforeend", dots[i]);
+    if (!reduceMotion()) await sleep(ms);
+  }
+  return location.hash === h;
+}
+function scatter(seed, n, quality, shape) {
+  const R = rng(seed), out = [];
+  for (let i = 0; i < n; i++) {
+    const cell = Math.floor(R() * 64), ok = R() * 100 < quality, x = cx(cell & 7) + (R() - 0.5) * 18, y = cy(cell >> 3) + (R() - 0.5) * 18;
+    out.push(shape === "sq" ? `<rect class="ev ${ok ? "ok" : "bad"}" x="${(x - 5).toFixed(1)}" y="${(y - 5).toFixed(1)}" width="10" height="10" rx="2"/>` : `<circle class="ev ${ok ? "ok" : "bad"}" cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="5"/>`);
+  }
+  return out;
+}
+const cellRect = (cell, cls) => `<rect class="${cls}" x="${O + (cell & 7) * C + 1}" y="${O + (cell >> 3) * C + 1}" width="${C - 2}" height="${C - 2}"/>`;
+
+/* ---------- quality tables (teaching model) ---------- */
+const PATROL_Q = [55, 90, 70, 40], LAB_Q = [5, 25, 60, 92], VOICE = [95, 88, 62, 30];
+const PATROL_WHY = [
+  "Block departments have one or two officers each. Nobody is on duty at 3 a.m.",
+  "",
+  "District officers cover sixteen blocks each and rarely see the same street twice.",
+  "One metro department sends officers who don't know the streets, and the far blocks wait longest."
+];
+const LAB_WHY = [
+  "A crime lab needs costly equipment and specialists. Split 64 ways, nobody can afford a real one.",
+  "Sixteen small labs each see too few cases to afford specialists, so most evidence waits.",
+  "Four district labs each get too few hard cases to keep specialists sharp.",
+  ""
+];
+
+/* ---------- state ---------- */
+const st = makeStore("larkspur", { start: [], solved: [], set: {}, wrap: {}, transfer: null });
+const S = st.s;
+
+/* ---------- missions ---------- */
+const MISSIONS = [
+  {
+    title: "One department for everything",
+    problem: "The reformers won. One Larkspur department now runs street patrol and the crime lab for all 64 blocks, and the city charter says every service must be run by the same department. Residents on the edges wait twenty minutes for an officer who has never seen their street. Change the charter if you need to, set a size for each service, and run a year.",
+    defaults: { lock: true, patrol: 3, lab: 3 },
+    controls(s) {
+      return toggleHTML("c-lock", "Keep every service in one department", "The charter rule: patrol and the lab must be the same size.", s.lock) +
+        `<div class="control"><div class="control-label">Street patrol is run by</div>${segHTML("c-patrol", SIZES.slice(0, 4).map((z, i) => [i, z.name]), s.patrol)}</div>` +
+        `<div class="control"><div class="control-label">The crime lab is run by</div>${segHTML("c-lab", SIZES.slice(0, 4).map((z, i) => [i, z.name]), s.lab)}</div>`;
+    },
+    read(s, changed) {
+      s.lock = $("#c-lock").checked;
+      const p = +$('input[name="c-patrol"]:checked').value, l = +$('input[name="c-lab"]:checked').value;
+      if (s.lock) { if (changed === "c-lab") { s.lab = l; s.patrol = l; } else { s.patrol = p; s.lab = p; } }
+      else { s.patrol = p; s.lab = l; }
+    },
+    layers: (s) => [{ cls: "patrol", label: "Patrol", size: s.patrol, inset: 2 }, { cls: "lab", label: "Crime lab", size: s.lab, inset: 6 }],
+    evaluate(s) {
+      return [
+        { label: "Residents who rate patrol good", value: PATROL_Q[s.patrol], unit: "%", target: 80, better: "high", why: PATROL_WHY[s.patrol] },
+        { label: "Crime lab cases solved", value: LAB_Q[s.lab], unit: "%", target: 80, better: "high", why: LAB_WHY[s.lab] }
+      ];
+    },
+    dots: (s) => scatter(7, 26, PATROL_Q[s.patrol]).concat(scatter(11, 8, LAB_Q[s.lab], "sq")),
+    keyExtra: '<span class="dot ok"><i></i>Call or case handled well</span><span class="dot bad"><i></i>Handled badly</span>',
+    win: "Patrol now works at the neighborhood scale, where officers can learn the streets and residents know who to call. The lab works at the metro scale, where it sees enough cases to pay for specialists. Larkspur is now served by two organizations of different sizes at once, and that's the point.",
+    p: { name: "Matching scale to the service",
+      line: "Different public services have different best scales, so the same neighborhood can be well served by several organizations of different sizes at once.",
+      pattern: "For each service, ask what size of organization does that job best. Then let different jobs be done at different sizes instead of forcing one size on all of them.",
+      field: "In Indianapolis, Elinor Ostrom and Gordon Whitaker compared neighborhoods policed by three small independent departments with similar neighborhoods policed by the big city department. Residents of the small-department areas generally rated their police as well or better. In the 80-metro Police Services Study, small departments did well at patrol, while specialized work like labs and training was usually done at a larger scale." }
+  },
+  {
+    title: "The budget crisis",
+    problem: "Larkspur now has sixteen neighborhood patrol departments and one metro crime lab. Then a budget crisis hits. For four months, the three east-side departments can run only half their patrols, and the metro lab loses its certification and can't take cases. Decide what backup Larkspur keeps, within a budget the council will approve.",
+    defaults: { sheriff: false, mutual: false, state: false, merge: false },
+    controls(s) {
+      return toggleHTML("c-sheriff", "A county sheriff also patrols every district", "A second patrol layer on top of the neighborhoods. Costs 9% more.", s.sheriff) +
+        toggleHTML("c-mutual", "Neighboring departments sign mutual-aid pacts", "Each department agrees to lend officers to the ones beside it. Costs 3% more.", s.mutual) +
+        toggleHTML("c-state", "The state lab takes overflow cases", "A second lab that can step in. Costs 6% more.", s.state) +
+        toggleHTML("c-merge", "Merge everything into one department to cut duplication", "No overlap at all. Saves 10%.", s.merge);
+    },
+    read(s, changed) {
+      ["sheriff", "mutual", "state", "merge"].forEach((k) => { s[k] = $("#c-" + k).checked; });
+      if (changed === "c-merge" && s.merge) { s.sheriff = s.mutual = s.state = false; }
+      else if (changed && changed !== "c-merge" && s[changed.slice(2)]) s.merge = false;
+    },
+    layers(s) {
+      if (s.merge) return [{ cls: "patrol", label: "Patrol", size: 3, inset: 2 }, { cls: "lab", label: "Crime lab", size: 3, inset: 6 }];
+      const l = [{ cls: "patrol", label: "Patrol", size: 1, inset: 2 }, { cls: "lab", label: "Crime lab", size: 3, inset: 6 }];
+      if (s.sheriff) l.push({ cls: "back", label: "Sheriff", size: 2, inset: 9 });
+      if (s.state) l.push({ cls: "back", label: "State lab", size: 3, inset: 12 });
+      return l;
+    },
+    evaluate(s) {
+      const cov = s.merge ? 50 : s.sheriff ? 100 : s.mutual ? 98 : 91;
+      const lab = s.state ? 100 : 67;
+      const budget = 100 + (s.sheriff ? 9 : 0) + (s.mutual ? 3 : 0) + (s.state ? 6 : 0) - (s.merge ? 10 : 0);
+      return [
+        { label: "Residents with normal patrol during the crisis", value: cov, unit: "%", target: 97, better: "high",
+          why: s.merge ? "One department means one budget. When it froze, every neighborhood lost half its patrols at once." : "The three east-side departments ran half their patrols for four months, and nobody filled the gap." },
+        { label: "Lab cases handled this year", value: lab, unit: "%", target: 95, better: "high",
+          why: s.merge ? "The merged department's lab lost its certification too, and there was no other lab to send cases to." : "For four months the only lab couldn't take cases, and nobody else could step in." },
+        { label: "Budget, where 100 is this year's", value: budget, unit: "", target: 110, better: "low", max: 130,
+          why: "Backup is worth paying for, but this much overlap costs more than the council will approve." }
+      ];
+    },
+    dots(s) {
+      const east = []; for (let c = 0; c < 64; c++) if ([3, 7, 11].includes(nbOf(c))) east.push(c);
+      const out = [];
+      if (s.merge) for (let c = 0; c < 64; c++) out.push(cellRect(c, "hot"));
+      else east.forEach((c) => out.push(cellRect(c, s.sheriff || s.mutual ? "cool" : "hot")));
+      out.push(`<rect class="ev ${s.state ? "ok" : "bad"}" x="${cx(3.5) - 8}" y="${cy(3.5) - 8}" width="16" height="16" rx="3"/>`);
+      return out;
+    },
+    keyExtra: '<span class="dot bad"><i></i>Area or lab without cover</span><span class="dot ok"><i></i>Covered by backup</span>',
+    win: "When the east-side departments faltered, their neighbors stepped in, and the state lab took the cases the metro lab couldn't. The overlap cost a little extra every year and paid for itself in the one season it was needed. A single merged department would have been cheaper, and it would have failed all at once.",
+    p: { name: "Redundancy through overlap",
+      line: "Overlapping organizations that can do similar work act as backups for each other, so one failure doesn't stop the whole service.",
+      pattern: "Don't strip out every duplicate in the name of efficiency. Keep cheap, deliberate overlap so another unit can step in when one fails.",
+      field: "Political scientist Martin Landau (1969) argued that duplication in public agencies works like the backup systems engineers build into airplanes. The Ostroms used this idea to answer critics of overlapping governments, and the Police Services Study found small departments routinely relying on larger neighbors for backup and specialist help." }
+  },
+  {
+    title: "The river doesn't stop at the line",
+    problem: "Spring floods hit Larkspur every few years. Flood control is still split among the sixteen neighborhoods, and the river crosses the lines of many of them. Only {RIVER} of the 64 blocks sit on the river. Patrol and the lab stay as they are. Choose who runs flood control, and run the spring.",
+    defaults: { flood: 1 },
+    controls(s) {
+      return `<div class="control"><div class="control-label">Flood control is run by</div>${segHTML("c-flood", SIZES.map((z, i) => [i, z.name]), s.flood)}</div>`;
+    },
+    read(s) { s.flood = +$('input[name="c-flood"]:checked').value; },
+    layers: (s) => [{ cls: "patrol", label: "Patrol", size: 1, inset: 2 }, { cls: "lab", label: "Crime lab", size: 3, inset: 6 }, { cls: "flood", label: "Flood control", size: s.flood, inset: 9 }],
+    evaluate(s) {
+      const dmg = [85, 75, 55, 30, 12][s.flood], say = [95, 88, 62, 25, 85][s.flood];
+      return [
+        { label: "Flood damage, in millions of dollars", value: dmg, unit: "", target: 20, better: "low",
+          why: ["Each block raised its own wall, and every wall upstream pushed more water onto the next block down.",
+                "Each neighborhood raised its own levee, and every levee upstream pushed more water onto the next neighborhood down.",
+                "The upstream district built high walls and the downstream districts paid for it. They had no shared place to decide.",
+                "The metro flood board answers to all 64 blocks. Most of them are dry, so levee money kept going to roads instead.", ""][s.flood] },
+        { label: "River residents' say in flood decisions", value: say, unit: "%", target: 70, better: "high",
+          why: s.flood === 3 ? "River residents are a small minority on a board that serves the whole metro." : "River residents are split across separate districts and outvoted in each one." }
+      ];
+    },
+    dots(s) {
+      const dmg = [85, 75, 55, 30, 12][s.flood], R = rng(23), wet = new Set(RIVER);
+      RIVER.forEach((c) => { if ((c & 7) < 7) wet.add(c + 1); if ((c & 7) > 0) wet.add(c - 1); });
+      const cells = Array.from(wet).sort((a, b) => (b >> 3) - (a >> 3) || R() - 0.5);
+      const n = Math.round(cells.length * dmg / 100);
+      return cells.map((c, i) => cellRect(c, i < n ? "hot" : "cool"));
+    },
+    keyExtra: '<span class="dot bad"><i></i>Flooded block</span><span class="dot ok"><i></i>Protected block</span>',
+    win: "A flood district drawn around the river answers only to the people who live with the river. It plans one set of levees from the top of the river to the bottom, so no one's wall floods a neighbor. It overlaps the patrol and lab layers without replacing them.",
+    p: { name: "Boundaries drawn around the problem",
+      line: "A special-purpose unit can be drawn to match a resource such as a river or a groundwater basin, even when that boundary cuts across city lines.",
+      pattern: "Draw each unit's boundary around the problem it handles, then let it overlap the units that handle other things.",
+      field: "For her 1965 dissertation, Elinor Ostrom studied Los Angeles's West Basin, where groundwater pumpers faced seawater seeping into their wells. Cities, companies and farmers formed an association, settled their water rights in court, and helped create a replenishment district drawn around the groundwater basins instead of along city lines." }
+  },
+  {
+    title: "Sixty-four tiny towns",
+    problem: "Tired of decisions made far away, Larkspur's voters have split the metro into 64 block towns, and each one runs every service itself. People love having a say. But patrol is thin at night, and no block can afford a crime lab. A new state law lets a town keep the decision about a service and buy the work from someone else. Set it up.",
+    defaults: { patrol: 0, lab: 0, buyP: false, buyL: false },
+    controls(s) {
+      return `<div class="control"><div class="control-label">Who decides about patrol</div>${segHTML("c-patrol", SIZES.slice(0, 4).map((z, i) => [i, z.name]), s.patrol)}</div>` +
+        toggleHTML("c-buyP", "Buy patrol work from the county sheriff", "The town still sets priorities and can switch at contract time.", s.buyP) +
+        `<div class="control"><div class="control-label">Who decides about the crime lab</div>${segHTML("c-lab", SIZES.slice(0, 4).map((z, i) => [i, z.name]), s.lab)}</div>` +
+        toggleHTML("c-buyL", "Buy lab work from the metro lab", "The town still decides what it needs and pays per case.", s.buyL);
+    },
+    read(s) {
+      s.patrol = +$('input[name="c-patrol"]:checked').value; s.lab = +$('input[name="c-lab"]:checked').value;
+      s.buyP = $("#c-buyP").checked; s.buyL = $("#c-buyL").checked;
+    },
+    layers(s) {
+      const l = [{ cls: "patrol", label: "Patrol decisions", size: s.patrol, inset: 2 }, { cls: "lab", label: "Lab decisions", size: s.lab, inset: 6 }];
+      if (s.buyL) l.push({ cls: "back", label: "Lab work bought from", size: 3, inset: 10 });
+      if (s.buyP) l.push({ cls: "back", label: "Patrol bought from", size: 2, inset: 13 });
+      return l;
+    },
+    evaluate(s) {
+      const pq = s.buyP ? 72 : PATROL_Q[s.patrol], lq = s.buyL ? 92 : LAB_Q[s.lab];
+      const voice = (VOICE[s.patrol] + VOICE[s.lab]) / 2;
+      const cost = ((s.buyP ? 100 : [130, 100, 95, 100][s.patrol]) + (s.buyL ? 104 : [400, 160, 110, 100][s.lab])) / 2;
+      return [
+        { label: "Residents who rate patrol good", value: pq, unit: "%", target: 80, better: "high",
+          why: s.buyP ? "Contract deputies rotate across the county and don't get to know these blocks." : PATROL_WHY[s.patrol] },
+        { label: "Crime lab cases solved", value: lq, unit: "%", target: 80, better: "high", why: LAB_WHY[s.lab] },
+        { label: "Residents who feel they have a say", value: voice, unit: "%", target: 80, better: "high",
+          why: "Some decisions now sit with a big board where each block is a small voice among many." },
+        { label: "Cost, where 100 is what the old metro charged", value: cost, unit: "", target: 105, better: "low", max: 250,
+          why: "Dozens of small labs, chiefs and radio systems cost far more than residents will pay." }
+      ];
+    },
+    dots: (s) => scatter(31, 26, s.buyP ? 72 : PATROL_Q[s.patrol]).concat(scatter(37, 8, s.buyL ? 92 : LAB_Q[s.lab], "sq")),
+    keyExtra: '<span class="dot ok"><i></i>Call or case handled well</span><span class="dot bad"><i></i>Handled badly</span>',
+    win: "Each neighborhood decides what it wants from its police and lab, and the lab work is done by the one organization big enough to do it well. Residents keep their say, the cases get solved, and nobody pays for 64 labs. Deciding and delivering turned out to be two different jobs.",
+    p: { name: "Provision and production",
+      line: "Deciding what a community wants and pays for (provision) is a different job from delivering it (production), and the two can sit with different organizations.",
+      pattern: "Keep the decision close to the people affected, and buy the delivery from whoever does it best at the right scale.",
+      field: "In 1954, the new city of Lakewood, California chose to buy police and other services from Los Angeles County instead of building its own departments. Dozens of cities copied the Lakewood Plan. Ostrom, Tiebout and Warren (1961) used the distinction between providing and producing a service to explain why such arrangements can work." }
+  },
+  {
+    title: "An idea nobody has tested",
+    problem: "A new kind of patrol, with officers assigned to solve one neighborhood's problems for years at a time, is spreading in other cities. It seems to work very well in some neighborhoods and to backfire in others, and nobody can tell in advance which will be which. How should Larkspur's sixteen neighborhoods decide?",
+    options: [
+      { text: "The metro council adopts it everywhere at once." },
+      { text: "The metro council rejects it everywhere until it's proven." },
+      { text: "Each neighborhood decides for itself and keeps its results to itself." },
+      { text: "Each neighborhood decides for itself, and all of them meet each quarter to share results." }
+    ],
+    defaults: { opt: null },
+    p: { name: "Experimentation and learning",
+      line: "With many centers, a new idea can be tried in a few places at once. Others can copy what works and skip what fails, without betting the whole system on one guess.",
+      pattern: "Try new ideas small and in several places, share the results openly, and let each unit adopt what fits its own conditions.",
+      field: "In her Nobel lecture (2009), Elinor Ostrom argued that polycentric systems let units experiment and learn from one another's successes and failures. A related American idea, from Justice Louis Brandeis in 1932, calls the states laboratories that can try new policies without risk to the rest of the country." }
+  }
+];
+const GOOD_NB = [0, 1, 2, 4, 5, 7, 9, 10, 12, 15];
+function learnSim(opt) {
+  const good = (n) => GOOD_NB.includes(n), years = [], tot = Array(16).fill(0);
+  let active = new Set(), tried = new Set();
+  const pioneers = [1, 6, 9, 11], R = rng(41);
+  for (let y = 0; y < 5; y++) {
+    if (opt === 0) active = new Set(Array.from({ length: 16 }, (_, i) => i));
+    if (opt === 1) active = new Set();
+    if (opt >= 2) {
+      if (y === 0) pioneers.forEach((n) => { active.add(n); tried.add(n); });
+      else {
+        Array.from(active).forEach((n) => { if (!good(n)) active.delete(n); });
+        if (opt === 2) { const left = Array.from({ length: 16 }, (_, i) => i).filter((n) => !tried.has(n)); for (let k = 0; k < 2 && left.length; k++) { const n = left.splice(Math.floor(R() * left.length), 1)[0]; tried.add(n); active.add(n); } }
+        if (opt === 3) { const add = y === 1 ? GOOD_NB.slice(0, 6) : GOOD_NB; add.forEach((n) => { active.add(n); tried.add(n); }); }
+      }
+    }
+    const row = [];
+    for (let n = 0; n < 16; n++) { const v = active.has(n) ? (good(n) ? 12 : -10) : 0; tot[n] += v; row.push(v); }
+    years.push(row);
+  }
+  return { years, avg: tot.reduce((a, b) => a + b, 0) / 16, worst: Math.min(...tot) };
+}
+
+/* ---------- strip ---------- */
+const SHORT = ["Scale", "Overlap", "Boundaries", "Provision", "Learning"];
+function strip(current) {
+  const items = [{ id: "start", label: "Start", aria: "Round zero: one night in Larkspur", done: S.start.length === 2 }]
+    .concat(MISSIONS.map((m, i) => ({ id: "m" + (i + 1), label: String(i + 1), aria: "Mission " + (i + 1) + (S.solved.includes(i + 1) ? ": " + m.p.name : ""), done: S.solved.includes(i + 1) })))
+    .concat([{ id: "wrap", label: "Wrap-up", aria: "Wrap-up", done: S.solved.length === 5 }]);
+  renderStrip(items, current, "Ideas found: " + S.solved.length + " of " + MISSIONS.length);
+}
+
+/* ---------- round zero ---------- */
+const startSvg = $("#map-start");
+function startStats(mode) {
+  const R = rng(mode === "big" ? 3 : 5), calls = [];
+  let sum = 0, fast = 0;
+  for (let i = 0; i < 24; i++) {
+    const cell = Math.floor(R() * 64), r = cell >> 3, c = cell & 7;
+    let min;
+    if (mode === "big") min = 5 + 2.2 * (Math.abs(r - 3.5) + Math.abs(c - 3.5));
+    else min = R() < 0.45 ? 3 + R() * 2 : 22 + R() * 14;
+    sum += min; if (min <= 10) fast++;
+    calls.push(`<circle class="ev ${min <= 10 ? "ok" : "bad"}" cx="${(cx(c) + (R() - 0.5) * 16).toFixed(1)}" cy="${(cy(r) + (R() - 0.5) * 16).toFixed(1)}" r="5"/>`);
+  }
+  return { calls, avg: sum / 24, fast, lab: mode === "big" ? "7 of 8" : "0 of 8", cost: mode === "big" ? "$38" : "$61" };
+}
+let startBusy = false;
+async function runStart(mode) {
+  if (startBusy) return; startBusy = true;
+  const layers = mode === "big" ? [{ cls: "patrol", label: "Police", size: 3, inset: 2 }] : [{ cls: "patrol", label: "Police", size: 0, inset: 2 }];
+  drawMap(startSvg, layers, mode === "big" ? `<circle class="station" cx="${O + 4 * C}" cy="${O + 4 * C}" r="6"/>` : "");
+  const r = startStats(mode);
+  $("#start-log").textContent = mode === "big" ? "One station in the middle of the metro takes every call..." : "Each block's department takes its own calls...";
+  await playDots(startSvg, r.calls, 60);
+  if (mode === "big") $("#start-log").textContent = `Calls near the middle were answered fast, but the edges waited up to 20 minutes. The officers who came didn't know the street. The lab solved 7 of 8 cases.`;
+  else $("#start-log").textContent = `When a block's officer was on duty, help came in minutes. Most of the time nobody was, and the call waited for help from far away. With no lab, 0 of 8 cases were solved.`;
+  if (!S.start.includes(mode)) S.start.push(mode);
+  S["r_" + mode] = { avg: r.avg, fast: r.fast, lab: r.lab, cost: r.cost };
+  st.save(); renderStartResults(); startBusy = false;
+}
+function renderStartResults() {
+  const card = (mode, title) => {
+    const r = S["r_" + mode];
+    if (!r) return `<div class="card empty"><h4>${title}</h4>Not run yet.</div>`;
+    return `<div class="card"><h4>${title}</h4><div class="row"><span>Average wait</span><b>${r0(r.avg)} min</b></div><div class="row"><span>Within 10 min</span><b>${r.fast} of 24</b></div><div class="row"><span>Lab cases solved</span><b>${r.lab}</b></div><div class="row"><span>Cost per household</span><b>${r.cost}/mo</b></div></div>`;
+  };
+  $("#start-results").innerHTML = card("big", "One big department") + card("tiny", "64 block departments");
+  $("#start-debrief").hidden = S.start.length < 2;
+  if (S.start.length === 2) strip("start");
+}
+$("#run-big").addEventListener("click", () => runStart("big"));
+$("#run-tiny").addEventListener("click", () => runStart("tiny"));
+
+/* ---------- mission view ---------- */
+let busy = false;
+function mSet(n) { const m = MISSIONS[n - 1]; if (!S.set[n]) S.set[n] = Object.assign({}, m.defaults); return S.set[n]; }
+function renderMission(n) {
+  const m = MISSIONS[n - 1], solved = S.solved.includes(n), s = mSet(n);
+  const el = $("#view-mission");
+  const isOpt = !!m.options;
+  el.innerHTML = `
+    <div class="prose"><p class="kicker">Mission ${n} of ${MISSIONS.length}</p><h2 id="h-mission" tabindex="-1">${esc(m.title)}</h2></div>
+    <div id="parts-slot">${partsRail(solved ? 4 : 1)}</div>
+    <div class="panel">
+      ${stepLabel("P", "Problem")}
+      <p>${esc(m.problem.replace("{RIVER}", String(RIVER.length)))}</p>
+      <div class="map-wrap"><svg class="map" id="map-m" viewBox="0 0 324 324" role="img" aria-label="Map of Larkspur showing the service layers you chose"></svg><div id="map-key"></div></div>
+    </div>
+    <div class="panel">
+      ${stepLabel("A", isOpt ? "Answer: how should Larkspur decide?" : "Answer: set the layers")}
+      ${isOpt ? `<div class="options" role="group" aria-label="Ways to decide">${m.options.map((o, i) => `<button class="opt${s.opt === i ? " picked" : ""}" data-opt="${i}"><span class="key">${"ABCD"[i]}</span><span>${esc(o.text)}</span></button>`).join("")}</div>`
+        : `<div class="controls" id="controls">${m.controls(s)}</div><div class="choices"><button class="btn primary" id="run">Run the year</button></div>`}
+    </div>
+    <div class="panel" id="outcome" hidden aria-live="polite"></div>
+    <div id="reveal" hidden></div>
+    <div class="nav-row">
+      <button class="btn quiet" data-go="${n === 1 ? "start" : "m" + (n - 1)}">Back</button>
+      <button class="btn${solved ? " primary" : " quiet"}" id="next-btn" data-go="${n === MISSIONS.length ? "wrap" : "m" + (n + 1)}">${n === MISSIONS.length ? "Go to wrap-up" : "Next mission"}</button>
+    </div>`;
+  if (isOpt) {
+    drawLearnMap(null);
+    el.querySelectorAll("[data-opt]").forEach((b) => b.addEventListener("click", () => runLearn(n, +b.dataset.opt)));
+    if (solved) showLearn(n, 3, false);
+  } else {
+    refreshMap(n);
+    $("#controls").addEventListener("change", (e) => { m.read(s, e.target.name || e.target.id); $("#controls").innerHTML = m.controls(s); refreshMap(n); st.save(); });
+    $("#run").addEventListener("click", () => runMission(n));
+    if (solved) showOutcome(n, false);
+  }
+}
+function refreshMap(n) {
+  const m = MISSIONS[n - 1], s = mSet(n), ls = m.layers(s);
+  drawMap($("#map-m"), ls, "");
+  $("#map-key").innerHTML = keyHTML(ls);
+}
+async function runMission(n) {
+  if (busy) return; busy = true;
+  const m = MISSIONS[n - 1], s = mSet(n);
+  $("#run").disabled = true; $("#outcome").hidden = true;
+  refreshMap(n);
+  $("#map-key").innerHTML = keyHTML(m.layers(s)) + `<div class="key" style="margin-top:6px">${m.keyExtra}</div>`;
+  const stayed = await playDots($("#map-m"), m.dots(s), 45);
+  if (!stayed) { busy = false; return; }
+  showOutcome(n, true);
+  $("#run").disabled = false; busy = false;
+}
+function showOutcome(n, fresh) {
+  const m = MISSIONS[n - 1], s = mSet(n), ms = m.evaluate(s), all = ms.every(meterPass);
+  if (!fresh) { refreshMap(n); drawMap($("#map-m"), m.layers(s), m.dots(s).join("")); $("#map-key").innerHTML = keyHTML(m.layers(s)) + `<div class="key" style="margin-top:6px">${m.keyExtra}</div>`; }
+  const out = $("#outcome"); out.hidden = false; out.className = "panel " + (all ? "v-win" : "v-fail");
+  out.innerHTML = `${stepLabel("R", "Reasoning: what happened")}
+    <p class="verdict">${all ? "Every goal met" : ms.filter(meterPass).length + " of " + ms.length + " goals met"}</p>
+    <div class="meters">${ms.map(meterHTML).join("")}</div>
+    ${all ? `<p class="feedback">${esc(m.win)}</p>` : `<p class="muted small">Change the layers and run the year again.</p>`}`;
+  finish(n, all);
+}
+function finish(n, all) {
+  const m = MISSIONS[n - 1], rev = $("#reveal");
+  if (all) {
+    if (!S.solved.includes(n)) { S.solved.push(n); S.solved.sort((a, b) => a - b); st.save(); }
+    strip("m" + n);
+    $("#parts-slot").innerHTML = partsRail(4);
+    rev.hidden = false; rev.innerHTML = termCard(n, m.p, "From the research:");
+    const nb = $("#next-btn"); nb.classList.add("primary"); nb.classList.remove("quiet");
+  } else { $("#parts-slot").innerHTML = partsRail(2); rev.hidden = true; }
+}
+/* mission 5: learning */
+function drawLearnMap(row, year) {
+  const svg = $("#map-m");
+  let ov = "";
+  if (row) for (let n = 0; n < 16; n++) {
+    const x = O + (n % 4) * 2 * C + 3, y = O + Math.floor(n / 4) * 2 * C + 3;
+    if (row[n]) ov += `<rect class="${row[n] > 0 ? "cool" : "hot"}" x="${x}" y="${y}" width="${2 * C - 6}" height="${2 * C - 6}" rx="4"/>`;
+  }
+  if (year) ov += `<text class="yr" x="${O + 6}" y="${O + 16}">Year ${year}</text>`;
+  drawMap(svg, [{ cls: "patrol", label: "Neighborhoods", size: 1, inset: 2 }], ov);
+  $("#map-key").innerHTML = `<div class="key"><span class="dot ok"><i></i>Trying it, and it works here</span><span class="dot bad"><i></i>Trying it, and it backfires here</span></div>`;
+}
+async function runLearn(n, opt) {
+  if (busy) return; busy = true;
+  const s = mSet(n); s.opt = opt; st.save();
+  $$("#view-mission .opt").forEach((b) => b.classList.toggle("picked", +b.dataset.opt === opt));
+  $("#outcome").hidden = true;
+  const r = learnSim(opt);
+  const h = location.hash;
+  for (let y = 0; y < 5; y++) { if (location.hash !== h) { busy = false; return; } drawLearnMap(r.years[y], y + 1); await sleep(650); }
+  if (location.hash !== h) { busy = false; return; }
+  showLearn(n, opt, true); busy = false;
+}
+function showLearn(n, opt, fresh) {
+  const r = learnSim(opt);
+  if (!fresh) drawLearnMap(r.years[4], 5);
+  const ms = [
+    { label: "Average improvement per neighborhood over 5 years (points)", value: Math.max(0, r.avg), unit: "", target: 20, better: "high", max: 40,
+      why: ["Every neighborhood adopted it, including the six where it backfires, so the losses ate most of the gains.", "Nothing was tried, so nothing improved.", "Each neighborhood had to find out for itself, one or two at a time, so the idea spread slowly.", ""][opt] },
+    { label: "Worst-hit neighborhood over 5 years (points)", value: r.worst, unit: "", target: -15, better: "high", min: -60, max: 0,
+      why: "The neighborhoods where it backfires were stuck with it for all five years." }
+  ];
+  const all = ms.every(meterPass);
+  const fb = ["One decision for everyone means one bet for everyone. Where the idea fit, crime fell. Where it didn't, residents lived with a failing program for five years and had no way out.",
+    "Waiting for proof sounds safe, but proof never came, because nobody in Larkspur tried it. The neighborhoods where it would have worked lost five good years.",
+    "Pioneers learned fast, and the ones where it failed dropped it after a year. But nobody else could see their results, so every neighborhood had to run its own trial, and the good news spread slowly.",
+    "Four pioneers tried it. Two thrived and two dropped it after a year. Because results were shared, the other neighborhoods could compare their own conditions with the pioneers' and adopt it only where it fit. By year three it was everywhere it worked, and nowhere it didn't."][opt];
+  const out = $("#outcome"); out.hidden = false; out.className = "panel " + (all ? "v-win" : "v-fail");
+  out.innerHTML = `${stepLabel("R", "Reasoning: what happened")}
+    <p class="verdict">${all ? "Every goal met" : ms.filter(meterPass).length + " of 2 goals met"}</p>
+    <div class="meters">${ms.map(meterHTML).join("")}</div>
+    <p class="feedback">${esc(fb)}</p>${all ? "" : `<p class="muted small">Pick another way to decide.</p>`}`;
+  finish(n, all);
+  if (all) $$("#view-mission .opt").forEach((b) => b.classList.toggle("win", +b.dataset.opt === opt));
+}
+
+/* ---------- wrap-up ---------- */
+const TRANSFER = [
+  { t: "The county takes over and closes the town squads to save money.", fb: "That trades twelve squads for one point of failure, and puts every decision far from the towns. It's the round-zero big department again." },
+  { t: "Towns keep their squads and their say, buy night coverage from a paid county crew, and sign a mutual-aid pact to back each other up.", win: true, fb: "Yes. Towns keep provision close to home, buy production where scale helps, and the pact adds cheap overlap. That's three of the five ideas working together." },
+  { t: "Each town hires its own full-time paid crew for every shift.", fb: "Twelve full-time crews for twelve small towns costs far more than residents will pay, like the 64 block labs in mission 4." },
+  { t: "Leave things as they are and hope new volunteers turn up.", fb: "Nights stay uncovered, and the gap grows every year as volunteers age out." }
+];
+const SERVICES = ["Trash pickup", "Drinking water", "Public schools", "Police patrol", "Parks", "Public transit"];
+const WHO = ["My city or town", "County", "Special district", "State", "Private company", "Not sure"];
+function renderWrap() {
+  const el = $("#view-wrap"), all = S.solved.length === MISSIONS.length;
+  el.innerHTML = `
+    <div class="prose">
+      <p class="kicker">Wrap-up</p>
+      <h2 id="h-wrap" tabindex="-1">${all ? "Larkspur runs in layers" : "Ideas found so far: " + S.solved.length + " of " + MISSIONS.length}</h2>
+      <p class="lede">${all ? "Neighborhood patrols, a metro lab, a river district, contracts, backups and shared learning, all overlapping on the same 64 blocks. That isn't a mess to clean up. It's a design." : "You can visit any mission from the strip above. The ideas you haven't found yet stay hidden until you do."}</p>
+    </div>
+    <div class="panel">
+      <h3 style="font-size:1.25rem">What polycentric means</h3>
+      <p>The Ostroms described a polycentric system as one with many centers of decision making that are formally independent of each other, but that take each other into account. They compete, sign contracts, cooperate, and turn to shared ways of settling conflicts. Polycentric doesn't mean anything goes: it works when there are shared rules, good information and fair places to resolve disputes.</p>
+      <ol class="recap">${MISSIONS.map((m, i) => `<li class="${S.solved.includes(i + 1) ? "found" : ""}"><span class="n">${i + 1}</span><div><div class="t">${S.solved.includes(i + 1) ? esc(m.p.name) : "Not found yet"}</div><div class="d">${S.solved.includes(i + 1) ? esc(m.p.pattern) : "Solve mission " + (i + 1) + " to reveal it."}</div></div></li>`).join("")}</ol>
+    </div>
+    <div class="panel" id="transfer">
+      ${stepLabel("?", "One more place: a rural ambulance service")}
+      <p>Twelve small towns each run a volunteer ambulance squad. Volunteers are aging, and night shifts often go unfilled. Which first move fits what you learned?</p>
+      <div class="options" role="group" aria-label="Options">${TRANSFER.map((f, i) => `<button class="opt" data-tr="${i}"><span class="key">${"ABCD"[i]}</span><span>${esc(f.t)}</span></button>`).join("")}</div>
+      <p class="feedback" id="tr-fb" hidden aria-live="polite"></p>
+    </div>
+    <div class="panel">
+      ${stepLabel("✓", "Map your own layers")}
+      <p>Who runs these services where you live? Pick your best guess for each.</p>
+      <div>${SERVICES.map((sv, i) => `<div class="svc-row"><div class="control-label">${sv}</div>${segHTML("w" + i, WHO.map((w, j) => [j, w]), S.wrap[i])}</div>`).join("")}</div>
+      <p class="layers-out" id="layers-out" aria-live="polite"></p>
+    </div>
+    <div class="nav-row"><button class="btn quiet" data-go="m5">Back to mission 5</button><button class="btn quiet" data-go="start">Back to the start</button></div>`;
+  el.querySelectorAll("[data-tr]").forEach((b) => b.addEventListener("click", () => {
+    const f = TRANSFER[+b.dataset.tr], fb = $("#tr-fb");
+    el.querySelectorAll("[data-tr]").forEach((x) => x.classList.remove("win", "tried", "picked"));
+    b.classList.add(f.win ? "win" : "tried");
+    $("#transfer").className = "panel " + (f.win ? "v-win" : "v-fail");
+    fb.hidden = false; fb.textContent = f.fb;
+  }));
+  el.querySelectorAll('.svc-row input').forEach((r) => r.addEventListener("change", () => { S.wrap[+r.name.slice(1)] = +r.value; st.save(); layersOut(); }));
+  layersOut();
+}
+function layersOut() {
+  const picks = Object.values(S.wrap).filter((v) => v !== 5 && v != null);
+  const out = $("#layers-out");
+  if (!Object.keys(S.wrap).length) { out.textContent = "Answer a few rows to count your layers."; return; }
+  const n = new Set(picks).size;
+  out.innerHTML = n >= 2 ? `<b>You live under at least ${n} different layers</b> for these services. Each one is a decision center sized for its job, overlapping on your street. That's a polycentric system.`
+    : n === 1 ? "So far one organization runs everything you've picked. Try a few more rows; most people find several layers." : "Pick a few more you're sure about.";
+}
+
+/* ---------- routing ---------- */
+function route() {
+  const h = location.hash.slice(1), mm = /^m([1-5])$/.exec(h);
+  if (mm) { renderMission(+mm[1]); showView("view-mission"); strip(h); }
+  else if (h === "wrap") { renderWrap(); showView("view-wrap"); strip("wrap"); }
+  else { showView("view-start"); strip("start"); }
+  afterRoute();
+}
+window.addEventListener("hashchange", route);
+drawMap(startSvg, [{ cls: "patrol", label: "Police", size: 3, inset: 2 }], `<circle class="station" cx="${O + 4 * C}" cy="${O + 4 * C}" r="6"/>`);
+renderStartResults();
+route();
+</script>
+
+</body></html>

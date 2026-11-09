@@ -1,0 +1,867 @@
+<!doctype html><html><head><meta charset="utf-8"><title>Saving Lake Wren</title><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: one narrow column, a sticky "rulebook" strip of eight stamps on top, one view at a time below it. */
+:root {
+  --bg: #ECF1F0;
+  --surface: #F8FBFA;
+  --ink: #0F2A33;
+  --muted: #4A6470;
+  --line: #C6D4D4;
+  --lake: #1B6872;
+  --lake-deep: #134C55;
+  --lake-shallow: #5C9FA5;
+  --reed: #6E8F5A;
+  --fish: #F3F7F6;
+  --buoy: #E2AE2C;
+  --buoy-soft: #F6E8BF;
+  --buoy-ink: #6E4E00;
+  --danger: #B33A25;
+  --danger-soft: #F6DED8;
+  --good-soft: #D6E9E9;
+  --font-display: "Bricolage Grotesque", "Avenir Next", "Segoe UI", system-ui, sans-serif;
+  --font-body: "Atkinson Hyperlegible", "Verdana", system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0B181C; --surface: #11242A; --ink: #E1EBEA; --muted: #93AAB0; --line: #26424B;
+    --lake: #52B3BD; --lake-deep: #0D3840; --lake-shallow: #2A727B; --reed: #7FA36A; --fish: #E6F0EF;
+    --buoy: #F2C14E; --buoy-soft: #3A3218; --buoy-ink: #F2C14E;
+    --danger: #F07D66; --danger-soft: #3B201B; --good-soft: #143940;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0B181C; --surface: #11242A; --ink: #E1EBEA; --muted: #93AAB0; --line: #26424B;
+  --lake: #52B3BD; --lake-deep: #0D3840; --lake-shallow: #2A727B; --reed: #7FA36A; --fish: #E6F0EF;
+  --buoy: #F2C14E; --buoy-soft: #3A3218; --buoy-ink: #F2C14E;
+  --danger: #F07D66; --danger-soft: #3B201B; --good-soft: #143940;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+body {
+  background: var(--bg); color: var(--ink);
+  font-family: var(--font-body); font-size: 17px; line-height: 1.55;
+  -webkit-text-size-adjust: 100%;
+}
+body::before {
+  content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px);
+  z-index: 10; background: var(--bg);
+}
+.gutter {
+  max-width: 780px; margin: 0 auto;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+h1, h2, h3 { font-family: var(--font-display); text-wrap: balance; margin: 0; }
+p { margin: 0; }
+button { font: inherit; color: inherit; }
+:focus-visible { outline: 3px solid var(--buoy); outline-offset: 2px; border-radius: 6px; }
+.mono { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+.kicker {
+  font-family: var(--font-mono); font-size: 0.74rem; letter-spacing: 0.08em;
+  text-transform: uppercase; color: var(--muted);
+}
+
+/* Masthead */
+.masthead { padding-block: 36px 18px; display: grid; gap: 10px; }
+.masthead h1 {
+  font-size: clamp(2.5rem, 9vw, 4.4rem); font-weight: 800; line-height: 0.95;
+  letter-spacing: -0.03em; font-variation-settings: "opsz" 96;
+}
+.masthead h1 span { color: var(--lake); }
+.masthead .sub { color: var(--muted); max-width: 58ch; }
+
+/* Rulebook strip */
+.strip {
+  position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5;
+  background: var(--bg); border-bottom: 1px solid var(--line);
+}
+.strip .gutter { padding-block: 10px; display: grid; gap: 6px; }
+.strip-row { display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; padding: 3px 2px; }
+.strip-row::-webkit-scrollbar { display: none; }
+.chip {
+  flex: 0 0 auto; min-width: 40px; height: 40px; padding: 0 10px;
+  border-radius: 999px; border: 1.5px solid var(--line); background: var(--surface);
+  font-family: var(--font-mono); font-size: 0.85rem; font-weight: 500; color: var(--muted);
+  cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+}
+.chip:hover { border-color: var(--lake); color: var(--ink); }
+.chip.done { background: var(--buoy); border-color: var(--buoy); color: #2B1F00; }
+.chip.current { border-color: var(--lake); border-width: 2.5px; color: var(--ink); }
+.chip.done.current { box-shadow: 0 0 0 2px var(--bg), 0 0 0 4px var(--lake); }
+.strip-meta { font-size: 0.82rem; color: var(--muted); display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+
+main { padding-block: 26px 40px; }
+.view { display: grid; gap: 22px; }
+.view h2 { font-size: clamp(1.7rem, 5.4vw, 2.4rem); font-weight: 700; line-height: 1.05; letter-spacing: -0.02em; }
+.view h2:focus { outline: none; }
+.lede { font-size: 1.08rem; max-width: 62ch; }
+.prose { display: grid; gap: 12px; max-width: 64ch; }
+
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 18px; display: grid; gap: 14px; min-width: 0; }
+
+/* Lake canvas */
+.lake-wrap { position: relative; border-radius: 12px; overflow: hidden; background: var(--bg); }
+.lake-wrap canvas { display: block; width: 100%; height: 100%; }
+.lake-big { aspect-ratio: 16 / 8; max-width: 100%; }
+.lake-strip { aspect-ratio: 16 / 5; max-width: 100%; }
+.lake-badge {
+  position: absolute; left: 10px; top: 10px; background: var(--surface); color: var(--ink);
+  border: 1px solid var(--line); border-radius: 8px; padding: 4px 9px; font-size: 0.82rem;
+}
+.lake-badge b { font-size: 1rem; }
+
+/* Hook game */
+.season-head { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+.season-head h3 { font-size: 1.2rem; }
+.boats { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 6px; }
+.boat { border: 1px solid var(--line); border-radius: 10px; padding: 8px 6px; text-align: center; min-width: 0; }
+.boat.you { border-color: var(--lake); background: var(--good-soft); }
+.boat .who { font-size: 0.78rem; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.boat .took { font-family: var(--font-mono); font-size: 1.15rem; font-weight: 500; }
+.choices { display: flex; flex-wrap: wrap; gap: 8px; }
+.btn {
+  border: 1.5px solid var(--lake); background: var(--surface); color: var(--ink);
+  border-radius: 10px; padding: 10px 16px; cursor: pointer; font-weight: 700;
+  min-height: 44px;
+}
+.btn:hover { background: var(--good-soft); }
+.btn.primary { background: var(--lake); color: var(--surface); border-color: var(--lake); }
+.btn.primary:hover { filter: brightness(1.08); }
+.btn.quiet { border-color: var(--line); font-weight: 400; }
+.btn small { font-weight: 400; color: inherit; opacity: 0.8; }
+.btn:disabled { opacity: 0.45; cursor: not-allowed; }
+.log { min-height: 3.2em; }
+.debrief { border-top: 1px dashed var(--line); padding-top: 16px; display: grid; gap: 12px; }
+.debrief h3 { font-size: 1.5rem; color: var(--danger); }
+details.how { border: 1px solid var(--line); border-radius: 12px; padding: 10px 14px; background: var(--surface); }
+details.how summary { cursor: pointer; font-weight: 700; }
+details.how p { margin-top: 8px; color: var(--muted); max-width: 64ch; }
+
+/* PARTS rail */
+.parts { display: flex; flex-wrap: wrap; gap: 6px; list-style: none; padding: 0; margin: 0; }
+.parts li {
+  font-size: 0.78rem; padding: 4px 9px; border-radius: 999px; border: 1px solid var(--line);
+  color: var(--muted); display: inline-flex; gap: 6px; align-items: center;
+}
+.parts li b { font-family: var(--font-mono); font-weight: 500; }
+.parts li.on { border-color: var(--ink); color: var(--ink); }
+.parts li.now { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+
+.step-label { display: flex; gap: 10px; align-items: center; }
+.step-label .letter {
+  font-family: var(--font-mono); font-weight: 500; width: 28px; height: 28px; border-radius: 50%;
+  background: var(--ink); color: var(--bg); display: inline-flex; align-items: center; justify-content: center;
+  font-size: 0.85rem; flex: 0 0 auto;
+}
+.step-label .name { font-family: var(--font-display); font-weight: 700; font-size: 1.1rem; }
+
+/* Options */
+.options { display: grid; gap: 8px; }
+.opt {
+  text-align: left; border: 1.5px solid var(--line); background: var(--surface); border-radius: 12px;
+  padding: 13px 15px; cursor: pointer; display: grid; grid-template-columns: auto 1fr; gap: 12px; align-items: start;
+}
+.opt:hover:not(:disabled) { border-color: var(--lake); }
+.opt .key { font-family: var(--font-mono); font-weight: 500; color: var(--muted); padding-top: 1px; }
+.opt .tag { display: block; font-size: 0.78rem; margin-top: 4px; font-family: var(--font-mono); }
+.opt.tried { border-style: dashed; }
+.opt.tried .tag { color: var(--danger); }
+.opt.picked { border-color: var(--ink); border-width: 2px; }
+.opt.win { border-color: var(--lake); background: var(--good-soft); }
+.opt.win .tag { color: var(--lake); }
+.opt:disabled { cursor: default; }
+
+/* Chart */
+.chart-box { min-width: 0; }
+.chart-box svg { display: block; width: 100%; height: auto; overflow: visible; }
+.chart-box .grid { stroke: var(--line); stroke-width: 1; }
+.chart-box .floor { stroke: var(--danger); stroke-width: 1; stroke-dasharray: 3 4; opacity: 0.8; }
+.chart-box .tick { fill: var(--muted); font-family: var(--font-mono); font-size: 10px; }
+.chart-box .floor-label { fill: var(--danger); font-family: var(--font-mono); font-size: 9.5px; }
+.chart-box .base { fill: none; stroke: var(--muted); stroke-width: 2; stroke-dasharray: 5 5; }
+.chart-box .mine { fill: none; stroke-width: 3.2; stroke-linecap: round; stroke-linejoin: round; }
+.legend { display: flex; flex-wrap: wrap; gap: 14px; font-size: 0.82rem; color: var(--muted); margin-top: 6px; }
+.legend span { display: inline-flex; align-items: center; gap: 6px; }
+.legend i { display: inline-block; width: 20px; height: 0; border-top: 2px dashed var(--muted); }
+.legend i.solid { border-top: 3px solid var(--lake); }
+
+.v-win { --v: var(--lake); --v-soft: var(--good-soft); }
+.v-partial { --v: var(--buoy-ink); --v-soft: var(--buoy-soft); }
+.v-fail { --v: var(--danger); --v-soft: var(--danger-soft); }
+.verdict { display: inline-flex; align-items: center; gap: 8px; font-weight: 700; color: var(--v); }
+.verdict::before { content: ""; width: 10px; height: 10px; border-radius: 50%; background: var(--v); }
+.stats { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+.stat { border: 1px solid var(--line); border-radius: 10px; padding: 8px 10px; min-width: 0; }
+.stat .k { font-size: 0.76rem; color: var(--muted); }
+.stat .v { font-family: var(--font-mono); font-size: 1.1rem; font-variant-numeric: tabular-nums; }
+.stat .v small { color: var(--muted); font-size: 0.78rem; }
+.feedback { background: var(--v-soft); border-radius: 10px; padding: 12px 14px; }
+
+/* Term card: a rulebook page */
+.term {
+  border: 2px dashed var(--buoy); border-radius: 16px; padding: 20px; background: var(--buoy-soft);
+  display: grid; gap: 10px; position: relative;
+}
+.term .num { font-family: var(--font-display); font-weight: 800; font-size: 3rem; line-height: 0.8; color: var(--buoy-ink); }
+.term h3 { font-size: clamp(1.4rem, 4.6vw, 1.9rem); line-height: 1.1; letter-spacing: -0.01em; }
+.term .line { font-size: 1.05rem; }
+.syntax { border-top: 1px solid var(--line); padding-top: 14px; display: grid; gap: 10px; }
+.pattern { font-family: var(--font-display); font-weight: 500; font-size: 1.15rem; line-height: 1.35; }
+.field { color: var(--muted); font-size: 0.95rem; }
+.field b { color: var(--ink); }
+.nav-row { display: flex; flex-wrap: wrap; gap: 8px; justify-content: space-between; }
+
+/* Wrap-up */
+.recap { list-style: none; padding: 0; margin: 0; display: grid; gap: 8px; }
+.recap li { display: grid; grid-template-columns: 34px 1fr; gap: 12px; align-items: start; padding: 10px 0; border-bottom: 1px solid var(--line); }
+.recap li:last-child { border-bottom: 0; }
+.recap .n {
+  width: 34px; height: 34px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center;
+  font-family: var(--font-mono); font-weight: 500; border: 1.5px solid var(--line); color: var(--muted);
+}
+.recap li.found .n { background: var(--buoy); border-color: var(--buoy); color: #2B1F00; }
+.recap .t { font-weight: 700; }
+.recap .d { color: var(--muted); font-size: 0.95rem; }
+.recap a { color: var(--lake); }
+.audit { display: grid; gap: 10px; }
+.audit-row { display: grid; gap: 6px; padding-block: 8px; border-bottom: 1px solid var(--line); }
+.audit-row:last-child { border-bottom: 0; }
+.audit-row legend { font-size: 0.95rem; padding: 0; }
+.audit-row fieldset { border: 0; margin: 0; padding: 0; min-width: 0; display: grid; gap: 6px; }
+.seg { display: inline-flex; border: 1.5px solid var(--line); border-radius: 10px; overflow: hidden; width: max-content; max-width: 100%; }
+.seg label { position: relative; }
+.seg input { position: absolute; opacity: 0; inset: 0; margin: 0; cursor: pointer; }
+.seg span { display: block; padding: 7px 14px; font-size: 0.88rem; border-right: 1px solid var(--line); }
+.seg label:last-child span { border-right: 0; }
+.seg input:checked + span { background: var(--ink); color: var(--bg); }
+.seg input:focus-visible + span { outline: 3px solid var(--buoy); outline-offset: -3px; }
+.audit-out { background: var(--good-soft); border-radius: 10px; padding: 12px 14px; }
+footer { border-top: 1px solid var(--line); padding-block: 22px 40px; color: var(--muted); font-size: 0.88rem; display: grid; gap: 6px; }
+footer b { color: var(--ink); }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+@media (min-width: 640px) {
+  .panel { padding: 22px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; animation: none !important; }
+}
+</style>
+
+<header class="masthead gutter">
+  <p class="kicker">An interactive lesson · Elinor Ostrom, <i>Governing the Commons</i></p>
+  <h1>Saving Lake <span>Wren</span></h1>
+  <p class="sub">Five households share one lake. Watch it fall apart, then fix one problem at a time and discover the eight design principles Ostrom found in commons that last.</p>
+</header>
+
+<nav class="strip" aria-label="Lesson progress">
+  <div class="gutter">
+    <div class="strip-row" id="strip"></div>
+    <div class="strip-meta"><span id="strip-count">Rules found: 0 of 8</span><span>Structured with the PARTS Method</span></div>
+  </div>
+</nav>
+
+<main class="gutter" id="main">
+  <!-- HOOK -->
+  <section class="view" id="view-lake" aria-labelledby="h-lake">
+    <div class="prose">
+      <p class="kicker">Round zero · No rules</p>
+      <h2 id="h-lake" tabindex="-1">Nobody owns the lake</h2>
+      <p class="lede">Five households fish Lake Wren. Nobody owns it and nobody has made any rules. You run one boat. Each season, choose how much to take and see how long the fish last.</p>
+    </div>
+
+    <div class="panel">
+      <div class="lake-wrap lake-big">
+        <canvas id="lake-hook" aria-hidden="true"></canvas>
+        <div class="lake-badge">Lake: <b class="mono" id="hook-stock">80</b> <span class="mono">/ 100</span></div>
+      </div>
+      <div class="season-head">
+        <h3 id="hook-season">Season 1 of 3</h3>
+        <span class="mono" style="color:var(--muted);font-size:.85rem" id="hook-total">Your catch so far: 0</span>
+      </div>
+      <div class="boats" id="hook-boats"></div>
+      <p class="log" id="hook-log" aria-live="polite">How much will your boat take this season?</p>
+      <div class="choices" id="hook-choices">
+        <button class="btn" data-take="3">Take 3 <small>light</small></button>
+        <button class="btn" data-take="8">Take 8 <small>usual</small></button>
+        <button class="btn" data-take="15">Take 15 <small>heavy</small></button>
+      </div>
+      <div class="debrief" id="hook-debrief" hidden>
+        <h3>Lake Wren is empty</h3>
+        <p>No one here is a villain. Each household did what made sense for itself, because any fish you leave in the water just ends up in someone else's net. Your own restraint changed the ending by a season at most.</p>
+        <p>Ecologist Garrett Hardin called this the <b>tragedy of the commons</b> (1968). He argued that the usual escapes were private ownership or government control. Elinor Ostrom went and looked at real communities instead: alpine meadows in Switzerland, village forests in Japan, irrigation canals in Spain and the Philippines. Many had shared a resource for centuries with neither. In <i>Governing the Commons</i> (1990) she described eight design principles the long-lasting ones had in common. In 2009 she became the first woman to win the Nobel Prize in economics.</p>
+        <p><b>Your job: rebuild Lake Wren.</b> Each mission brings the lake back with one new failure. Pick a fix, watch eight seasons play out, and only then learn the name of the principle you found.</p>
+        <div class="choices">
+          <button class="btn primary" id="go-m1">Start mission 1</button>
+          <button class="btn quiet" id="hook-reset">Play the seasons again</button>
+        </div>
+      </div>
+    </div>
+
+    <details class="how">
+      <summary>How the lake works</summary>
+      <p>The lake holds at most 100 units of fish. After each season's catch, the fish that remain breed. The lake grows back fastest when it's about half full (up to 15 units a season) and slowly when it's nearly full or nearly empty. Below 15 units, there are too few fish to breed back quickly. Every number in this lesson comes from that one rule, so your choices change the results.</p>
+    </details>
+  </section>
+
+  <!-- MISSION (re-rendered) -->
+  <section class="view" id="view-mission" hidden></section>
+
+  <!-- WRAP-UP -->
+  <section class="view" id="view-wrap" hidden></section>
+</main>
+
+<footer class="gutter">
+  <p>Instructional design by <b>Avalynn Circe</b>.</p>
+  <p>Based on Elinor Ostrom, <i>Governing the Commons: The Evolution of Institutions for Collective Action</i> (Cambridge University Press, 1990). Principles are paraphrased. Lake Wren and its households are fictional; the field notes describe cases Ostrom studied.</p>
+</footer>
+
+<script>
+/*DATA*/
+const K = 100, R = 0.6, FLOOR = 15, START = 70, SEASONS = 8;
+const fill = (v) => Array(SEASONS).fill(v);
+
+function simulate(S0, catches, rmult) {
+  let S = S0; const stocks = [S], caught = [];
+  for (let i = 0; i < catches.length; i++) {
+    const c = Math.min(catches[i], S);
+    S -= c;
+    const r = R * (rmult ? rmult[i] : 1);
+    const g = r * S * (1 - S / K) * Math.min(1, S / FLOOR);
+    S = Math.max(0, Math.min(K, S + g));
+    stocks.push(S); caught.push(c);
+  }
+  return { stocks, caught, total: caught.reduce((a, b) => a + b, 0), end: S };
+}
+
+const MISSIONS = [
+  {
+    title: "Strangers on the water",
+    problem: "After the collapse, the five households agree to take 12 fish a season between them, a catch the lake can replace. The fish start to come back. Then word reaches the highway town, and boats nobody recognizes launch at dawn. Every fish the village leaves in the water, an outsider takes home.",
+    base: { c: [20, 22, 24, 26, 28, 30, 32, 34] },
+    options: [
+      { text: "Put up a sign asking everyone, visitors included, to fish lightly.", c: [19, 21, 23, 25, 27, 29, 31, 33], v: "fail",
+        fb: "The sign asks for restraint but gives no one a reason to show it. Villagers cut back a little. Outsiders, who have no stake in next year, kept coming. The village's savings went straight into strangers' boats." },
+      { text: "Agree who may fish here: households on the lake register their boats, and the lake's edges are marked.", c: [20, 12, 12, 12, 12, 12, 12, 12], v: "win",
+        fb: "Once everyone knows who belongs and where the lake ends, restraint pays off: fish left in the water stay for the people who left them. Outsiders can be turned away because there's a clear line to point to." },
+      { text: "Close the lake to everyone for a full year.", c: [0, 28, 30, 32, 34, 36, 38, 40], v: "fail",
+        fb: "The pause worked while it lasted. Reopening put you right back where you started. Nobody had settled who may fish, so even more boats came to share the recovered lake, and the slide began again." }
+    ],
+    p: { name: "Clearly defined boundaries",
+      line: "Who may use the resource, and where the resource begins and ends, are clearly defined.",
+      pattern: "Before limits can work, a commons needs a line around it: who's in, who's out, and what exactly is shared.",
+      field: "For centuries, only citizens of Törbel, a Swiss mountain village, could send cattle to its shared alpine meadows." }
+  },
+  {
+    title: "A rule from somewhere else",
+    problem: "With boundaries in place, the village copies a rule from a handbook written for a big northern lake: every boat takes the same amount, every week of the year. But Lake Wren's fish spawn each spring in the shallow reeds by the inlet, and spring is when the handbook allows the most fishing. Meanwhile the two families who clear the silted inlet every year, which keeps the reeds alive, get the same share as everyone else and are tired of doing it for free.",
+    base: { c: fill(12), r: fill(0.45) },
+    options: [
+      { text: "Keep the handbook rule, but cut everyone's catch by a third.", c: fill(8), r: fill(0.45), v: "partial",
+        fb: "You caught a third less, and the lake still shrank. The trouble was the timing of the rule, not its size. Spring fishing in the reeds still killed next year's fish, and the inlet kept silting up." },
+      { text: "Write a local rule: close the reeds during spring spawning, allow more fishing in autumn, and give the inlet-clearing families a larger share.", c: fill(13), r: fill(1.05), v: "win",
+        fb: "The rule now matches how this lake works. Spawning fish are left alone, so each year's young survive. The families who keep the inlet clear are paid back in fish, so the work keeps getting done. The village even catches a little more than before." },
+      { text: "Adopt the national average catch limit, which is a bit higher.", c: fill(15), r: fill(0.45), v: "fail",
+        fb: "The national figure was built from bigger, deeper lakes. Here it allowed even more fishing during spawning, and the decline sped up." }
+    ],
+    p: { name: "Rules that fit local conditions",
+      line: "Rules about when, where, how and how much to harvest match the local resource, and what people get back is in proportion to what they put in.",
+      pattern: "Borrowed rules break. Good rules are written for this resource, and they reward the people who maintain it.",
+      field: "In Törbel, no one could send more cows to the summer meadows than they could feed through the winter." }
+  },
+  {
+    title: "Rules made by a few",
+    problem: "The new local rules were drafted by the three households with the biggest boats. They set a net size that suits big boats and makes it hard for small ones to catch anything. Nobody asked the two smaller households. They don't see the rules as theirs, so they quietly fish past their share, and the extra catch grows each season.",
+    base: { c: [15, 16, 17, 18, 19, 20, 21, 22] },
+    options: [
+      { text: "Post the rules on a board at the landing and remind everyone to follow them.", c: [15, 16, 17, 17, 18, 19, 20, 21], v: "fail",
+        fb: "Everyone already knew the rules. They didn't think the rules were fair, and a bigger sign doesn't change that. The quiet overfishing went on." },
+      { text: "Form a lake council where every fishing household can propose changes and vote on them.", c: [15, 13, 12, 12, 12, 12, 12, 12], r: [1, 1, 1.05, 1.05, 1.05, 1.05, 1.05, 1.05], v: "win",
+        fb: "Once the small households had a vote, the council replaced the net rule with a mesh size that suits every boat and lets young fish slip through. The overfishing stopped, because people tend to keep rules they helped write." },
+      { text: "Ask a regional fisheries expert to rewrite the rules for everyone.", c: fill(16), v: "partial",
+        fb: "The expert's rules were fairer on paper, so the overfishing shrank. But the households still had no say, the expert didn't know about the reed beds, and a steady trickle of cheating kept the lake drifting down." }
+    ],
+    p: { name: "Collective-choice arrangements",
+      line: "Most of the people affected by the rules can take part in changing them.",
+      pattern: "The people who live under the rules should help make them. They know the resource, and they keep rules they chose.",
+      field: "Irrigators in Valencia's huerta elect their own canal officials and change their rules in general assemblies." }
+  },
+  {
+    title: "Nobody's watching",
+    problem: "The rules are fair now and most people keep them. But catches land at night, at five different docks, and nobody counts them. One household starts taking a few extra. Others notice the lake looking thinner, assume everyone is cheating, and stop holding back too.",
+    base: { c: [12, 13, 14, 16, 18, 21, 24, 27] },
+    options: [
+      { text: "Trust each other. The rules are fair now, so people will follow them.", c: [12, 13, 14, 16, 18, 21, 24, 27], v: "fail",
+        fb: "Fair rules got the village most of the way, but trust needs evidence. With no way to check, a little cheating looked like a lot, and each household decided not to be the only one holding back. The unraveling sped up season by season." },
+      { text: "Take turns: each week two households count catches at the landing, check the lake and report to the council.", c: [12, 13, 13, 12, 12, 12, 12, 12], v: "win",
+        fb: "The watchers are fishers themselves, they answer to the council, and the job rotates so no one carries it alone. Cheating gets noticed early, and honest households can see that everyone else is honest too, so they keep holding back." },
+      { text: "Hire a guard from the city who reports to the county office.", c: [12, 12, 12, 13, 15, 17, 19, 21], v: "partial",
+        fb: "The guard helped at first. But the guard answered to the county instead of the village, didn't know the docks, and could be bought off with a share of the catch. Cheating crept back while the village paid a salary." }
+    ],
+    p: { name: "Monitoring",
+      line: "The people who keep watch over the resource and how it's used are the users themselves, or answer to them.",
+      pattern: "Rules need eyes. The best monitors have a stake in the resource and answer to the people who share it.",
+      field: "On Spanish irrigation canals that take turns, the farmer waiting for the next turn has every reason to watch the one using the water now." }
+  },
+  {
+    title: "Three fish too many",
+    problem: "The watchers catch Tomás with three fish over his share during a hard week. His child has been sick and he couldn't fish for days. The rulebook says any violation means a lifetime ban from the lake. People like Tomás, and nobody is sure what to do. The chart shows what happens if the rule is applied as written.",
+    base: { c: [15, 14, 16, 18, 20, 22, 24, 26] },
+    options: [
+      { text: "Apply the rule as written: Tomás is banned for life.", c: [15, 14, 16, 18, 20, 22, 24, 26], v: "fail",
+        fb: "The punishment was so far out of proportion that people sided with Tomás. Watchers stopped reporting small slips rather than ruin a neighbor, so cheating went unrecorded and grew." },
+      { text: "Let it go. It was only three fish.", c: [15, 16, 18, 20, 22, 24, 25, 26], v: "fail",
+        fb: "Everyone learned that breaking a rule cost nothing. Others started taking a few extra in their own hard weeks, and soon in easy weeks too." },
+      { text: "Use steps: a warning first, then a fine paid in fish, then a suspension for anyone who keeps breaking the rule.", c: [15, 13, 12, 13, 12, 12, 12, 12], v: "win",
+        fb: "Tomás got a warning and kept his place. Everyone saw that slips get noticed and repeat offenses cost more. Small penalties are easy to hand out, so the watchers kept reporting." }
+    ],
+    p: { name: "Graduated sanctions",
+      line: "People who break the rules face penalties that start small and grow with how serious or how frequent the offense is.",
+      pattern: "Penalties start light and climb for repeat or serious offenses. A warning keeps people in the community; the next steps keep them honest.",
+      field: "In some Japanese mountain villages, a first offense in the common forest drew a small fine, sometimes paid in sake, and repeat offenses drew more." }
+  },
+  {
+    title: "The net across the inlet",
+    problem: "Ines and Bao disagree about a net Bao stretched across the mouth of the inlet. Ines says it blocks everyone else's fish. Bao says it's one boat's gear like any other. The rules don't say. The only place to settle it is the county court, three hours away, with a wait of months. While they wait, both families fish however they like, and their friends take sides.",
+    base: { c: [12, 15, 17, 19, 20, 21, 21, 21] },
+    options: [
+      { text: "File with the county court and wait for a ruling.", c: [12, 15, 17, 19, 18, 16, 14, 12], v: "partial",
+        fb: "The court ruled eventually, but months of feuding did the damage first. Both families and their friends ignored the rules while they waited, and the lake took seasons to recover." },
+      { text: "Have the council side with whichever family has more supporters.", c: [12, 14, 16, 18, 20, 22, 23, 24], v: "fail",
+        fb: "Bao's side won the vote, and Ines's side decided the rules no longer protected them. They stopped following them, and the split widened." },
+      { text: "Hold a monthly hearing at the boathouse where respected elders settle disputes quickly and clarify unclear rules.", c: [12, 13, 12, 12, 12, 12, 12, 12], v: "win",
+        fb: "The dispute was heard within weeks. The elders ruled that no net may close more than half the inlet and added it to the rules, so the next argument never started. Quick, cheap hearings keep small conflicts small." }
+    ],
+    p: { name: "Conflict-resolution mechanisms",
+      line: "People have quick, low-cost, local ways to settle disputes among themselves or with officials.",
+      pattern: "Disagreements will come. A commons needs a fast, cheap, nearby place to settle them before they spread.",
+      field: "Valencia's Water Tribunal meets every Thursday outside the cathedral door and settles irrigation disputes on the spot." }
+  },
+  {
+    title: "The license from the capital",
+    problem: "A provincial agency announces that Lake Wren is state property. Village rules have no legal standing, it says, and anyone who buys a state fishing license may fish there. Licensed boats from the city arrive within weeks and point to their papers when the watchers ask them to leave.",
+    base: { c: [12, 18, 22, 26, 30, 34, 36, 38] },
+    options: [
+      { text: "Ignore the agency and keep enforcing the village rules.", c: [12, 18, 22, 26, 30, 34, 36, 38], v: "fail",
+        fb: "The village kept its rules, but the licensed outsiders had the law on their side and wouldn't leave. Every attempt to turn them away became a legal fight the village lost, and the catch climbed out of control." },
+      { text: "Accept the agency's rules and disband the lake council.", c: [20, 22, 25, 28, 30, 30, 30, 30], v: "fail",
+        fb: "The agency had one inspector for two hundred lakes. Without the council there were no watchers, no hearings and no local rules. Open fishing came back, and the lake went the way it went in round zero." },
+      { text: "Ask the agency to formally recognize the council's rules as the lake's official rules, with the village managing the lake.", c: [12, 14, 12, 12, 12, 12, 12, 12], v: "win",
+        fb: "With official recognition, the watchers could turn away licensed boats, and the agency gained a partner instead of a problem. The village kept everything it had built." }
+    ],
+    p: { name: "Recognized right to organize",
+      line: "Outside authorities respect the users' right to design their own rules.",
+      pattern: "Local rules only hold if higher authorities don't override them. A community needs the right to govern itself.",
+      field: "At Alanya on the Turkish coast, fishers rotate the best fishing spots by an annual lottery, and local officials treated the fishers' own arrangement as legitimate." }
+  },
+  {
+    title: "Trouble from upstream",
+    problem: "Lake Wren is one small part of a river. Upstream, fertilizer runoff from a farm cooperative feeds algae that choke the reed beds. A dam shared with two other villages decides how much water reaches the lake, and downstream fishers catch the same fish as they migrate. The lake council's rules stop at the shoreline. Its problems don't.",
+    base: { c: fill(12), r: [1, 0.85, 0.7, 0.55, 0.45, 0.4, 0.35, 0.3] },
+    options: [
+      { text: "Make the lake's own catch limits stricter to make up for it.", c: fill(8), r: [1, 0.85, 0.7, 0.55, 0.45, 0.4, 0.35, 0.3], v: "fail",
+        fb: "The village gave up a third of its catch, and the lake still shrank. No local rule can stop algae coming from upstream or change a dam that belongs to three villages." },
+      { text: "Hand the whole river, Lake Wren included, to a national river authority.", c: [12, 13, 14, 15, 16, 16, 16, 16], r: [1, 0.9, 0.85, 0.85, 0.9, 0.9, 0.9, 0.9], v: "partial",
+        fb: "The authority cut some of the runoff, but it ran hundreds of lakes from far away. Local rules, watchers and hearings faded, and the old problems of cheating and conflict crept back." },
+      { text: "Join a river council: every lake and village sends a representative to handle shared problems like the dam, runoff and migrating fish, while each lake keeps its own rules.", c: fill(12), r: [1, 0.9, 0.9, 0.95, 1, 1, 1, 1], v: "win",
+        fb: "Each problem is now handled at the level where it lives. The river council agreed on dam releases and a planted strip along the farms, and Lake Wren's council still runs the lake. Small units keep their local knowledge, and the larger one handles what crosses their borders." }
+    ],
+    p: { name: "Nested enterprises",
+      line: "When a commons is part of a larger system, rule-making, monitoring, enforcement and conflict resolution are organized in layers, each handling problems at its own scale.",
+      pattern: "Govern in layers. Solve each problem at the smallest level that can handle it, and link the layers for problems that cross borders.",
+      field: "In Spain's huertas, each branch canal has its own community, and those communities join together to run the main canals." }
+  }
+];
+/*ENDDATA*/
+
+const SHORT = ["Boundaries", "Local fit", "Collective choice", "Monitoring", "Graduated sanctions", "Conflict resolution", "Right to organize", "Nested layers"];
+const AUDIT_Q = [
+  "Is it clear who may use it, and what exactly is shared?",
+  "Do the rules fit how this particular resource works, and do contributors get a fair return?",
+  "Can most of the people who use it help change the rules?",
+  "Does someone who answers to the users keep an eye on how it's used?",
+  "Do penalties start small and grow for repeat offenses?",
+  "Is there a quick, cheap way to settle disputes?",
+  "Do outside authorities respect the group's right to set its own rules?",
+  "If it's part of something larger, are decisions made in layers?"
+];
+
+/* ---------- state ---------- */
+let state = { hook: false, solved: [], tried: {}, audit: {} };
+try { const s = JSON.parse(localStorage.getItem("lakewren") || "null"); if (s && Array.isArray(s.solved)) state = Object.assign(state, s); } catch (e) {}
+function save() { try { localStorage.setItem("lakewren", JSON.stringify(state)); } catch (e) {} }
+const reduceMotion = () => window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+const $ = (s, el = document) => el.querySelector(s);
+const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+const r0 = (n) => Math.round(n);
+
+/* ---------- lake renderer ---------- */
+const lakes = new Set();
+function cssVar(name) { return getComputedStyle(document.documentElement).getPropertyValue(name).trim(); }
+let palette = {}, paletteAge = 999;
+function refreshPalette() {
+  palette = { bg: cssVar("--bg"), deep: cssVar("--lake-deep"), shallow: cssVar("--lake-shallow"), fish: cssVar("--fish"), reed: cssVar("--reed"), line: cssVar("--line") };
+  paletteAge = 0;
+}
+class Lake {
+  constructor(canvas, maxFish, stock) {
+    this.c = canvas; this.ctx = canvas.getContext("2d"); this.max = maxFish;
+    this.stock = stock; this.seed = Math.random() * 10;
+    this.fish = Array.from({ length: maxFish }, (_, i) => this.spawn(i));
+    this.fish.forEach((f, i) => { f.a = i < this.target() ? 1 : 0; });
+    this.reeds = Array.from({ length: 26 }, () => ({ t: Math.random(), h: 0.5 + Math.random() * 0.6, lean: (Math.random() - 0.5) * 0.4 }));
+    lakes.add(this); this.resize();
+  }
+  spawn() {
+    const ang = Math.random() * Math.PI * 2, rad = Math.sqrt(Math.random()) * 0.72;
+    return { x: Math.cos(ang) * rad, y: Math.sin(ang) * rad * 0.8, vx: (Math.random() < 0.5 ? -1 : 1) * (0.0012 + Math.random() * 0.0016), ph: Math.random() * 6.28, s: 0.8 + Math.random() * 0.45, a: 0 };
+  }
+  target() { return Math.round(Math.max(0, Math.min(K, this.stock)) / K * this.max); }
+  setStock(v) { this.stock = v; if (reduceMotion()) this.fish.forEach((f, i) => { f.a = i < this.target() ? 1 : 0; }); }
+  resize() {
+    const dpr = Math.min(2, window.devicePixelRatio || 1), w = this.c.clientWidth, h = this.c.clientHeight;
+    if (!w || !h) return;
+    this.c.width = Math.round(w * dpr); this.c.height = Math.round(h * dpr);
+    this.ctx.setTransform(dpr, 0, 0, dpr, 0, 0); this.w = w; this.h = h;
+  }
+  shape(t) { return 1 + 0.05 * Math.sin(3 * t + this.seed) + 0.035 * Math.sin(5 * t + this.seed * 2); }
+  draw(dt) {
+    if (!this.w) { this.resize(); if (!this.w) return; }
+    const { ctx, w, h } = this, cx = w / 2, cy = h / 2, rx = w * 0.46, ry = h * 0.42;
+    ctx.clearRect(0, 0, w, h);
+    ctx.fillStyle = palette.bg; ctx.fillRect(0, 0, w, h);
+    // water
+    ctx.beginPath();
+    for (let i = 0; i <= 64; i++) { const t = i / 64 * Math.PI * 2, k = this.shape(t); const x = cx + Math.cos(t) * rx * k, y = cy + Math.sin(t) * ry * k; i ? ctx.lineTo(x, y) : ctx.moveTo(x, y); }
+    ctx.closePath();
+    const g = ctx.createRadialGradient(cx, cy, 2, cx, cy, Math.max(rx, ry));
+    g.addColorStop(0, palette.deep); g.addColorStop(1, palette.shallow);
+    ctx.fillStyle = g; ctx.fill();
+    ctx.save(); ctx.clip();
+    // fish
+    const tgt = this.target(), still = reduceMotion();
+    this.fish.forEach((f, i) => {
+      const want = i < tgt ? 1 : 0;
+      f.a += (want - f.a) * Math.min(1, dt * 0.004);
+      if (!still) {
+        f.x += f.vx * dt * 0.06; f.ph += dt * 0.004;
+        const lim = 0.8 * this.shape(Math.atan2(f.y, f.x));
+        if (Math.hypot(f.x, f.y / 0.8) > lim) { f.vx *= -1; f.x += f.vx * 4; }
+      }
+      if (f.a < 0.02) return;
+      const px = cx + f.x * rx, py = cy + f.y * ry + Math.sin(f.ph) * 1.5, s = f.s * Math.max(4, Math.min(w, h * 2) / 90), dir = f.vx > 0 ? 1 : -1;
+      ctx.globalAlpha = f.a * 0.92; ctx.fillStyle = palette.fish;
+      ctx.beginPath(); ctx.ellipse(px, py, s * 1.6, s * 0.62, 0, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.moveTo(px - dir * s * 1.4, py); ctx.lineTo(px - dir * s * 2.5, py - s * 0.7); ctx.lineTo(px - dir * s * 2.5, py + s * 0.7); ctx.closePath(); ctx.fill();
+    });
+    ctx.globalAlpha = 1; ctx.restore();
+    // reeds along the lower left shore
+    ctx.strokeStyle = palette.reed; ctx.lineWidth = 1.6; ctx.lineCap = "round";
+    this.reeds.forEach((r) => {
+      const t = Math.PI * (0.62 + r.t * 0.32), k = this.shape(t);
+      const x = cx + Math.cos(t) * rx * k, y = cy + Math.sin(t) * ry * k, len = h * 0.12 * r.h;
+      ctx.beginPath(); ctx.moveTo(x, y + 2); ctx.quadraticCurveTo(x + r.lean * len * 0.5, y - len * 0.5, x + r.lean * len, y - len); ctx.stroke();
+    });
+  }
+}
+let last = performance.now();
+function loop(now) {
+  const dt = Math.min(64, now - last); last = now;
+  if (paletteAge++ > 30) refreshPalette();
+  lakes.forEach((l) => { if (!l.c.isConnected) { lakes.delete(l); return; } if (l.c.offsetParent !== null) l.draw(dt); });
+  requestAnimationFrame(loop);
+}
+refreshPalette();
+window.addEventListener("resize", () => lakes.forEach((l) => l.resize()));
+matchMedia("(prefers-color-scheme: dark)").addEventListener?.("change", refreshPalette);
+new MutationObserver(refreshPalette).observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
+
+/* ---------- strip ---------- */
+function renderStrip(current) {
+  const row = $("#strip");
+  const items = [{ id: "lake", label: "Lake", aria: "Round zero: the lake with no rules", done: state.hook }]
+    .concat(MISSIONS.map((m, i) => ({ id: "m" + (i + 1), label: String(i + 1), aria: "Mission " + (i + 1) + (state.solved.includes(i + 1) ? ": " + m.p.name : ""), done: state.solved.includes(i + 1) })))
+    .concat([{ id: "wrap", label: "Wrap-up", aria: "Wrap-up and recap", done: state.solved.length === 8 }]);
+  row.innerHTML = items.map((it) => `<button class="chip${it.done ? " done" : ""}${it.id === current ? " current" : ""}" data-go="${it.id}" aria-label="${esc(it.aria)}"${it.id === current ? ' aria-current="step"' : ""}>${esc(it.label)}</button>`).join("");
+  $("#strip-count").textContent = "Rules found: " + state.solved.length + " of 8";
+  const cur = row.querySelector(".current"); if (cur) cur.scrollIntoView({ block: "nearest", inline: "nearest" });
+}
+document.addEventListener("click", (e) => { const b = e.target.closest("[data-go]"); if (b) go(b.dataset.go); });
+function go(id) { if (location.hash.slice(1) === id) route(); else location.hash = id; }
+
+/* ---------- hook game ---------- */
+const NEIGHBORS = ["Ines", "Tomás", "Bao", "Marit"], N_TAKE = [8, 12, 15];
+let hook, hookLake;
+function hookReset() {
+  hook = { S: 80, season: 0, mine: 0, takes: [null, null, null, null, null], over: false };
+  if (hookLake) hookLake.setStock(80);
+  $("#hook-debrief").hidden = true; $("#hook-choices").hidden = false;
+  $("#hook-log").textContent = "How much will your boat take this season?";
+  drawHook();
+}
+function drawHook() {
+  $("#hook-stock").textContent = r0(hook.S);
+  $("#hook-season").textContent = hook.over ? "After season " + hook.season : "Season " + (hook.season + 1) + " of 3";
+  $("#hook-total").textContent = "Your catch so far: " + r0(hook.mine);
+  const names = ["You"].concat(NEIGHBORS);
+  $("#hook-boats").innerHTML = names.map((n, i) => `<div class="boat${i ? "" : " you"}"><div class="who">${n}</div><div class="took">${hook.takes[i] == null ? "·" : r0(hook.takes[i])}</div></div>`).join("");
+}
+function hookPlay(p) {
+  if (hook.over) return;
+  const s = hook.season, want = [p].concat(NEIGHBORS.map(() => N_TAKE[s]));
+  const sum = want.reduce((a, b) => a + b, 0), before = hook.S;
+  const scale = sum > before ? before / sum : 1;
+  const got = want.map((x) => x * scale), took = got.reduce((a, b) => a + b, 0);
+  let S = before - took;
+  const g = R * S * (1 - S / K) * Math.min(1, S / FLOOR);
+  S = Math.max(0, S + g);
+  hook.S = S; hook.season++; hook.mine += got[0]; hook.takes = got;
+  hookLake.setStock(S);
+  const why = [
+    "Your four neighbors took 8 each, the usual haul.",
+    "The lake looks thinner. Ines figures any fish she leaves will end up in someone else's net, so she takes 12. Everyone else does the same.",
+    "Everyone rushes for whatever is left."
+  ][s];
+  let msg = `${why} ${r0(took)} fish came out of the lake. `;
+  if (scale < 1) msg += "There weren't enough fish to fill everyone's nets. ";
+  if (S < 1) { msg += "Too few fish are left to breed. The lake is empty."; hook.over = true; }
+  else { msg += `The fish that were left bred back to ${r0(S)}.`; if (hook.season >= 3) hook.over = true; }
+  $("#hook-log").textContent = msg;
+  drawHook();
+  if (hook.over) {
+    $("#hook-choices").hidden = true; $("#hook-debrief").hidden = false;
+    state.hook = true; save(); renderStrip("lake");
+  }
+}
+$("#hook-choices").addEventListener("click", (e) => { const b = e.target.closest("[data-take]"); if (b) hookPlay(+b.dataset.take); });
+$("#hook-reset").addEventListener("click", hookReset);
+$("#go-m1").addEventListener("click", () => go("m1"));
+
+/* ---------- chart ---------- */
+const CW = 340, CH = 178, ML = 30, MR = 12, MT = 12, MB = 30;
+const cx = (i) => ML + i * (CW - ML - MR) / SEASONS, cy = (v) => MT + (1 - v / K) * (CH - MT - MB);
+const pathOf = (arr) => arr.map((v, i) => (i ? "L" : "M") + cx(i).toFixed(1) + " " + cy(v).toFixed(1)).join(" ");
+function chartSVG(base, mine, verdict) {
+  const col = { win: "var(--lake)", partial: "var(--buoy)", fail: "var(--danger)" }[verdict] || "var(--lake)";
+  let s = `<svg viewBox="0 0 ${CW} ${CH}" role="img" aria-label="Line chart of lake health over ${SEASONS} seasons">`;
+  [0, 50, 100].forEach((v) => { s += `<line class="grid" x1="${ML}" x2="${CW - MR}" y1="${cy(v)}" y2="${cy(v)}"/><text class="tick" x="${ML - 6}" y="${cy(v) + 3.5}" text-anchor="end">${v}</text>`; });
+  s += `<line class="floor" x1="${ML}" x2="${CW - MR}" y1="${cy(FLOOR)}" y2="${cy(FLOOR)}"/><text class="floor-label" x="${CW - MR}" y="${cy(FLOOR) - 4}" text-anchor="end">breeding floor</text>`;
+  for (let i = 0; i <= SEASONS; i++) s += `<text class="tick" x="${cx(i)}" y="${CH - 12}" text-anchor="middle">${i}</text>`;
+  s += `<text class="tick" x="${(ML + CW - MR) / 2}" y="${CH}" text-anchor="middle">season</text>`;
+  s += `<path class="base" d="${pathOf(base)}"/>`;
+  if (mine) {
+    s += `<path class="mine" id="mine-path" d="${pathOf(mine)}" style="stroke:${col}"/>`;
+    s += `<circle id="mine-dot" cx="${cx(SEASONS)}" cy="${cy(mine[SEASONS])}" r="4.5" style="fill:${col}"/>`;
+  }
+  return s + "</svg>";
+}
+
+/* ---------- mission ---------- */
+let mLake, playTimer;
+function partsRail(stage) {
+  const steps = [["P", "Problem"], ["A", "Answer"], ["R", "Reasoning"], ["T", "Terms"], ["S", "Syntax"]];
+  return `<ol class="parts" aria-label="PARTS steps">${steps.map(([l, n], i) => `<li class="${i < stage ? "on" : ""}${i === stage ? " now" : ""}"${i === stage ? ' aria-current="step"' : ""}><b>${l}</b>${n}</li>`).join("")}</ol>`;
+}
+function renderMission(n) {
+  clearInterval(playTimer);
+  const m = MISSIONS[n - 1], solved = state.solved.includes(n), tried = state.tried[n] || [];
+  const base = simulate(START, m.base.c, m.base.r);
+  const winIdx = m.options.findIndex((o) => o.v === "win");
+  const el = $("#view-mission");
+  el.innerHTML = `
+    <div class="prose">
+      <p class="kicker">Mission ${n} of 8</p>
+      <h2 id="h-mission" tabindex="-1">${esc(m.title)}</h2>
+    </div>
+    <div id="parts-slot">${partsRail(solved ? 4 : 1)}</div>
+    <div class="panel">
+      <div class="step-label"><span class="letter">P</span><span class="name">Problem</span></div>
+      <p>${esc(m.problem)}</p>
+      <div class="lake-wrap lake-strip"><canvas id="lake-m" aria-hidden="true"></canvas><div class="lake-badge">Season <b class="mono" id="m-season">0</b> · Lake <b class="mono" id="m-stock">${START}</b></div></div>
+      <div class="chart-box" id="chart">${chartSVG(base.stocks, null)}
+        <div class="legend"><span><i></i>If nothing changes: lake at ${r0(base.end)} after ${SEASONS} seasons</span></div>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="step-label"><span class="letter">A</span><span class="name">Answer: which fix do you try?</span></div>
+      <div class="options" role="group" aria-label="Possible fixes">
+        ${m.options.map((o, i) => {
+          const isTried = tried.includes(i) && i !== winIdx, isWin = solved && i === winIdx;
+          return `<button class="opt${isTried ? " tried" : ""}${isWin ? " win" : ""}" data-opt="${i}"${solved ? " disabled" : ""}><span class="key">${"ABC"[i]}</span><span>${esc(o.text)}${isTried ? '<span class="tag">Tried · didn\'t hold</span>' : ""}${isWin ? '<span class="tag">The fix that held</span>' : ""}</span></button>`;
+        }).join("")}
+      </div>
+    </div>
+    <div class="panel" id="outcome" hidden aria-live="polite"></div>
+    <div id="reveal" hidden></div>
+    <div class="nav-row">
+      <button class="btn quiet" data-go="${n === 1 ? "lake" : "m" + (n - 1)}">Back</button>
+      <button class="btn${solved ? " primary" : " quiet"}" id="next-btn" data-go="${n === 8 ? "wrap" : "m" + (n + 1)}">${n === 8 ? "Go to wrap-up" : "Next mission"}</button>
+    </div>`;
+  mLake = new Lake($("#lake-m"), 30, START);
+  el.querySelectorAll("[data-opt]").forEach((b) => b.addEventListener("click", () => choose(n, +b.dataset.opt)));
+  if (solved) showOutcome(n, winIdx, false);
+}
+function choose(n, i) {
+  const m = MISSIONS[n - 1], o = m.options[i];
+  state.tried[n] = Array.from(new Set((state.tried[n] || []).concat(i)));
+  document.querySelectorAll("#view-mission .opt").forEach((b) => b.classList.toggle("picked", +b.dataset.opt === i));
+  showOutcome(n, i, true);
+  if (o.v === "win" && !state.solved.includes(n)) { state.solved.push(n); state.solved.sort((a, b) => a - b); renderStrip("m" + n); }
+  save();
+}
+function showOutcome(n, i, animate) {
+  clearInterval(playTimer);
+  const m = MISSIONS[n - 1], o = m.options[i];
+  const base = simulate(START, m.base.c, m.base.r), mine = simulate(START, o.c, o.r);
+  const vText = { win: "The lake held", partial: "Better, but still slipping", fail: mine.end < FLOOR ? "The lake collapsed" : "The lake kept declining" }[o.v];
+  $("#chart").innerHTML = chartSVG(base.stocks, mine.stocks, o.v) +
+    `<div class="legend"><span><i></i>If nothing changes</span><span><i class="solid" style="border-top-color:${{ win: "var(--lake)", partial: "var(--buoy)", fail: "var(--danger)" }[o.v]}"></i>Your fix: option ${"ABC"[i]}</span></div>`;
+  const out = $("#outcome");
+  out.className = "panel v-" + o.v; out.hidden = false;
+  out.innerHTML = `
+    <div class="step-label"><span class="letter">R</span><span class="name">Reasoning: what happened</span></div>
+    <p class="verdict">${vText}</p>
+    <div class="stats">
+      <div class="stat"><div class="k">Lake after ${SEASONS} seasons, your fix</div><div class="v">${r0(mine.end)} <small>/ 100</small></div></div>
+      <div class="stat"><div class="k">Lake after ${SEASONS} seasons, no fix</div><div class="v">${r0(base.end)} <small>/ 100</small></div></div>
+    </div>
+    <p class="feedback">${esc(o.fb)}</p>
+    ${o.v === "win" ? "" : `<p><button class="btn quiet" id="try-again">Try another fix</button></p>`}`;
+  const ta = $("#try-again");
+  if (ta) ta.addEventListener("click", () => {
+    const b = document.querySelector(`#view-mission .opt[data-opt="${i}"]`);
+    if (b) { b.classList.add("tried"); b.classList.remove("picked"); if (!b.querySelector(".tag")) b.lastElementChild.insertAdjacentHTML("beforeend", '<span class="tag">Tried · didn\'t hold</span>'); }
+    out.hidden = true; const first = document.querySelector("#view-mission .opt:not(.tried)"); if (first) first.focus();
+  });
+  // playback: chart line draws while the lake fills or empties
+  const path = $("#mine-path"), dot = $("#mine-dot");
+  const finish = () => { mLake.setStock(mine.end); $("#m-season").textContent = SEASONS; $("#m-stock").textContent = r0(mine.end); };
+  if (animate && !reduceMotion() && path) {
+    const len = path.getTotalLength(), dur = 2400;
+    path.style.strokeDasharray = len; path.style.strokeDashoffset = len; dot.style.opacity = 0;
+    path.getBoundingClientRect();
+    path.style.transition = `stroke-dashoffset ${dur}ms linear`; path.style.strokeDashoffset = 0;
+    let k = 0; mLake.setStock(START);
+    playTimer = setInterval(() => {
+      k++; mLake.setStock(mine.stocks[k]); $("#m-season").textContent = k; $("#m-stock").textContent = r0(mine.stocks[k]);
+      if (k >= SEASONS) { clearInterval(playTimer); dot.style.transition = "opacity .3s"; dot.style.opacity = 1; }
+    }, dur / SEASONS);
+  } else finish();
+  // reveal Terms and Syntax only after a win
+  const rev = $("#reveal");
+  if (o.v === "win") {
+    $("#parts-slot").innerHTML = partsRail(4);
+    rev.hidden = false;
+    rev.innerHTML = `
+      <div class="term">
+        <div class="step-label"><span class="letter">T</span><span class="name">Terms: the principle you just found</span></div>
+        <div class="num" aria-hidden="true">${n}</div>
+        <h3>${esc(m.p.name)}</h3>
+        <p class="line">${esc(m.p.line)}</p>
+        <div class="syntax">
+          <div class="step-label"><span class="letter">S</span><span class="name">Syntax: the pattern to reuse</span></div>
+          <p class="pattern">${esc(m.p.pattern)}</p>
+          <p class="field"><b>From Ostrom's field cases:</b> ${esc(m.p.field)}</p>
+        </div>
+      </div>`;
+    const nb = $("#next-btn"); nb.classList.add("primary"); nb.classList.remove("quiet");
+    document.querySelectorAll("#view-mission .opt").forEach((b) => { b.disabled = true; if (+b.dataset.opt === i) { b.classList.add("win"); b.classList.remove("tried"); } });
+  } else {
+    $("#parts-slot").innerHTML = partsRail(2);
+    rev.hidden = true;
+  }
+}
+
+/* ---------- wrap-up ---------- */
+const FRIDGE = [
+  { t: "Clearly defined boundaries", fb: "Everyone knows who shares this fridge: the 40 people in the studio. The trouble is how the rules were made, not who's allowed in." },
+  { t: "Collective-choice arrangements", win: true, fb: "Yes. One person wrote the rules and nobody else had a say, so the rules don't fit how people actually eat at work and nobody feels bound by them. Let the fridge users change the rules, perhaps a Friday clean-out that spares labeled food still in date, and you'd likely fix the fit problem (principle 2) at the same time." },
+  { t: "Graduated sanctions", fb: "There aren't any penalties here to grade. Adding penalties to rules people already think are unfair would push even more lunches into desk drawers." },
+  { t: "Nested enterprises", fb: "One fridge in one office doesn't need layers of governance. The problem is closer to home: who made the rules." }
+];
+function renderWrap() {
+  const el = $("#view-wrap"), all = state.solved.length === 8;
+  el.innerHTML = `
+    <div class="prose">
+      <p class="kicker">Wrap-up</p>
+      <h2 id="h-wrap" tabindex="-1">${all ? "Lake Wren is thriving" : "Rules found so far: " + state.solved.length + " of 8"}</h2>
+      <p class="lede">${all ? "You fixed the commons one problem at a time. The village keeps its lake because of rules it made, watches and enforces itself, inside a larger system that lets it." : "You can visit any mission from the strip above. Here are all eight principles, with the ones you've found marked."}</p>
+    </div>
+    <div class="panel">
+      <h3 style="font-size:1.25rem">Ostrom's eight design principles</h3>
+      <ol class="recap">
+        ${MISSIONS.map((m, i) => `<li class="${state.solved.includes(i + 1) ? "found" : ""}"><span class="n">${i + 1}</span><div><div class="t">${esc(m.p.name)}</div><div class="d">${esc(m.p.line)}</div>${state.solved.includes(i + 1) ? "" : `<div class="d"><a href="#m${i + 1}">Find it in mission ${i + 1}</a></div>`}</div></li>`).join("")}
+      </ol>
+    </div>
+    <div class="panel" id="fridge">
+      <div class="step-label"><span class="letter">?</span><span class="name">One more commons: the office fridge</span></div>
+      <p>A design studio of 40 people shares one kitchen fridge. The office manager wrote the fridge rules alone: everything is thrown out at 5 pm every Friday, no exceptions. Nobody else was asked. Now people hide lunches in their desk drawers, good food gets tossed every week, and the posted rules are mostly ignored.</p>
+      <p><b>Which principle would you fix first?</b></p>
+      <div class="options" role="group" aria-label="Principles">
+        ${FRIDGE.map((f, i) => `<button class="opt" data-fridge="${i}"><span class="key">${"ABCD"[i]}</span><span>${esc(f.t)}</span></button>`).join("")}
+      </div>
+      <p class="feedback" id="fridge-fb" hidden aria-live="polite"></p>
+    </div>
+    <div class="panel">
+      <div class="step-label"><span class="letter">✓</span><span class="name">Audit a commons you belong to</span></div>
+      <p>Think of something you share with other people: a shared kitchen, a community garden, a group chat, an open-source project, a neighborhood. For each principle, choose how well it holds.</p>
+      <div class="audit">
+        ${AUDIT_Q.map((q, i) => `<div class="audit-row"><fieldset><legend><b>${i + 1}. ${SHORT[i]}.</b> ${esc(q)}</legend>
+          <div class="seg">${["Yes", "Partly", "No"].map((a) => `<label><input type="radio" id="audit-${i}-${a}" name="audit-${i}" value="${a}"${state.audit[i] === a ? " checked" : ""}><span>${a}</span></label>`).join("")}</div>
+        </fieldset></div>`).join("")}
+      </div>
+      <p class="audit-out" id="audit-out" aria-live="polite"></p>
+    </div>
+    <div class="nav-row"><button class="btn quiet" data-go="m8">Back to mission 8</button><button class="btn quiet" data-go="lake">Back to the start</button></div>`;
+  el.querySelectorAll("[data-fridge]").forEach((b) => b.addEventListener("click", () => {
+    const f = FRIDGE[+b.dataset.fridge], fb = $("#fridge-fb");
+    el.querySelectorAll("[data-fridge]").forEach((x) => x.classList.remove("picked", "win", "tried"));
+    b.classList.add(f.win ? "win" : "tried");
+    fb.parentElement.className = "panel " + (f.win ? "v-win" : "v-fail");
+    fb.hidden = false; fb.textContent = f.fb;
+  }));
+  el.querySelectorAll('input[type="radio"]').forEach((r) => r.addEventListener("change", () => { state.audit[+r.name.split("-")[1]] = r.value; save(); auditResult(); }));
+  auditResult();
+}
+function auditResult() {
+  const out = $("#audit-out"), answered = Object.keys(state.audit).length;
+  if (!answered) { out.textContent = "Answer a few rows to see where to start."; return; }
+  let pick = -1;
+  for (let i = 0; i < 8; i++) if (state.audit[i] === "No") { pick = i; break; }
+  if (pick < 0) for (let i = 0; i < 8; i++) if (state.audit[i] === "Partly") { pick = i; break; }
+  if (pick < 0) { out.textContent = answered < 8 ? "So far, so strong. Keep going through the list." : "Every principle holds. This commons is built to last."; return; }
+  out.innerHTML = `<b>Start with principle ${pick + 1}: ${esc(MISSIONS[pick].p.name)}.</b> ${esc(MISSIONS[pick].p.pattern)} What is one change your group could make this month?`;
+}
+
+/* ---------- routing ---------- */
+function show(id) { ["view-lake", "view-mission", "view-wrap"].forEach((v) => { $("#" + v).hidden = v !== id; }); }
+let firstRoute = true;
+function route() {
+  const h = location.hash.slice(1);
+  const mm = /^m([1-8])$/.exec(h);
+  if (mm) { renderMission(+mm[1]); show("view-mission"); renderStrip(h); }
+  else if (h === "wrap") { renderWrap(); show("view-wrap"); renderStrip("wrap"); }
+  else { clearInterval(playTimer); show("view-lake"); renderStrip("lake"); hookLake && hookLake.resize(); }
+  if (!firstRoute) {
+    const top = $("#main").getBoundingClientRect().top + window.scrollY - 90;
+    window.scrollTo({ top: Math.max(0, top), behavior: reduceMotion() ? "auto" : "smooth" });
+    const hd = document.querySelector("main .view:not([hidden]) h2"); if (hd) hd.focus({ preventScroll: true });
+  }
+  firstRoute = false;
+  lakes.forEach((l) => l.resize());
+}
+window.addEventListener("hashchange", route);
+
+hookLake = new Lake($("#lake-hook"), 44, 80);
+hookReset();
+route();
+requestAnimationFrame(loop);
+</script>
+
+</body></html>

@@ -1,0 +1,731 @@
+<!doctype html><html><head><meta charset="utf-8"><title>The Kettle Street Fund</title><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: one narrow column; a sticky strip of stops on top; every mission shows the street's twelve houses filling with giving, month by month, over a chart of the street's average. */
+:root {
+  --bg: #F1EEF5; --surface: #FCFBFE; --ink: #241B33; --muted: #625A74; --line: #D8D1E3;
+  --accent: #9B2F6B; --on-accent: #FFFFFF; --accent-soft: #F6E3EE;
+  --hi: #F3C24E; --hi-soft: #FBEFCC; --hi-ink: #7A5600; --hi-on: #2E2100;
+  --good: #16806A; --good-soft: #D6EDE6; --danger: #C24A1C; --danger-soft: #F8E1D6;
+  --give: #1E9C7E; --house: #E6E0EE; --roof: #B9AECB; --coin: #E3A92C;
+  --font-display: "Bricolage Grotesque", "Avenir Next", "Segoe UI", system-ui, sans-serif;
+  --font-body: "Atkinson Hyperlegible", Verdana, system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #15111D; --surface: #1D1828; --ink: #EAE5F2; --muted: #A49BB6; --line: #342C44;
+    --accent: #E77BB5; --on-accent: #15111D; --accent-soft: #3A1E31;
+    --hi: #F3C24E; --hi-soft: #3A3018; --hi-ink: #F3C24E; --hi-on: #2E2100;
+    --good: #5FCFB2; --good-soft: #163A31; --danger: #F08A5D; --danger-soft: #3C2118;
+    --give: #45C2A2; --house: #2A2338; --roof: #4C4160; --coin: #F3C24E;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #15111D; --surface: #1D1828; --ink: #EAE5F2; --muted: #A49BB6; --line: #342C44;
+  --accent: #E77BB5; --on-accent: #15111D; --accent-soft: #3A1E31;
+  --hi: #F3C24E; --hi-soft: #3A3018; --hi-ink: #F3C24E; --hi-on: #2E2100;
+  --good: #5FCFB2; --good-soft: #163A31; --danger: #F08A5D; --danger-soft: #3C2118;
+  --give: #45C2A2; --house: #2A2338; --roof: #4C4160; --coin: #F3C24E;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body {
+  background: var(--bg); color: var(--ink);
+  font-family: var(--font-body); font-size: 17px; line-height: 1.55;
+  -webkit-text-size-adjust: 100%;
+}
+body::before {
+  content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px);
+  z-index: 10; background: var(--bg);
+}
+.gutter {
+  max-width: 800px; margin: 0 auto;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+h1, h2, h3 { font-family: var(--font-display); text-wrap: balance; margin: 0; }
+p { margin: 0; }
+button { font: inherit; color: inherit; }
+:focus-visible { outline: 3px solid var(--hi); outline-offset: 2px; border-radius: 6px; }
+.mono { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+.kicker { font-family: var(--font-mono); font-size: 0.74rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+
+.masthead { padding-block: 36px 18px; display: grid; gap: 10px; }
+.masthead h1 { font-size: clamp(2.4rem, 8.6vw, 4.2rem); font-weight: 800; line-height: 0.95; letter-spacing: -0.03em; font-variation-settings: "opsz" 96; }
+.masthead h1 span { color: var(--accent); }
+.masthead .sub { color: var(--muted); max-width: 60ch; }
+
+.strip { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: var(--bg); border-bottom: 1px solid var(--line); }
+.strip .gutter { padding-block: 10px; display: grid; gap: 6px; }
+.strip-row { display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; padding: 3px 2px; }
+.strip-row::-webkit-scrollbar { display: none; }
+.chip {
+  flex: 0 0 auto; min-width: 40px; height: 40px; padding: 0 12px; border-radius: 999px;
+  border: 1.5px solid var(--line); background: var(--surface); font-family: var(--font-mono);
+  font-size: 0.85rem; font-weight: 500; color: var(--muted); cursor: pointer;
+  display: inline-flex; align-items: center; justify-content: center;
+}
+.chip:hover { border-color: var(--accent); color: var(--ink); }
+.chip.done { background: var(--hi); border-color: var(--hi); color: var(--hi-on); }
+.chip.current { border-color: var(--accent); border-width: 2.5px; color: var(--ink); }
+.chip.done.current { color: var(--hi-on); box-shadow: 0 0 0 2px var(--bg), 0 0 0 4px var(--accent); }
+.strip-meta { font-size: 0.82rem; color: var(--muted); display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+
+main { padding-block: 26px 40px; }
+.view { display: grid; gap: 22px; }
+.view h2 { font-size: clamp(1.7rem, 5.4vw, 2.4rem); font-weight: 700; line-height: 1.05; letter-spacing: -0.02em; }
+.view h2:focus { outline: none; }
+.lede { font-size: 1.08rem; max-width: 62ch; }
+.prose { display: grid; gap: 12px; max-width: 64ch; }
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 18px; display: grid; gap: 14px; min-width: 0; }
+.muted { color: var(--muted); }
+.small { font-size: 0.88rem; }
+
+.btn { border: 1.5px solid var(--accent); background: var(--surface); color: var(--ink); border-radius: 10px; padding: 10px 16px; cursor: pointer; font-weight: 700; min-height: 44px; }
+.btn:hover { background: var(--accent-soft); }
+.btn.primary { background: var(--accent); color: var(--on-accent); border-color: var(--accent); }
+.btn.primary:hover { filter: brightness(1.08); }
+.btn.quiet { border-color: var(--line); font-weight: 400; }
+.btn small { font-weight: 400; opacity: 0.8; }
+.btn:disabled { opacity: 0.45; cursor: not-allowed; }
+.choices { display: flex; flex-wrap: wrap; gap: 8px; }
+.log { min-height: 3.2em; }
+.debrief { border-top: 1px dashed var(--line); padding-top: 16px; display: grid; gap: 12px; }
+.debrief h3 { font-size: 1.5rem; color: var(--danger); }
+details.how { border: 1px solid var(--line); border-radius: 12px; padding: 10px 14px; background: var(--surface); }
+details.how summary { cursor: pointer; font-weight: 700; }
+details.how p { margin-top: 8px; color: var(--muted); max-width: 64ch; }
+
+.parts { display: flex; flex-wrap: wrap; gap: 6px; list-style: none; padding: 0; margin: 0; }
+.parts li { font-size: 0.78rem; padding: 4px 9px; border-radius: 999px; border: 1px solid var(--line); color: var(--muted); display: inline-flex; gap: 6px; align-items: center; }
+.parts li b { font-family: var(--font-mono); font-weight: 500; }
+.parts li.on { border-color: var(--ink); color: var(--ink); }
+.parts li.now { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+.step-label { display: flex; gap: 10px; align-items: center; }
+.step-label .letter { font-family: var(--font-mono); font-weight: 500; width: 28px; height: 28px; border-radius: 50%; background: var(--ink); color: var(--bg); display: inline-flex; align-items: center; justify-content: center; font-size: 0.85rem; flex: 0 0 auto; }
+.step-label .name { font-family: var(--font-display); font-weight: 700; font-size: 1.1rem; }
+
+.options { display: grid; gap: 8px; }
+.opt { text-align: left; border: 1.5px solid var(--line); background: var(--surface); border-radius: 12px; padding: 13px 15px; cursor: pointer; display: grid; grid-template-columns: auto 1fr; gap: 12px; align-items: start; }
+.opt:hover:not(:disabled) { border-color: var(--accent); }
+.opt .key { font-family: var(--font-mono); font-weight: 500; color: var(--muted); padding-top: 1px; }
+.opt.tried { border-style: dashed; }
+.opt.picked { border-color: var(--ink); border-width: 2px; }
+.opt.win { border-color: var(--good); background: var(--good-soft); }
+.opt:disabled { cursor: default; }
+
+.controls { display: grid; gap: 16px; }
+.control { display: grid; gap: 6px; min-width: 0; }
+.control-label { font-weight: 700; display: flex; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
+.control-label small { font-weight: 400; color: var(--muted); }
+.seg { display: flex; flex-wrap: wrap; border: 1.5px solid var(--line); border-radius: 10px; overflow: hidden; width: max-content; max-width: 100%; }
+.seg label { position: relative; flex: 1 0 auto; }
+.seg input { position: absolute; opacity: 0; inset: 0; margin: 0; cursor: pointer; }
+.seg span { display: block; padding: 8px 13px; font-size: 0.88rem; border-right: 1px solid var(--line); text-align: center; height: 100%; }
+.seg label:last-child span { border-right: 0; }
+.seg input:checked + span { background: var(--ink); color: var(--bg); }
+.seg input:focus-visible + span { outline: 3px solid var(--hi); outline-offset: -3px; }
+.seg input:disabled + span { opacity: 0.4; }
+.toggle { display: grid; grid-template-columns: auto 1fr; gap: 12px; align-items: start; padding: 12px 14px; border: 1.5px solid var(--line); border-radius: 12px; cursor: pointer; }
+.toggle:has(input:checked) { border-color: var(--accent); background: var(--accent-soft); }
+.toggle input { width: 22px; height: 22px; margin: 2px 0 0; accent-color: var(--accent); }
+.toggle b { display: block; }
+.toggle small { color: var(--muted); font-size: 0.86rem; display: block; }
+.range { width: 100%; accent-color: var(--accent); min-height: 32px; }
+
+.v-win { --v: var(--good); --v-soft: var(--good-soft); }
+.v-partial { --v: var(--hi-ink); --v-soft: var(--hi-soft); }
+.v-fail { --v: var(--danger); --v-soft: var(--danger-soft); }
+.verdict { display: inline-flex; align-items: center; gap: 8px; font-weight: 700; color: var(--v); }
+.verdict::before { content: ""; width: 10px; height: 10px; border-radius: 50%; background: var(--v); }
+.feedback { background: var(--v-soft); border-radius: 10px; padding: 12px 14px; display: grid; gap: 8px; }
+.meters { display: grid; gap: 12px; }
+.meter { display: grid; gap: 5px; }
+.meter-top { display: flex; justify-content: space-between; gap: 10px; font-size: 0.92rem; }
+.meter-top .val { font-family: var(--font-mono); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.meter-top .val small { color: var(--muted); }
+.meter .bar { position: relative; height: 10px; border-radius: 5px; background: var(--line); }
+.meter .bar i { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 5px; background: var(--mv); transition: width .6s ease; }
+.meter .bar b { position: absolute; top: -4px; bottom: -4px; width: 2px; background: var(--ink); }
+.meter.pass { --mv: var(--good); }
+.meter.miss { --mv: var(--danger); }
+.meter.idle { --mv: var(--muted); }
+.meter .why { font-size: 0.86rem; color: var(--muted); }
+
+.term { border: 2px dashed var(--hi); border-radius: 16px; padding: 20px; background: var(--hi-soft); display: grid; gap: 10px; }
+.term .num { font-family: var(--font-display); font-weight: 800; font-size: 3rem; line-height: 0.8; color: var(--hi-ink); }
+.term h3 { font-size: clamp(1.4rem, 4.6vw, 1.9rem); line-height: 1.1; letter-spacing: -0.01em; }
+.term .line { font-size: 1.05rem; }
+.syntax { border-top: 1px solid var(--line); padding-top: 14px; display: grid; gap: 10px; }
+.pattern { font-family: var(--font-display); font-weight: 500; font-size: 1.15rem; line-height: 1.35; }
+.field { color: var(--muted); font-size: 0.95rem; }
+.field b { color: var(--ink); }
+.nav-row { display: flex; flex-wrap: wrap; gap: 8px; justify-content: space-between; }
+
+.recap { list-style: none; padding: 0; margin: 0; display: grid; gap: 8px; }
+.recap li { display: grid; grid-template-columns: 34px 1fr; gap: 12px; align-items: start; padding: 10px 0; border-bottom: 1px solid var(--line); }
+.recap li:last-child { border-bottom: 0; }
+.recap .n { width: 34px; height: 34px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-family: var(--font-mono); font-weight: 500; border: 1.5px solid var(--line); color: var(--muted); }
+.recap li.found .n { background: var(--hi); border-color: var(--hi); color: var(--hi-on); }
+.recap .t { font-weight: 700; }
+.recap .d { color: var(--muted); font-size: 0.95rem; }
+footer { border-top: 1px solid var(--line); padding-block: 22px 40px; color: var(--muted); font-size: 0.88rem; display: grid; gap: 6px; }
+footer b { color: var(--ink); }
+footer ul { margin: 0; padding-left: 1.1em; display: grid; gap: 3px; }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+@media (min-width: 640px) { .panel { padding: 22px; } }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+
+.street { width: 100%; height: auto; display: block; }
+.street .body { fill: var(--house); }
+.street .roof { fill: var(--roof); }
+.street .fill { fill: var(--give); transition: height .3s ease, y .3s ease; }
+.street .you .body { stroke: var(--accent); stroke-width: 2.5; }
+.street .lbl { fill: var(--muted); font-family: var(--font-mono); font-size: 10px; }
+.street .amt { fill: var(--ink); font-family: var(--font-mono); font-size: 11px; font-weight: 500; }
+.street .coin { fill: var(--coin); }
+.street .coin-t { fill: #2E2100; font-family: var(--font-mono); font-size: 9px; font-weight: 500; }
+.street .ground { stroke: var(--line); stroke-width: 2; }
+.street-head { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+.street-head h3 { font-size: 1.15rem; }
+.chart-box { min-width: 0; }
+.chart-box svg { display: block; width: 100%; height: auto; overflow: visible; }
+.chart-box .grid { stroke: var(--line); stroke-width: 1; }
+.chart-box .tick { fill: var(--muted); font-family: var(--font-mono); font-size: 10px; }
+.chart-box .data { fill: var(--ink); }
+.chart-box .pred { fill: none; stroke: var(--muted); stroke-width: 2; stroke-dasharray: 5 5; }
+.chart-box .model { fill: none; stroke: var(--give); stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
+.chart-box .model-dot { fill: var(--give); }
+.legend { display: flex; flex-wrap: wrap; gap: 14px; font-size: 0.82rem; color: var(--muted); margin-top: 6px; }
+.legend span { display: inline-flex; align-items: center; gap: 6px; }
+.legend i { display: inline-block; width: 20px; height: 0; border-top: 3px solid var(--give); }
+.legend i.dash { border-top: 2px dashed var(--muted); }
+.legend i.dot { width: 8px; height: 8px; border: 0; border-radius: 50%; background: var(--ink); }
+.predict { display: grid; gap: 10px; }
+.triangle { width: 100%; max-width: 380px; height: auto; display: block; margin: 0 auto; }
+.triangle .node { fill: var(--accent-soft); stroke: var(--accent); stroke-width: 1.5; }
+.triangle .nt { fill: var(--ink); font-family: var(--font-display); font-weight: 700; font-size: 14px; }
+.triangle .edge { stroke: var(--accent); stroke-width: 2; fill: none; }
+.triangle .core { fill: var(--hi-soft); stroke: var(--hi-ink); stroke-width: 1.5; }
+.compare { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+.compare div { border: 1px solid var(--line); border-radius: 12px; padding: 12px; display: grid; gap: 6px; min-width: 0; }
+.compare h4 { margin: 0; font-family: var(--font-display); font-size: 1rem; }
+.compare ul { margin: 0; padding-left: 1.1em; font-size: 0.9rem; display: grid; gap: 4px; }
+.audit-out { background: var(--accent-soft); border-radius: 10px; padding: 12px 14px; }
+@media (max-width: 520px) { .compare { grid-template-columns: minmax(0, 1fr); } }
+</style>
+
+<header class="masthead gutter">
+  <p class="kicker">An interactive lesson · Elinor Ostrom's behavioral theory of the individual</p>
+  <h1>The Kettle Street <span>Fund</span></h1>
+  <p class="sub">Twelve households, one shared pot, and a question economists got wrong for decades: what are people actually like when cooperating pays off for everyone but costs each of us a little?</p>
+</header>
+
+<nav class="strip" aria-label="Lesson progress">
+  <div class="gutter">
+    <div class="strip-row" id="strip"></div>
+    <div class="strip-meta"><span id="strip-count">Ideas found: 0 of 5</span><span>Structured with the PARTS Method</span></div>
+  </div>
+</nav>
+
+<main class="gutter" id="main">
+  <section class="view" id="view-start" aria-labelledby="h-start">
+    <div class="prose">
+      <p class="kicker">Round zero · You live here</p>
+      <h2 id="h-start" tabindex="-1">Twelve houses, one pot</h2>
+      <p class="lede">Each month, every household on Kettle Street gets $10 to keep or put in the street fund. Every dollar in the fund buys $3.60 of repairs that all twelve households share. So a dollar you put in comes back to you as 30 cents, and gives 30 cents to each of your eleven neighbors.</p>
+    </div>
+    <div class="panel">
+      <div class="street-head"><h3 id="hook-month">Before month 1</h3><span class="mono muted small" id="hook-earn">You've earned $0</span></div>
+      <svg class="street" id="street-hook" viewBox="0 0 360 170" role="img" aria-label="The twelve houses of Kettle Street and what each gave this month"></svg>
+      <div class="predict" id="hook-predict">
+        <p><b>First, a guess.</b> In month 1, how much do you think your eleven neighbors will put in, on average?</p>
+        <div class="choices">
+          <button class="btn" data-guess="0">About $0</button>
+          <button class="btn" data-guess="5">About $5</button>
+          <button class="btn" data-guess="10">About $10</button>
+        </div>
+      </div>
+      <div id="hook-play" hidden>
+        <p class="log" id="hook-log" aria-live="polite">How much will you put in this month?</p>
+        <div class="choices" id="hook-choices">
+          <button class="btn" data-give="0">Put in $0</button>
+          <button class="btn" data-give="5">Put in $5</button>
+          <button class="btn" data-give="10">Put in $10</button>
+        </div>
+      </div>
+      <div class="debrief" id="hook-debrief" hidden>
+        <div class="chart-box" id="hook-chart"></div>
+        <h3>The fund is fading, and the textbook was wrong twice</h3>
+        <p>The standard rational-choice prediction is $0 from everyone, every month: each dollar you put in returns only 30 cents to you, so a purely self-interested person keeps it all. Real people don't do that. In hundreds of experiments like this one, people start by giving roughly half. But the hopeful prediction fails too, because giving slides month after month.</p>
+        <p>In her 1998 presidential address to the American Political Science Association, Elinor Ostrom argued that we need a behavioral theory of the individual to explain both facts: people who are boundedly rational, who learn, who use norms like reciprocity, and who are not all alike.</p>
+        <p><b>Your job: figure out who lives on Kettle Street, and what keeps their fund alive.</b> Each mission gives you levers to pull. The name of each idea comes only after you find it.</p>
+        <div class="choices"><button class="btn primary" data-go="m1">Start mission 1</button><button class="btn quiet" id="hook-reset">Play again</button></div>
+      </div>
+    </div>
+    <details class="how">
+      <summary>How Kettle Street works</summary>
+      <p>Each household follows a simple rule. Conditional cooperators give a bit less than they expect others to give, and update that expectation each month from what they saw. Free riders give nothing unless something changes their incentives. Some cooperators are also willing to pay to fine free riders, when fines are allowed. Talking, visible records, an open-ended future and agreed rules change these rules in the ways that experiments by Ostrom and others have reported. The numbers are a simplified teaching model: they follow the direction of the research findings, not their exact values.</p>
+    </details>
+  </section>
+
+  <section class="view" id="view-mission" hidden></section>
+  <section class="view" id="view-wrap" hidden></section>
+</main>
+
+<footer class="gutter">
+  <p>Instructional design by <b>Avalynn Circe</b>.</p>
+  <p>Kettle Street is fictional. Ideas are paraphrased from these sources:</p>
+  <ul>
+    <li>Elinor Ostrom, "A Behavioral Approach to the Rational Choice Theory of Collective Action," presidential address, <i>American Political Science Review</i> (1998).</li>
+    <li>Elinor Ostrom, James Walker and Roy Gardner, "Covenants With and Without a Sword: Self-Governance Is Possible," <i>American Political Science Review</i> (1992).</li>
+    <li>Elinor Ostrom, Roy Gardner and James Walker, <i>Rules, Games, and Common-Pool Resources</i> (1994).</li>
+    <li>Elinor Ostrom, "Collective Action and the Evolution of Social Norms," <i>Journal of Economic Perspectives</i> (2000).</li>
+    <li>Urs Fischbacher, Simon Gächter and Ernst Fehr, "Are People Conditionally Cooperative?" <i>Economics Letters</i> (2001).</li>
+    <li>Juan-Camilo Cárdenas, John Stranlund and Cleve Willis, "Local Environmental Control and Institutional Crowding-Out," <i>World Development</i> (2000).</li>
+  </ul>
+</footer>
+
+<script>
+const $ = (s, el = document) => el.querySelector(s);
+const $$ = (s, el = document) => Array.from(el.querySelectorAll(s));
+const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+const r0 = (n) => Math.round(n);
+const reduceMotion = () => window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+function makeStore(key, init) {
+  let s = init;
+  try { const v = JSON.parse(localStorage.getItem(key) || "null"); if (v && typeof v === "object") s = Object.assign(init, v); } catch (e) {}
+  return { s, save() { try { localStorage.setItem(key, JSON.stringify(s)); } catch (e) {} } };
+}
+const PARTS = [["P", "Problem"], ["A", "Answer"], ["R", "Reasoning"], ["T", "Terms"], ["S", "Syntax"]];
+function partsRail(stage) {
+  return `<ol class="parts" aria-label="PARTS steps">${PARTS.map(([l, n], i) => `<li class="${i < stage ? "on" : ""}${i === stage ? " now" : ""}"${i === stage ? ' aria-current="step"' : ""}><b>${l}</b>${n}</li>`).join("")}</ol>`;
+}
+const stepLabel = (l, name) => `<div class="step-label"><span class="letter">${l}</span><span class="name">${name}</span></div>`;
+function termCard(n, p, fieldLabel) {
+  return `<div class="term">
+    ${stepLabel("T", "Terms: the idea you just found")}
+    <div class="num" aria-hidden="true">${n}</div>
+    <h3>${esc(p.name)}</h3>
+    <p class="line">${esc(p.line)}</p>
+    <div class="syntax">
+      ${stepLabel("S", "Syntax: the pattern to reuse")}
+      <p class="pattern">${esc(p.pattern)}</p>
+      <p class="field"><b>${esc(fieldLabel)}</b> ${esc(p.field)}</p>
+    </div>
+  </div>`;
+}
+/* m: {label, value, unit, target, better: "high"|"low", max, why} ; value null = not run yet */
+function meterHTML(m) {
+  const max = m.max == null ? 100 : m.max, min = m.min || 0, run = m.value != null;
+  const pass = run && (m.better === "low" ? m.value <= m.target : m.value >= m.target);
+  const pct = (v) => Math.max(0, Math.min(100, (v - min) / (max - min) * 100));
+  const w = run ? pct(m.value) : 0;
+  const tgt = (m.better === "low" ? "at most " : "at least ") + m.target + (m.unit || "");
+  return `<div class="meter ${run ? (pass ? "pass" : "miss") : "idle"}">
+    <div class="meter-top"><span>${esc(m.label)}</span><span class="val">${run ? r0(m.value) + (m.unit || "") : "·"} <small>goal ${tgt}</small></span></div>
+    <div class="bar" role="img" aria-label="${esc(m.label)}: ${run ? r0(m.value) + (m.unit || "") : "not run yet"}, goal ${tgt}"><i style="width:${w}%"></i><b style="left:calc(${pct(m.target)}% - 1px)"></b></div>
+    ${run && !pass && m.why ? `<div class="why">${esc(m.why)}</div>` : ""}
+  </div>`;
+}
+const meterPass = (m) => m.value != null && (m.better === "low" ? m.value <= m.target : m.value >= m.target);
+function segHTML(name, opts, value, disabled) {
+  return `<div class="seg" role="radiogroup">${opts.map(([v, label]) => `<label><input type="radio" id="${name}-${v}" name="${name}" value="${v}"${String(value) === String(v) ? " checked" : ""}${disabled ? " disabled" : ""}><span>${esc(label)}</span></label>`).join("")}</div>`;
+}
+function toggleHTML(id, title, sub, checked) {
+  return `<label class="toggle" for="${id}"><input type="checkbox" id="${id}"${checked ? " checked" : ""}><span><b>${esc(title)}</b>${sub ? `<small>${esc(sub)}</small>` : ""}</span></label>`;
+}
+function renderStrip(items, current, countText) {
+  const row = $("#strip");
+  row.innerHTML = items.map((it) => `<button class="chip${it.done ? " done" : ""}${it.id === current ? " current" : ""}" data-go="${it.id}" aria-label="${esc(it.aria)}"${it.id === current ? ' aria-current="step"' : ""}>${esc(it.label)}</button>`).join("");
+  $("#strip-count").textContent = countText;
+  const cur = row.querySelector(".current"); if (cur) cur.scrollIntoView({ block: "nearest", inline: "nearest" });
+}
+function go(id) { if (location.hash.slice(1) === id) window.dispatchEvent(new HashChangeEvent("hashchange")); else location.hash = id; }
+document.addEventListener("click", (e) => { const b = e.target.closest("[data-go]"); if (b) go(b.dataset.go); });
+let firstRoute = true;
+function afterRoute() {
+  if (!firstRoute) {
+    const top = $("#main").getBoundingClientRect().top + window.scrollY - 90;
+    window.scrollTo({ top: Math.max(0, top), behavior: reduceMotion() ? "auto" : "smooth" });
+    const hd = document.querySelector("main .view:not([hidden]) h2"); if (hd) hd.focus({ preventScroll: true });
+  }
+  firstRoute = false;
+}
+function showView(id) { $$("main > .view").forEach((v) => { v.hidden = v.id !== id; }); }
+const sleep = (ms) => new Promise((r) => setTimeout(r, reduceMotion() ? 0 : ms));
+
+/* ---------- the street model (teaching model) ---------- */
+const N = 12, MPCR = 0.3;
+const JIT = [0.05, -0.05, 0.03, -0.03, 0.04, -0.04, 0.02, -0.02, 0.01, -0.01, 0.06, -0.06];
+const DATA = [52, 47, 43, 39, 35, 31, 27, 23, 19, 12];
+function pop(nE, nP) { const t = []; for (let i = 0; i < N; i++) t.push(i < nP ? "P" : i < N - nE ? "C" : "E"); return t; }
+function simulate(cfg) {
+  cfg = Object.assign({ T: 10, k: 0.9, b0: 0.75, lam: 0.3, talk: "none", rep: false, openEnd: false, sanction: false, agree: false, fine: 2, city: false, newcomers: false, fixed: false, player: null }, cfg);
+  const T = cfg.T, talkB = cfg.talk !== "none" || cfg.agree;
+  const A = cfg.types.map((t, i) => ({ t, k: t === "E" ? 0 : Math.min(1.05, cfg.k + JIT[i]), b: talkB ? 0.92 : cfg.b0, fined: 0, earn: 0 }));
+  const rounds = [], stopAt = cfg.player ? cfg.player.length : T;
+  for (let t = 0; t < stopAt; t++) {
+    const rem = T - t;
+    const reset = cfg.talk === "every" ? (cfg.city ? 0.75 : 0.9) : cfg.agree ? 0.9 : 0;
+    A.forEach((a) => { if (a.t === "C" || a.t === "P") a.b = Math.max(a.b, reset); });
+    const coop = A.filter((a) => a.t === "C" || a.t === "P");
+    const norm = coop.reduce((s, a) => s + a.b, 0) / coop.length;
+    const c = A.map((a) => {
+      let x;
+      if (a.t === "Y") x = cfg.player[t];
+      else if (a.t !== "E") {
+        const k = (cfg.rep ? Math.min(1, a.k + 0.1) : a.k) * (cfg.city ? 0.85 : 1);
+        x = cfg.fixed ? a.k * cfg.b0 : k * a.b;
+        if (!cfg.fixed && !cfg.openEnd && rem === 1 && !cfg.sanction) x *= 0.55;
+      } else {
+        x = 0;
+        if (cfg.talk === "every") x = Math.max(x, cfg.city ? 0.1 : 0.35);
+        if (cfg.rep && !cfg.newcomers && (cfg.openEnd || rem > 3)) x = Math.max(x, 0.8 * norm);
+        if (cfg.sanction && (a.fined > 0 || cfg.agree)) x = Math.max(x, [0, 0.5, 0.9, 0.95][cfg.fine] * norm);
+      }
+      return Math.max(0, Math.min(1, x));
+    });
+    const pot = c.reduce((s, x) => s + 10 * x, 0), cost = Array(N).fill(0), fines = Array(N).fill(0);
+    if (cfg.sanction) {
+      const pts = [0, 1, 2, 4][cfg.fine], avg = pot / 10 / N;
+      const pun = A.map((a, i) => i).filter((i) => A[i].t === "P" || (cfg.agree && A[i].t === "C"));
+      A.forEach((a, o) => {
+        const thr = cfg.agree ? 0.85 * norm : 0.75 * avg;
+        if (c[o] < thr - 1e-9) {
+          if (cfg.agree) { const w = pun[(t + o) % pun.length]; cost[w] += pts; fines[o] += 3 * pts; }
+          else pun.forEach((w) => { if (w !== o) { cost[w] += pts; fines[o] += 3 * pts; } });
+          a.fined++;
+          if (!cfg.agree && a.t === "E") { let top = 0; c.forEach((x, i) => { if (x > c[top]) top = i; }); cost[o] += pts; fines[top] += 3 * pts; A[top].b *= 0.85; }
+        }
+      });
+    }
+    const earn = c.map((x, i) => 10 * (1 - x) + MPCR * pot - cost[i] - fines[i]);
+    A.forEach((a, i) => { a.earn += earn[i]; });
+    if (!cfg.fixed) A.forEach((a, i) => {
+      if (a.t !== "C" && a.t !== "P") return;
+      let others = c.filter((_, j) => j !== i).sort((p, q) => p - q);
+      if (cfg.rep) others = others.slice(3);
+      a.b += cfg.lam * (others.reduce((s, x) => s + x, 0) / others.length - a.b);
+    });
+    rounds.push({ c, avg: pot / 10 / N, fines });
+  }
+  const tot = A.reduce((s, a) => s + a.earn, 0);
+  return { rounds, types: cfg.types, avg: rounds.reduce((s, r) => s + r.avg, 0) / rounds.length * 100,
+    last: rounds[rounds.length - 1].avg * 100, gain: (tot - 10 * N * T) / (26 * N * T) * 100, curve: rounds.map((r) => r.avg * 100), earn: A.map((a) => a.earn) };
+}
+
+/* ---------- drawing ---------- */
+const HW = 52, HX = 14, ROWY = [12, 92];
+function streetSVG(round, types, opts) {
+  opts = opts || {};
+  let s = "";
+  ROWY.forEach((y) => { s += `<line class="ground" x1="6" x2="354" y1="${y + 62}" y2="${y + 62}"/>`; });
+  for (let i = 0; i < N; i++) {
+    const x = HX + (i % 6) * 56, y = ROWY[Math.floor(i / 6)], c = round ? round.c[i] : 0, h = 34 * c;
+    const you = types && types[i] === "Y";
+    s += `<g class="${you ? "you" : ""}"><polygon class="roof" points="${x},${y + 22} ${x + HW / 2},${y + 4} ${x + HW},${y + 22}"/>`;
+    s += `<rect class="body" x="${x + 4}" y="${y + 22}" width="${HW - 8}" height="38" rx="2"/>`;
+    s += `<rect class="fill" x="${x + 6}" y="${(y + 58 - h).toFixed(1)}" width="${HW - 12}" height="${h.toFixed(1)}" rx="1"/>`;
+    s += `<text class="amt" x="${x + HW / 2}" y="${y + 45}" text-anchor="middle">${round ? "$" + r0(c * 10) : ""}</text>`;
+    s += `<text class="lbl" x="${x + HW / 2}" y="${y + 74}" text-anchor="middle">${you ? "You" : opts.reveal && types ? ({ C: "matcher", P: "matcher", E: "free rider" }[types[i]]) : "#" + (i + 1)}</text>`;
+    if (round && round.fines[i] > 0) s += `<circle class="coin" cx="${x + HW - 6}" cy="${y + 10}" r="8"/><text class="coin-t" x="${x + HW - 6}" y="${y + 13}" text-anchor="middle">−$</text>`;
+    s += `</g>`;
+  }
+  return s;
+}
+const CW = 340, CH = 170, ML = 30, MR = 10, MT = 10, MB = 28;
+function chartSVG(o) {
+  const T = o.T || 10, X = (i) => ML + (i + 0.5) * (CW - ML - MR) / T, Y = (v) => MT + (1 - v / 100) * (CH - MT - MB);
+  const path = (a) => a.map((v, i) => (i ? "L" : "M") + X(i).toFixed(1) + " " + Y(v).toFixed(1)).join(" ");
+  let s = `<svg viewBox="0 0 ${CW} ${CH}" role="img" aria-label="${esc(o.aria || "Chart of average giving by month")}">`;
+  [0, 50, 100].forEach((v) => { s += `<line class="grid" x1="${ML}" x2="${CW - MR}" y1="${Y(v)}" y2="${Y(v)}"/><text class="tick" x="${ML - 6}" y="${Y(v) + 3.5}" text-anchor="end">${v}%</text>`; });
+  for (let i = 0; i < T; i++) s += `<text class="tick" x="${X(i)}" y="${CH - 12}" text-anchor="middle">${i + 1}</text>`;
+  s += `<text class="tick" x="${(ML + CW - MR) / 2}" y="${CH}" text-anchor="middle">month</text>`;
+  if (o.pred) s += `<path class="pred" d="${path(o.pred)}"/>`;
+  if (o.data) o.data.forEach((v, i) => { s += `<circle class="data" cx="${X(i)}" cy="${Y(v)}" r="3.5"/>`; });
+  if (o.model && o.model.length) { s += `<path class="model" d="${path(o.model)}"/>`; o.model.forEach((v, i) => { s += `<circle class="model-dot" cx="${X(i)}" cy="${Y(v)}" r="2.6"/>`; }); }
+  return s + "</svg>" + `<div class="legend">${o.legend || ""}</div>`;
+}
+
+/* ---------- state ---------- */
+const st = makeStore("kettlestreet", { hookDone: false, solved: [], set: {}, audit: {} });
+const S = st.s;
+
+/* ---------- round zero ---------- */
+const HOOK_TYPES = ["Y"].concat(pop(3, 2).slice(1));
+let hook = { guess: null, choices: [] };
+function hookRender() {
+  const T = 6, played = hook.choices.length;
+  const r = played ? simulate({ types: HOOK_TYPES, T, player: hook.choices }) : null;
+  const last = r ? r.rounds[played - 1] : null;
+  $("#street-hook").innerHTML = streetSVG(last, HOOK_TYPES, { reveal: played >= T });
+  $("#hook-month").textContent = played === 0 ? "Before month 1" : played >= T ? "After month 6" : "After month " + played;
+  $("#hook-earn").textContent = "You've earned $" + (r ? r.earn[0].toFixed(2) : "0");
+  $("#hook-predict").hidden = hook.guess !== null;
+  $("#hook-play").hidden = hook.guess === null || played >= T;
+  if (last) {
+    const others = (last.c.slice(1).reduce((a, b) => a + b, 0) / 11 * 10);
+    let msg = `Month ${played}: your neighbors put in $${others.toFixed(2)} on average. `;
+    if (played === 1) msg += `You guessed about $${hook.guess}. `;
+    msg += played >= T ? "That's the last month." : others < 4 ? "Several houses are giving little or nothing, and others are pulling back to match." : "Most houses gave something, though a few gave nothing at all.";
+    $("#hook-log").textContent = msg;
+  } else $("#hook-log").textContent = "How much will you put in this month?";
+  $("#hook-debrief").hidden = played < T;
+  if (played >= T) {
+    $("#hook-chart").innerHTML = chartSVG({ T, model: r.curve, pred: Array(T).fill(0), aria: "Average giving on Kettle Street over six months",
+      legend: '<span><i></i>Kettle Street, average given</span><span><i class="dash"></i>Rational-choice prediction</span>' });
+    if (!S.hookDone) { S.hookDone = true; st.save(); strip("start"); }
+  }
+}
+$("#hook-predict").addEventListener("click", (e) => { const b = e.target.closest("[data-guess]"); if (!b) return; hook.guess = +b.dataset.guess; hookRender(); });
+$("#hook-choices").addEventListener("click", (e) => { const b = e.target.closest("[data-give]"); if (!b || hook.choices.length >= 6) return; hook.choices.push(+b.dataset.give / 10); hookRender(); });
+$("#hook-reset").addEventListener("click", () => { hook = { guess: null, choices: [] }; hookRender(); });
+
+/* ---------- missions ---------- */
+const POP = pop(3, 2), POP4 = pop(5, 2);
+const fitErr = (curve) => Math.sqrt(curve.reduce((s, v, i) => s + (v - DATA[i]) ** 2, 0) / 10);
+const MISSIONS = [
+  {
+    title: "Who lives on Kettle Street?",
+    problem: "Across hundreds of lab experiments run just like the Kettle Street fund, people show the same pattern: about half the money goes in the first month, and giving slides toward almost nothing by month ten. The dots on the chart show that typical pattern. Decide who lives on your street so that it behaves the same way.",
+    defaults: { nE: 0, rule: "match" },
+    controls: (s) => `<div class="control"><div class="control-label"><span>Free riders on the street</span><small id="ne-out">${s.nE} of 12</small></div><input class="range" type="range" id="c-ne" min="0" max="12" step="1" value="${s.nE}" aria-describedby="ne-out"><small class="muted">Free riders never put anything in.</small></div>
+      <div class="control"><div class="control-label">Everyone else decides by</div>${segHTML("c-rule", [["match", "Matching what they expect others to give"], ["fixed", "Giving the same amount every month"]], s.rule)}</div>`,
+    read(s) { s.nE = +$("#c-ne").value; s.rule = $('input[name="c-rule"]:checked').value; },
+    sim: (s) => simulate({ types: pop(s.nE, 0), fixed: s.rule === "fixed" }),
+    meters: (r, s) => [{ label: "Gap between your street and the real pattern (points)", value: fitErr(r.curve), unit: "", target: 4, better: "low", max: 40,
+      why: s.rule === "fixed" ? "Your street gives the same every month, so it can't slide the way real groups do." : s.nE < 3 ? "Your street starts too generous and slides too slowly." : "Your street starts too stingy and collapses too fast." }],
+    data: true, reveal: true,
+    win: "A street of mostly conditional cooperators with a few free riders reproduces the pattern. The cooperators start out hopeful and give generously. Each month they see that some houses gave nothing, lower their expectations, and give a little less. The slide doesn't mean people learned to be selfish. It's cooperators protecting themselves from being exploited.",
+    p: { name: "Conditional cooperators and free riders",
+      line: "People are not all rational egoists. Many are conditional cooperators who give if they expect others to give, and the decline in giving comes from them pulling back when they see free riders.",
+      pattern: "When cooperation fades, look for the free riders the cooperators are reacting to, instead of assuming everyone has turned selfish.",
+      field: "In her 1998 address, Ostrom noted that people in public-good experiments typically give 40 to 60 percent of their money at first, and that giving falls when the game is repeated. A later study by Fischbacher, Gächter and Fehr (2001) found that about half of participants were conditional cooperators and about a third were free riders." }
+  },
+  {
+    title: "Talk is cheap. Or is it?",
+    problem: "The fund works by envelope: nobody meets, nobody talks. A neighbor proposes meeting on the porch to talk about the fund. The street's economist scoffs: promises cost nothing and can't be enforced, so talking can't change what anyone does. The street now has seven matchers, two matchers who'd fine others if they could, and three free riders. Try it.",
+    defaults: { talk: "none" },
+    controls: (s) => `<div class="control"><div class="control-label">Neighbors meet and talk</div>${segHTML("c-talk", [["none", "Never"], ["once", "Once, before month 1"], ["every", "Every month"]], s.talk)}</div>`,
+    read(s) { s.talk = $('input[name="c-talk"]:checked').value; },
+    sim: (s) => simulate({ types: POP, talk: s.talk }),
+    meters: (r, s) => [{ label: "Average given over ten months", value: r.avg, unit: "%", target: 60, better: "high",
+      why: s.talk === "once" ? "One meeting gave everyone a hopeful start, but nothing renewed the agreement, and giving slid back." : "With no way to agree on anything, the slide from the last mission plays out again." }],
+    win: "Meeting every month did what the economist said was impossible. Neighbors agreed on a fair amount, made promises face to face, and renewed them each month. Matchers trusted the agreement instead of guessing, and even some free riders gave a little rather than face the porch empty-handed.",
+    p: { name: "Communication builds cooperation",
+      line: "Face-to-face talk lets people agree on what to do, make promises and judge who means it, so cooperation rises even though no promise can be enforced.",
+      pattern: "Before reaching for enforcement, give the people involved a regular place to talk, agree and renew the agreement.",
+      field: "In common-pool resource experiments by Ostrom, Walker and Gardner (1992), letting participants talk face to face raised cooperation sharply, and repeated chances to talk worked better than a single one." }
+  },
+  {
+    title: "After the meetings stopped",
+    problem: "Summer came and the porch meetings fizzled. Two neighbors have ideas. One wants to post what each household gives on the board at the corner each month. The other points out that the fund is set to close after month ten, and wants to make it permanent. Same twelve households as before. Try either idea, or both.",
+    defaults: { rep: false, open: false },
+    controls: (s) => toggleHTML("c-rep", "Post each household's giving on the corner board", "Everyone can see everyone's track record.", s.rep) +
+      toggleHTML("c-open", "Make the fund permanent instead of closing after month 10", "Nobody knows when the last month will be.", s.open),
+    read(s) { s.rep = $("#c-rep").checked; s.open = $("#c-open").checked; },
+    sim: (s) => simulate({ types: POP, rep: s.rep, openEnd: s.open }),
+    meters: (r, s) => [
+      { label: "Average given over ten months", value: r.avg, unit: "%", target: 60, better: "high", why: "Nobody can see who gives what, so a few free riders drag the matchers down." },
+      { label: "Given in month ten", value: r.last, unit: "%", target: 50, better: "high",
+        why: s.rep ? "Everyone knew month ten was the end. A good name is worth nothing after the last month, so giving collapsed at the finish." : "By the last month, matchers had little reason left to expect anything from anyone." }
+    ],
+    reveal: true,
+    win: "With the board, matchers could see that most neighbors kept giving, so a few zeros no longer dragged them down. With no last month in sight, even the free riders had a reason to keep their record clean, because a good name keeps paying as long as the street goes on.",
+    p: { name: "Trust, reciprocity and reputation",
+      line: "When people can see each other's track records and expect to keep dealing with each other, a good reputation pays. Reputation supports trust, trust supports reciprocity, and the three together sustain cooperation.",
+      pattern: "Make contributions visible and keep relationships open-ended, so being trustworthy gets noticed and keeps paying off.",
+      field: "At the core of Ostrom's 1998 explanation of collective action are three linked things: the reputations people build, the trust others place in them, and the norm of reciprocity. When one rises, the others tend to rise with it, and so does cooperation." }
+  },
+  {
+    title: "The new building",
+    problem: "A new apartment building opens at the end of the street, and five of its households join the fund. They don't read the corner board and don't plan to stay long, so they give nothing. The street is now five matchers, two matchers willing to fine others, and five free riders. The board and the permanent fund stay. The street is considering fines.",
+    defaults: { sanction: false, fine: 2, agree: false },
+    controls: (s) => toggleHTML("c-sanction", "Neighbors may fine households that give too little", "Each fine costs the fining neighbor $1 and the fined household $3.", s.sanction) +
+      `<div class="control"><div class="control-label">Size of each fine</div>${segHTML("c-fine", [[1, "Small"], [2, "Medium"], [3, "Large"]], s.fine)}</div>` +
+      toggleHTML("c-agree", "Meet first and agree on the rules together", "The street decides what counts as too little and how fines work.", s.agree),
+    read(s) { s.sanction = $("#c-sanction").checked; s.fine = +$('input[name="c-fine"]:checked').value; s.agree = $("#c-agree").checked; },
+    sim: (s) => simulate({ types: POP4, rep: true, openEnd: true, newcomers: true, sanction: s.sanction, fine: s.fine, agree: s.agree }),
+    meters: (r, s) => [
+      { label: "Average given over ten months", value: r.avg, unit: "%", target: 75, better: "high",
+        why: !s.sanction ? "Without any cost for giving nothing, the newcomers keep giving nothing, and matchers pull back." : s.fine === 1 ? "The fines are too small to change anyone's mind." : "Fines landed, but nobody agreed on what was fair, and resentment kept giving down." },
+      { label: "Street's net gain from the fund, after fines", value: r.gain, unit: "%", target: 75, better: "high",
+        why: s.sanction && !s.agree ? "Neighbors spent a lot fining each other, and some free riders fined the biggest givers back. The fines ate the gains." : "The fund is producing far less than it could." }
+    ],
+    reveal: true,
+    win: "Once the street agreed on its own rules, fines were seen as fair, everyone knew they would land, and the newcomers started giving. Look at the coins: the fines were hardly ever needed. Unagreed fines raised giving too, but neighbors burned money punishing and counter-punishing each other.",
+    p: { name: "Sanctions people choose for themselves",
+      line: "Many people will pay a personal cost to punish free riders. Sanctions work best when the group discusses and agrees on them, because then they're seen as fair and rarely need to be used.",
+      pattern: "Let the group agree on its own penalties. Credible, agreed rules need far fewer penalties in practice than rules nobody chose.",
+      field: "In \"Covenants With and Without a Sword\" (1992), Ostrom, Walker and Gardner found that participants would pay to fine free riders. Fines alone raised cooperation, but their cost ate much of the gain. Groups that talked and chose their own sanctioning system came close to the best possible result and rarely needed to fine anyone." }
+  },
+  {
+    title: "The city wants to help",
+    problem: "Kettle Street is doing well with monthly meetings, the corner board and a permanent fund. Three free riders remain. Then the city offers help: an inspection program that checks one month in ten and fines households $1 for every dollar they fall short. Decide what the street does.",
+    defaults: { city: false, meet: true },
+    controls: (s) => toggleHTML("c-city", "Accept the city's inspection program", "Random checks, small fines, run by the city.", s.city) +
+      toggleHTML("c-meet", "Keep the monthly street meetings", "Neighbors keep talking and renewing their agreement.", s.meet),
+    read(s) { s.city = $("#c-city").checked; s.meet = $("#c-meet").checked; },
+    sim: (s) => simulate({ types: POP, rep: true, openEnd: true, talk: s.meet ? "every" : "none", city: s.city }),
+    meters: (r, s) => [{ label: "Average given over ten months", value: r.avg, unit: "%", target: 75, better: "high",
+      why: s.city ? "Neighbors started treating giving as the city's business. A small, rare fine is a cheap price, and the street's own reasons to give weakened." : "Without the meetings, the street loses the agreement that held it together." }],
+    win: "Turning down the help was the right call here. The city's rule would have replaced a shared commitment with a small price: a free rider risks about ten cents per dollar kept, and cooperators start to feel that giving is the city's job, not theirs. The street's own arrangements were doing more than the outside rule could.",
+    p: { name: "Crowding out",
+      line: "An outside rule with weak enforcement can replace people's own reasons to cooperate with a small price, and cooperation can fall instead of rise.",
+      pattern: "Before adding outside rules to a group that already cooperates, make sure they support its own arrangements instead of replacing them.",
+      field: "In field experiments with villagers in rural Colombia, Cárdenas, Stranlund and Willis (2000) found that a weakly enforced rule imposed from outside led to worse outcomes over time than letting groups talk and manage the resource themselves. Ostrom discussed the finding in her 2000 article on social norms." }
+  }
+];
+
+/* ---------- strip ---------- */
+function strip(current) {
+  const items = [{ id: "start", label: "Start", aria: "Round zero: twelve houses, one pot", done: S.hookDone }]
+    .concat(MISSIONS.map((m, i) => ({ id: "m" + (i + 1), label: String(i + 1), aria: "Mission " + (i + 1) + (S.solved.includes(i + 1) ? ": " + m.p.name : ""), done: S.solved.includes(i + 1) })))
+    .concat([{ id: "wrap", label: "Wrap-up", aria: "Wrap-up", done: S.solved.length === MISSIONS.length }]);
+  renderStrip(items, current, "Ideas found: " + S.solved.length + " of " + MISSIONS.length);
+}
+
+/* ---------- mission view ---------- */
+let busy = false;
+function mSet(n) { const m = MISSIONS[n - 1]; if (!S.set[n]) S.set[n] = Object.assign({}, m.defaults); return S.set[n]; }
+function legendFor(m) { return '<span><i></i>Your street, average given</span>' + (m.data ? '<span><i class="dot"></i>Typical lab pattern</span>' : ""); }
+function renderMission(n) {
+  const m = MISSIONS[n - 1], solved = S.solved.includes(n), s = mSet(n);
+  $("#view-mission").innerHTML = `
+    <div class="prose"><p class="kicker">Mission ${n} of ${MISSIONS.length}</p><h2 id="h-mission" tabindex="-1">${esc(m.title)}</h2></div>
+    <div id="parts-slot">${partsRail(solved ? 4 : 1)}</div>
+    <div class="panel">
+      ${stepLabel("P", "Problem")}
+      <p>${esc(m.problem)}</p>
+      <div class="street-head"><h3 id="m-month">Month 0</h3><span class="mono muted small" id="m-avg"></span></div>
+      <svg class="street" id="street-m" viewBox="0 0 360 170" role="img" aria-label="The twelve houses of Kettle Street and what each gave"></svg>
+      <div class="chart-box" id="chart">${chartSVG({ data: m.data ? DATA : null, legend: legendFor(m) })}</div>
+    </div>
+    <div class="panel">
+      ${stepLabel("A", "Answer: pull the levers")}
+      <div class="controls" id="controls">${m.controls(s)}</div>
+      <div class="choices"><button class="btn primary" id="run">Run ten months</button></div>
+    </div>
+    <div class="panel" id="outcome" hidden aria-live="polite"></div>
+    <div id="reveal" hidden></div>
+    <div class="nav-row">
+      <button class="btn quiet" data-go="${n === 1 ? "start" : "m" + (n - 1)}">Back</button>
+      <button class="btn${solved ? " primary" : " quiet"}" id="next-btn" data-go="${n === MISSIONS.length ? "wrap" : "m" + (n + 1)}">${n === MISSIONS.length ? "Go to wrap-up" : "Next mission"}</button>
+    </div>`;
+  $("#street-m").innerHTML = streetSVG(null, null);
+  $("#controls").addEventListener("input", (e) => { if (e.target.id === "c-ne") $("#ne-out").textContent = e.target.value + " of 12"; });
+  $("#controls").addEventListener("change", () => { m.read(s); st.save(); });
+  $("#run").addEventListener("click", () => runMission(n));
+  if (solved) showOutcome(n, false);
+}
+async function runMission(n) {
+  if (busy) return; busy = true;
+  const m = MISSIONS[n - 1], s = mSet(n); m.read(s); st.save();
+  const r = m.sim(s);
+  $("#run").disabled = true; $("#outcome").hidden = true;
+  const h = location.hash;
+  for (let t = 0; t < 10; t++) {
+    if (location.hash !== h) { busy = false; return; }
+    $("#street-m").innerHTML = streetSVG(r.rounds[t], r.types, { reveal: m.reveal && t === 9 });
+    $("#m-month").textContent = "Month " + (t + 1);
+    $("#m-avg").textContent = "Average given: " + r0(r.curve[t]) + "%";
+    $("#chart").innerHTML = chartSVG({ data: m.data ? DATA : null, model: r.curve.slice(0, t + 1), legend: legendFor(m) });
+    await sleep(260);
+  }
+  if (location.hash !== h) { busy = false; return; }
+  showOutcome(n, true, r);
+  $("#run").disabled = false; busy = false;
+}
+function showOutcome(n, fresh, r) {
+  const m = MISSIONS[n - 1], s = mSet(n);
+  r = r || m.sim(s);
+  if (!fresh) {
+    $("#street-m").innerHTML = streetSVG(r.rounds[9], r.types, { reveal: m.reveal });
+    $("#m-month").textContent = "Month 10"; $("#m-avg").textContent = "Average given: " + r0(r.curve[9]) + "%";
+    $("#chart").innerHTML = chartSVG({ data: m.data ? DATA : null, model: r.curve, legend: legendFor(m) });
+  }
+  const ms = m.meters(r, s), all = ms.every(meterPass);
+  const out = $("#outcome"); out.hidden = false; out.className = "panel " + (all ? "v-win" : "v-fail");
+  out.innerHTML = `${stepLabel("R", "Reasoning: what happened")}
+    <p class="verdict">${all ? "Every goal met" : ms.filter(meterPass).length + " of " + ms.length + " goals met"}</p>
+    <div class="meters">${ms.map(meterHTML).join("")}</div>
+    ${all ? `<p class="feedback">${esc(m.win)}</p>` : `<p class="muted small">Change the levers and run again.</p>`}`;
+  const rev = $("#reveal");
+  if (all) {
+    if (!S.solved.includes(n)) { S.solved.push(n); S.solved.sort((a, b) => a - b); st.save(); }
+    strip("m" + n); $("#parts-slot").innerHTML = partsRail(4);
+    rev.hidden = false; rev.innerHTML = termCard(n, m.p, "From the research:");
+    const nb = $("#next-btn"); nb.classList.add("primary"); nb.classList.remove("quiet");
+  } else { $("#parts-slot").innerHTML = partsRail(2); rev.hidden = true; }
+}
+
+/* ---------- wrap-up ---------- */
+const AUDIT = [
+  ["talk", "Do members talk face to face, regularly?", 2],
+  ["see", "Can members see who contributes what?", 3],
+  ["future", "Do members expect to keep working together for a long time?", 3],
+  ["rules", "Did members agree together on penalties for not pulling their weight?", 4],
+  ["outside", "Do outside rules support the group's own arrangements, rather than replace them?", 5]
+];
+function renderWrap() {
+  const el = $("#view-wrap"), all = S.solved.length === MISSIONS.length;
+  el.innerHTML = `
+    <div class="prose">
+      <p class="kicker">Wrap-up</p>
+      <h2 id="h-wrap" tabindex="-1">${all ? "Kettle Street keeps its fund" : "Ideas found so far: " + S.solved.length + " of " + MISSIONS.length}</h2>
+      <p class="lede">${all ? "You never changed who lived on the street. You changed what they could see, say and agree on, and the same people cooperated." : "You can visit any mission from the strip above. The ideas you haven't found yet stay hidden until you do."}</p>
+    </div>
+    <div class="panel">
+      <h3 style="font-size:1.25rem">Two models of a person</h3>
+      <div class="compare">
+        <div><h4>The rational egoist</h4><ul><li>Everyone is the same.</li><li>Maximizes their own payoff, fully informed.</li><li>Talk is cheap and changes nothing.</li><li>Predicts zero giving, every month.</li></ul></div>
+        <div><h4>Ostrom's behavioral model</h4><ul><li>People differ: matchers, free riders, willing enforcers.</li><li>Boundedly rational: they learn and use rules of thumb.</li><li>Norms, promises and reputations change choices.</li><li>Predicts cooperation that depends on the setting.</li></ul></div>
+      </div>
+      <svg class="triangle" viewBox="0 0 380 250" role="img" aria-label="Diagram: reputation, trust and reciprocity reinforce each other and raise cooperation">
+        <line class="edge" x1="190" y1="48" x2="70" y2="190"/><line class="edge" x1="190" y1="48" x2="310" y2="190"/><line class="edge" x1="70" y1="190" x2="310" y2="190"/>
+        <rect class="node" x="125" y="22" width="130" height="40" rx="20"/><text class="nt" x="190" y="47" text-anchor="middle">Reputation</text>
+        <rect class="node" x="10" y="170" width="120" height="40" rx="20"/><text class="nt" x="70" y="195" text-anchor="middle">Trust</text>
+        <rect class="node" x="240" y="170" width="132" height="40" rx="20"/><text class="nt" x="306" y="195" text-anchor="middle">Reciprocity</text>
+        <rect class="core" x="128" y="112" width="124" height="38" rx="8"/><text class="nt" x="190" y="136" text-anchor="middle">Cooperation</text>
+      </svg>
+      <p class="muted small" style="text-align:center">Ostrom's core relationships: each strengthens the others, and together they raise cooperation.</p>
+      <ol class="recap">${MISSIONS.map((m, i) => `<li class="${S.solved.includes(i + 1) ? "found" : ""}"><span class="n">${i + 1}</span><div><div class="t">${S.solved.includes(i + 1) ? esc(m.p.name) : "Not found yet"}</div><div class="d">${S.solved.includes(i + 1) ? esc(m.p.pattern) : "Solve mission " + (i + 1) + " to reveal it."}</div></div></li>`).join("")}</ol>
+    </div>
+    <div class="panel">
+      ${stepLabel("✓", "Check a group you belong to")}
+      <p>Think of a group that depends on everyone chipping in: a team, a club, a shared house, a volunteer crew, an online community.</p>
+      <div class="controls">${AUDIT.map(([k, q]) => `<div class="control"><div class="control-label">${esc(q)}</div>${segHTML("a-" + k, [["yes", "Yes"], ["partly", "Partly"], ["no", "No"]], S.audit[k])}</div>`).join("")}</div>
+      <p class="audit-out" id="audit-out" aria-live="polite"></p>
+    </div>
+    <div class="nav-row"><button class="btn quiet" data-go="m5">Back to mission 5</button><button class="btn quiet" data-go="start">Back to the start</button></div>`;
+  el.querySelectorAll(".controls input").forEach((r) => r.addEventListener("change", () => { S.audit[r.name.slice(2)] = r.value; st.save(); auditOut(); }));
+  auditOut();
+}
+function auditOut() {
+  const out = $("#audit-out"), answered = Object.keys(S.audit).length;
+  if (!answered) { out.textContent = "Answer a few questions to see which lever to try first."; return; }
+  let pick = AUDIT.find(([k]) => S.audit[k] === "no") || AUDIT.find(([k]) => S.audit[k] === "partly");
+  if (!pick) { out.textContent = answered < AUDIT.length ? "Strong so far. Keep going." : "Every lever is in place. This group has what it needs to keep cooperating."; return; }
+  const m = MISSIONS[pick[2] - 1];
+  out.innerHTML = `<b>Try this lever first:</b> ${esc(m.p.pattern)} <span class="muted">(Mission ${pick[2]}${S.solved.includes(pick[2]) ? ": " + esc(m.p.name) : ""})</span>`;
+}
+
+/* ---------- routing ---------- */
+function route() {
+  const h = location.hash.slice(1), mm = /^m([1-5])$/.exec(h);
+  if (mm) { renderMission(+mm[1]); showView("view-mission"); strip(h); }
+  else if (h === "wrap") { renderWrap(); showView("view-wrap"); strip("wrap"); }
+  else { showView("view-start"); strip("start"); }
+  afterRoute();
+}
+window.addEventListener("hashchange", route);
+hookRender();
+route();
+</script>
+
+</body></html>

@@ -1,0 +1,680 @@
+<!doctype html><html><head><meta charset="utf-8"><title>The Juniper Falls Charter</title><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: one narrow column; a sticky strip of stops on top; each mission is a page of the town charter: resource cards you test, sort and stamp with a way of governing, then run for ten years. */
+:root {
+  --bg: #ECF0EA; --surface: #FAFCF8; --ink: #1E2A22; --muted: #56655A; --line: #CBD5CC;
+  --accent: #245C50; --on-accent: #FFFFFF; --accent-soft: #DCEBE6;
+  --hi: #8FD0C2; --hi-soft: #DDF1EC; --hi-ink: #1E6B5E; --hi-on: #0E2E28;
+  --good: #1E7A4E; --good-soft: #D7EEDF; --danger: #B8402C; --danger-soft: #F6DFD9;
+  --m-market: #B0571F; --m-club: #7A4BB5; --m-state: #2558A8; --m-community: #2E8A50; --m-layered: #0C8486;
+  --font-display: "Bricolage Grotesque", "Avenir Next", "Segoe UI", system-ui, sans-serif;
+  --font-body: "Atkinson Hyperlegible", Verdana, system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #111713; --surface: #18201B; --ink: #E2EAE4; --muted: #9DAEA2; --line: #2D3A31;
+    --accent: #7CC9B5; --on-accent: #0D1A16; --accent-soft: #1C3530;
+    --hi: #8FD0C2; --hi-soft: #183530; --hi-ink: #9FE0D2; --hi-on: #0E2E28;
+    --good: #66CC93; --good-soft: #17352A; --danger: #F08770; --danger-soft: #3B1F1A;
+    --m-market: #F09A5E; --m-club: #B994F0; --m-state: #79A6F2; --m-community: #6BCF8C; --m-layered: #4FD1D1;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #111713; --surface: #18201B; --ink: #E2EAE4; --muted: #9DAEA2; --line: #2D3A31;
+  --accent: #7CC9B5; --on-accent: #0D1A16; --accent-soft: #1C3530;
+  --hi: #8FD0C2; --hi-soft: #183530; --hi-ink: #9FE0D2; --hi-on: #0E2E28;
+  --good: #66CC93; --good-soft: #17352A; --danger: #F08770; --danger-soft: #3B1F1A;
+  --m-market: #F09A5E; --m-club: #B994F0; --m-state: #79A6F2; --m-community: #6BCF8C; --m-layered: #4FD1D1;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body {
+  background: var(--bg); color: var(--ink);
+  font-family: var(--font-body); font-size: 17px; line-height: 1.55;
+  -webkit-text-size-adjust: 100%;
+}
+body::before {
+  content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px);
+  z-index: 10; background: var(--bg);
+}
+.gutter {
+  max-width: 800px; margin: 0 auto;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+h1, h2, h3 { font-family: var(--font-display); text-wrap: balance; margin: 0; }
+p { margin: 0; }
+button { font: inherit; color: inherit; }
+:focus-visible { outline: 3px solid var(--hi); outline-offset: 2px; border-radius: 6px; }
+.mono { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+.kicker { font-family: var(--font-mono); font-size: 0.74rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+
+.masthead { padding-block: 36px 18px; display: grid; gap: 10px; }
+.masthead h1 { font-size: clamp(2.4rem, 8.6vw, 4.2rem); font-weight: 800; line-height: 0.95; letter-spacing: -0.03em; font-variation-settings: "opsz" 96; }
+.masthead h1 span { color: var(--accent); }
+.masthead .sub { color: var(--muted); max-width: 60ch; }
+
+.strip { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: var(--bg); border-bottom: 1px solid var(--line); }
+.strip .gutter { padding-block: 10px; display: grid; gap: 6px; }
+.strip-row { display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; padding: 3px 2px; }
+.strip-row::-webkit-scrollbar { display: none; }
+.chip {
+  flex: 0 0 auto; min-width: 40px; height: 40px; padding: 0 12px; border-radius: 999px;
+  border: 1.5px solid var(--line); background: var(--surface); font-family: var(--font-mono);
+  font-size: 0.85rem; font-weight: 500; color: var(--muted); cursor: pointer;
+  display: inline-flex; align-items: center; justify-content: center;
+}
+.chip:hover { border-color: var(--accent); color: var(--ink); }
+.chip.done { background: var(--hi); border-color: var(--hi); color: var(--hi-on); }
+.chip.current { border-color: var(--accent); border-width: 2.5px; color: var(--ink); }
+.chip.done.current { color: var(--hi-on); box-shadow: 0 0 0 2px var(--bg), 0 0 0 4px var(--accent); }
+.strip-meta { font-size: 0.82rem; color: var(--muted); display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+
+main { padding-block: 26px 40px; }
+.view { display: grid; gap: 22px; }
+.view h2 { font-size: clamp(1.7rem, 5.4vw, 2.4rem); font-weight: 700; line-height: 1.05; letter-spacing: -0.02em; }
+.view h2:focus { outline: none; }
+.lede { font-size: 1.08rem; max-width: 62ch; }
+.prose { display: grid; gap: 12px; max-width: 64ch; }
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 18px; display: grid; gap: 14px; min-width: 0; }
+.muted { color: var(--muted); }
+.small { font-size: 0.88rem; }
+
+.btn { border: 1.5px solid var(--accent); background: var(--surface); color: var(--ink); border-radius: 10px; padding: 10px 16px; cursor: pointer; font-weight: 700; min-height: 44px; }
+.btn:hover { background: var(--accent-soft); }
+.btn.primary { background: var(--accent); color: var(--on-accent); border-color: var(--accent); }
+.btn.primary:hover { filter: brightness(1.08); }
+.btn.quiet { border-color: var(--line); font-weight: 400; }
+.btn small { font-weight: 400; opacity: 0.8; }
+.btn:disabled { opacity: 0.45; cursor: not-allowed; }
+.choices { display: flex; flex-wrap: wrap; gap: 8px; }
+.log { min-height: 3.2em; }
+.debrief { border-top: 1px dashed var(--line); padding-top: 16px; display: grid; gap: 12px; }
+.debrief h3 { font-size: 1.5rem; color: var(--danger); }
+details.how { border: 1px solid var(--line); border-radius: 12px; padding: 10px 14px; background: var(--surface); }
+details.how summary { cursor: pointer; font-weight: 700; }
+details.how p { margin-top: 8px; color: var(--muted); max-width: 64ch; }
+
+.parts { display: flex; flex-wrap: wrap; gap: 6px; list-style: none; padding: 0; margin: 0; }
+.parts li { font-size: 0.78rem; padding: 4px 9px; border-radius: 999px; border: 1px solid var(--line); color: var(--muted); display: inline-flex; gap: 6px; align-items: center; }
+.parts li b { font-family: var(--font-mono); font-weight: 500; }
+.parts li.on { border-color: var(--ink); color: var(--ink); }
+.parts li.now { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+.step-label { display: flex; gap: 10px; align-items: center; }
+.step-label .letter { font-family: var(--font-mono); font-weight: 500; width: 28px; height: 28px; border-radius: 50%; background: var(--ink); color: var(--bg); display: inline-flex; align-items: center; justify-content: center; font-size: 0.85rem; flex: 0 0 auto; }
+.step-label .name { font-family: var(--font-display); font-weight: 700; font-size: 1.1rem; }
+
+.options { display: grid; gap: 8px; }
+.opt { text-align: left; border: 1.5px solid var(--line); background: var(--surface); border-radius: 12px; padding: 13px 15px; cursor: pointer; display: grid; grid-template-columns: auto 1fr; gap: 12px; align-items: start; }
+.opt:hover:not(:disabled) { border-color: var(--accent); }
+.opt .key { font-family: var(--font-mono); font-weight: 500; color: var(--muted); padding-top: 1px; }
+.opt.tried { border-style: dashed; }
+.opt.picked { border-color: var(--ink); border-width: 2px; }
+.opt.win { border-color: var(--good); background: var(--good-soft); }
+.opt:disabled { cursor: default; }
+
+.controls { display: grid; gap: 16px; }
+.control { display: grid; gap: 6px; min-width: 0; }
+.control-label { font-weight: 700; display: flex; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
+.control-label small { font-weight: 400; color: var(--muted); }
+.seg { display: flex; flex-wrap: wrap; border: 1.5px solid var(--line); border-radius: 10px; overflow: hidden; width: max-content; max-width: 100%; }
+.seg label { position: relative; flex: 1 0 auto; }
+.seg input { position: absolute; opacity: 0; inset: 0; margin: 0; cursor: pointer; }
+.seg span { display: block; padding: 8px 13px; font-size: 0.88rem; border-right: 1px solid var(--line); text-align: center; height: 100%; }
+.seg label:last-child span { border-right: 0; }
+.seg input:checked + span { background: var(--ink); color: var(--bg); }
+.seg input:focus-visible + span { outline: 3px solid var(--hi); outline-offset: -3px; }
+.seg input:disabled + span { opacity: 0.4; }
+.toggle { display: grid; grid-template-columns: auto 1fr; gap: 12px; align-items: start; padding: 12px 14px; border: 1.5px solid var(--line); border-radius: 12px; cursor: pointer; }
+.toggle:has(input:checked) { border-color: var(--accent); background: var(--accent-soft); }
+.toggle input { width: 22px; height: 22px; margin: 2px 0 0; accent-color: var(--accent); }
+.toggle b { display: block; }
+.toggle small { color: var(--muted); font-size: 0.86rem; display: block; }
+.range { width: 100%; accent-color: var(--accent); min-height: 32px; }
+
+.v-win { --v: var(--good); --v-soft: var(--good-soft); }
+.v-partial { --v: var(--hi-ink); --v-soft: var(--hi-soft); }
+.v-fail { --v: var(--danger); --v-soft: var(--danger-soft); }
+.verdict { display: inline-flex; align-items: center; gap: 8px; font-weight: 700; color: var(--v); }
+.verdict::before { content: ""; width: 10px; height: 10px; border-radius: 50%; background: var(--v); }
+.feedback { background: var(--v-soft); border-radius: 10px; padding: 12px 14px; display: grid; gap: 8px; }
+.meters { display: grid; gap: 12px; }
+.meter { display: grid; gap: 5px; }
+.meter-top { display: flex; justify-content: space-between; gap: 10px; font-size: 0.92rem; }
+.meter-top .val { font-family: var(--font-mono); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.meter-top .val small { color: var(--muted); }
+.meter .bar { position: relative; height: 10px; border-radius: 5px; background: var(--line); }
+.meter .bar i { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 5px; background: var(--mv); transition: width .6s ease; }
+.meter .bar b { position: absolute; top: -4px; bottom: -4px; width: 2px; background: var(--ink); }
+.meter.pass { --mv: var(--good); }
+.meter.miss { --mv: var(--danger); }
+.meter.idle { --mv: var(--muted); }
+.meter .why { font-size: 0.86rem; color: var(--muted); }
+
+.term { border: 2px dashed var(--hi); border-radius: 16px; padding: 20px; background: var(--hi-soft); display: grid; gap: 10px; }
+.term .num { font-family: var(--font-display); font-weight: 800; font-size: 3rem; line-height: 0.8; color: var(--hi-ink); }
+.term h3 { font-size: clamp(1.4rem, 4.6vw, 1.9rem); line-height: 1.1; letter-spacing: -0.01em; }
+.term .line { font-size: 1.05rem; }
+.syntax { border-top: 1px solid var(--line); padding-top: 14px; display: grid; gap: 10px; }
+.pattern { font-family: var(--font-display); font-weight: 500; font-size: 1.15rem; line-height: 1.35; }
+.field { color: var(--muted); font-size: 0.95rem; }
+.field b { color: var(--ink); }
+.nav-row { display: flex; flex-wrap: wrap; gap: 8px; justify-content: space-between; }
+
+.recap { list-style: none; padding: 0; margin: 0; display: grid; gap: 8px; }
+.recap li { display: grid; grid-template-columns: 34px 1fr; gap: 12px; align-items: start; padding: 10px 0; border-bottom: 1px solid var(--line); }
+.recap li:last-child { border-bottom: 0; }
+.recap .n { width: 34px; height: 34px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-family: var(--font-mono); font-weight: 500; border: 1.5px solid var(--line); color: var(--muted); }
+.recap li.found .n { background: var(--hi); border-color: var(--hi); color: var(--hi-on); }
+.recap .t { font-weight: 700; }
+.recap .d { color: var(--muted); font-size: 0.95rem; }
+footer { border-top: 1px solid var(--line); padding-block: 22px 40px; color: var(--muted); font-size: 0.88rem; display: grid; gap: 6px; }
+footer b { color: var(--ink); }
+footer ul { margin: 0; padding-left: 1.1em; display: grid; gap: 3px; }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+@media (min-width: 640px) { .panel { padding: 22px; } }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+
+.mode-market { --m: var(--m-market); } .mode-club { --m: var(--m-club); } .mode-state { --m: var(--m-state); }
+.mode-community { --m: var(--m-community); } .mode-layered { --m: var(--m-layered); }
+.tray { display: flex; flex-wrap: wrap; gap: 8px; }
+.stamp-pick { position: relative; }
+.stamp-pick input { position: absolute; opacity: 0; inset: 0; margin: 0; cursor: pointer; }
+.stamp-pick span { display: grid; gap: 1px; padding: 8px 14px; border: 2px solid var(--m); border-radius: 999px; color: var(--m); font-weight: 700; font-size: 0.92rem; background: var(--surface); }
+.stamp-pick span small { font-weight: 400; color: var(--muted); font-size: 0.74rem; }
+.stamp-pick input:checked + span { background: var(--m); color: var(--surface); }
+.stamp-pick input:checked + span small { color: var(--surface); opacity: 0.85; }
+.stamp-pick input:focus-visible + span { outline: 3px solid var(--hi); outline-offset: 2px; }
+.cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 220px), 1fr)); gap: 10px; }
+.rcard { position: relative; text-align: left; border: 1.5px solid var(--line); background: var(--surface); border-radius: 14px; padding: 14px; cursor: pointer; display: grid; gap: 6px; min-height: 118px; align-content: start; overflow: hidden; }
+.rcard:hover:not(:disabled) { border-color: var(--accent); }
+.rcard h4 { margin: 0; font-family: var(--font-display); font-size: 1.05rem; padding-right: 70px; }
+.rcard p { font-size: 0.88rem; color: var(--muted); }
+.rcard:disabled { cursor: default; }
+.mark { position: absolute; top: 10px; right: 8px; transform: rotate(-8deg); border: 2.5px double var(--m); color: var(--m); font-family: var(--font-mono); font-weight: 500; font-size: 0.72rem; letter-spacing: 0.06em; text-transform: uppercase; padding: 3px 7px; border-radius: 6px; background: var(--surface); }
+.mark.empty { --m: var(--line); color: var(--muted); border-style: dashed; }
+.res-out { display: grid; gap: 6px; border-top: 1px dashed var(--line); padding-top: 8px; margin-top: 2px; }
+.res-out .bar { position: relative; height: 8px; border-radius: 4px; background: var(--line); }
+.res-out .bar i { position: absolute; inset: 0 auto 0 0; border-radius: 4px; background: var(--rv); width: 0; transition: width 1s ease; }
+.res-out .bar b { position: absolute; top: -3px; bottom: -3px; width: 2px; background: var(--ink); }
+.res-out .vt { font-size: 0.84rem; font-weight: 700; color: var(--rv); }
+.res-out p { font-size: 0.86rem; color: var(--ink); }
+.rcard.ok { --rv: var(--good); border-color: var(--good); }
+.rcard.no { --rv: var(--danger); border-color: var(--danger); }
+.board { display: grid; grid-template-columns: auto minmax(0, 1fr) minmax(0, 1fr); gap: 6px; }
+.board .hd { font-size: 0.76rem; color: var(--muted); font-family: var(--font-mono); text-align: center; align-self: end; padding: 2px; }
+.board .rh { writing-mode: vertical-rl; transform: rotate(180deg); align-self: center; justify-self: center; text-align: center; }
+.quad { border: 1.5px dashed var(--line); border-radius: 12px; padding: 8px; min-height: 104px; display: grid; gap: 6px; align-content: start; background: var(--surface); text-align: left; cursor: pointer; min-width: 0; }
+.quad:disabled { cursor: default; }
+.quad.live { border-color: var(--accent); border-style: solid; }
+.quad .qn { font-family: var(--font-display); font-weight: 700; font-size: 0.95rem; }
+.quad .qn.hidden { color: var(--muted); font-weight: 500; }
+.quad .chipx { font-size: 0.78rem; border-radius: 6px; padding: 3px 7px; background: var(--accent-soft); overflow-wrap: anywhere; }
+.tests { display: grid; gap: 10px; }
+.test-row { display: grid; gap: 6px; }
+.test-row .res { background: var(--accent-soft); border-radius: 10px; padding: 10px 12px; font-size: 0.94rem; }
+.picker { display: flex; flex-wrap: wrap; gap: 6px; }
+.picker .btn { min-height: 40px; padding: 7px 12px; font-size: 0.9rem; }
+.picker .btn.done { border-style: dashed; opacity: 0.6; }
+.picker .btn.sel { background: var(--accent); color: var(--on-accent); }
+.hint { font-size: 0.92rem; }
+.goods-table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+.goods-table th, .goods-table td { border: 1px solid var(--line); padding: 8px; text-align: left; vertical-align: top; }
+.goods-table th { font-family: var(--font-mono); font-weight: 500; font-size: 0.76rem; color: var(--muted); }
+.goods-table td b { display: block; font-family: var(--font-display); }
+.table-wrap { overflow-x: auto; }
+.versus { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+.versus div { border: 1px solid var(--line); border-radius: 12px; padding: 12px; display: grid; gap: 6px; min-width: 0; }
+.versus h4 { margin: 0; font-family: var(--font-display); }
+.versus p { font-size: 0.92rem; }
+@media (max-width: 520px) { .versus { grid-template-columns: minmax(0, 1fr); } }
+</style>
+
+<header class="masthead gutter">
+  <p class="kicker">An interactive lesson · Elinor Ostrom on types of goods and ways of governing</p>
+  <h1>The Juniper Falls <span>Charter</span></h1>
+  <p class="sub">A new town is writing its charter, one clause per shared thing: bread, a pool, a meadow, a creek, a forest. Test each one, stamp it with a way of governing, and run ten years to see which stamps hold.</p>
+</header>
+
+<nav class="strip" aria-label="Lesson progress">
+  <div class="gutter">
+    <div class="strip-row" id="strip"></div>
+    <div class="strip-meta"><span id="strip-count">Ideas found: 0 of 5</span><span>Structured with the PARTS Method</span></div>
+  </div>
+</nav>
+
+<main class="gutter" id="main">
+  <section class="view" id="view-start" aria-labelledby="h-start">
+    <div class="prose">
+      <p class="kicker">Round zero · Only two stamps</p>
+      <h2 id="h-start" tabindex="-1">Charter day</h2>
+      <p class="lede">The founders of Juniper Falls have read one famous essay, and it gave them two options for anything shared: sell it to an owner, or let the state run it. Stamp each of the four clauses below, then run the town for ten years.</p>
+    </div>
+    <div class="panel" id="hook-panel"></div>
+    <details class="how">
+      <summary>How the charter works</summary>
+      <p>Each card is something the town shares. Each stamp is a way of governing it: a market of owners and buyers, a club with dues, the state with taxes and officials, a community of users making their own rules, or layered arrangements that link local groups inside a larger framework. Running ten years scores how well each card does, from 0 to 100, based on patterns Ostrom and others reported in real cases. The scores are a simplified teaching model, not measurements.</p>
+    </details>
+  </section>
+  <section class="view" id="view-mission" hidden></section>
+  <section class="view" id="view-wrap" hidden></section>
+</main>
+
+<footer class="gutter">
+  <p>Instructional design by <b>Avalynn Circe</b>.</p>
+  <p>Juniper Falls is fictional. Ideas are paraphrased from these sources:</p>
+  <ul>
+    <li>Garrett Hardin, "The Tragedy of the Commons," <i>Science</i> (1968).</li>
+    <li>Vincent Ostrom and Elinor Ostrom, "Public Goods and Public Choices," in E. S. Savas, ed., <i>Alternatives for Delivering Public Services</i> (1977).</li>
+    <li>Elinor Ostrom, <i>Governing the Commons: The Evolution of Institutions for Collective Action</i> (1990).</li>
+    <li>James Buchanan, "An Economic Theory of Clubs," <i>Economica</i> (1965); Ronald Coase, "The Lighthouse in Economics," <i>Journal of Law and Economics</i> (1974).</li>
+    <li>Wai Fung Lam, <i>Governing Irrigation Systems in Nepal</i> (1998).</li>
+    <li>Elinor Ostrom, "A Diagnostic Approach for Going Beyond Panaceas," <i>PNAS</i> (2007), and "A General Framework for Analyzing Sustainability of Social-Ecological Systems," <i>Science</i> (2009).</li>
+  </ul>
+</footer>
+
+<script>
+const $ = (s, el = document) => el.querySelector(s);
+const $$ = (s, el = document) => Array.from(el.querySelectorAll(s));
+const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+const r0 = (n) => Math.round(n);
+const reduceMotion = () => window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+function makeStore(key, init) {
+  let s = init;
+  try { const v = JSON.parse(localStorage.getItem(key) || "null"); if (v && typeof v === "object") s = Object.assign(init, v); } catch (e) {}
+  return { s, save() { try { localStorage.setItem(key, JSON.stringify(s)); } catch (e) {} } };
+}
+const PARTS = [["P", "Problem"], ["A", "Answer"], ["R", "Reasoning"], ["T", "Terms"], ["S", "Syntax"]];
+function partsRail(stage) {
+  return `<ol class="parts" aria-label="PARTS steps">${PARTS.map(([l, n], i) => `<li class="${i < stage ? "on" : ""}${i === stage ? " now" : ""}"${i === stage ? ' aria-current="step"' : ""}><b>${l}</b>${n}</li>`).join("")}</ol>`;
+}
+const stepLabel = (l, name) => `<div class="step-label"><span class="letter">${l}</span><span class="name">${name}</span></div>`;
+function termCard(n, p, fieldLabel) {
+  return `<div class="term">
+    ${stepLabel("T", "Terms: the idea you just found")}
+    <div class="num" aria-hidden="true">${n}</div>
+    <h3>${esc(p.name)}</h3>
+    <p class="line">${esc(p.line)}</p>
+    <div class="syntax">
+      ${stepLabel("S", "Syntax: the pattern to reuse")}
+      <p class="pattern">${esc(p.pattern)}</p>
+      <p class="field"><b>${esc(fieldLabel)}</b> ${esc(p.field)}</p>
+    </div>
+  </div>`;
+}
+/* m: {label, value, unit, target, better: "high"|"low", max, why} ; value null = not run yet */
+function meterHTML(m) {
+  const max = m.max == null ? 100 : m.max, min = m.min || 0, run = m.value != null;
+  const pass = run && (m.better === "low" ? m.value <= m.target : m.value >= m.target);
+  const pct = (v) => Math.max(0, Math.min(100, (v - min) / (max - min) * 100));
+  const w = run ? pct(m.value) : 0;
+  const tgt = (m.better === "low" ? "at most " : "at least ") + m.target + (m.unit || "");
+  return `<div class="meter ${run ? (pass ? "pass" : "miss") : "idle"}">
+    <div class="meter-top"><span>${esc(m.label)}</span><span class="val">${run ? r0(m.value) + (m.unit || "") : "·"} <small>goal ${tgt}</small></span></div>
+    <div class="bar" role="img" aria-label="${esc(m.label)}: ${run ? r0(m.value) + (m.unit || "") : "not run yet"}, goal ${tgt}"><i style="width:${w}%"></i><b style="left:calc(${pct(m.target)}% - 1px)"></b></div>
+    ${run && !pass && m.why ? `<div class="why">${esc(m.why)}</div>` : ""}
+  </div>`;
+}
+const meterPass = (m) => m.value != null && (m.better === "low" ? m.value <= m.target : m.value >= m.target);
+function segHTML(name, opts, value, disabled) {
+  return `<div class="seg" role="radiogroup">${opts.map(([v, label]) => `<label><input type="radio" id="${name}-${v}" name="${name}" value="${v}"${String(value) === String(v) ? " checked" : ""}${disabled ? " disabled" : ""}><span>${esc(label)}</span></label>`).join("")}</div>`;
+}
+function toggleHTML(id, title, sub, checked) {
+  return `<label class="toggle" for="${id}"><input type="checkbox" id="${id}"${checked ? " checked" : ""}><span><b>${esc(title)}</b>${sub ? `<small>${esc(sub)}</small>` : ""}</span></label>`;
+}
+function renderStrip(items, current, countText) {
+  const row = $("#strip");
+  row.innerHTML = items.map((it) => `<button class="chip${it.done ? " done" : ""}${it.id === current ? " current" : ""}" data-go="${it.id}" aria-label="${esc(it.aria)}"${it.id === current ? ' aria-current="step"' : ""}>${esc(it.label)}</button>`).join("");
+  $("#strip-count").textContent = countText;
+  const cur = row.querySelector(".current"); if (cur) cur.scrollIntoView({ block: "nearest", inline: "nearest" });
+}
+function go(id) { if (location.hash.slice(1) === id) window.dispatchEvent(new HashChangeEvent("hashchange")); else location.hash = id; }
+document.addEventListener("click", (e) => { const b = e.target.closest("[data-go]"); if (b) go(b.dataset.go); });
+let firstRoute = true;
+function afterRoute() {
+  if (!firstRoute) {
+    const top = $("#main").getBoundingClientRect().top + window.scrollY - 90;
+    window.scrollTo({ top: Math.max(0, top), behavior: reduceMotion() ? "auto" : "smooth" });
+    const hd = document.querySelector("main .view:not([hidden]) h2"); if (hd) hd.focus({ preventScroll: true });
+  }
+  firstRoute = false;
+}
+function showView(id) { $$("main > .view").forEach((v) => { v.hidden = v.id !== id; }); }
+const sleep = (ms) => new Promise((r) => setTimeout(r, reduceMotion() ? 0 : ms));
+
+const MODES = {
+  market: { name: "Market", sub: "Owned and sold" },
+  club: { name: "Club", sub: "Members pay dues" },
+  state: { name: "State", sub: "Taxes and officials" },
+  community: { name: "Community", sub: "Users make the rules" },
+  layered: { name: "Layered", sub: "Local groups in a larger frame" }
+};
+/* outcomes: [score 0..100, what happened] per resource per mode (teaching model) */
+const RES = {
+  bread: { name: "Bread at the bakery", d: "Loaves baked fresh every morning.",
+    o: { market: [90, "Bakeries compete, prices stay fair, and everyone buys the bread they want."],
+         club: [55, "A bread club works for members, but there's no reason to shut anyone out of buying bread."],
+         state: [35, "A town bakery bakes one kind of bread on a schedule set at town hall. Shelves are empty by noon."] } },
+  fireworks: { name: "Founders' Day fireworks", d: "A show over the river every July.",
+    o: { market: [20, "A company can't charge people for looking up. It loses money and cancels the show after one year."],
+         state: [85, "The town pays from taxes and everyone enjoys the show. Since nobody can be kept from watching, everybody chips in through taxes."] } },
+  meadow: { name: "The summer meadow", d: "High pasture where families graze cattle in summer.",
+    o: { market: [45, "Split into private plots. Rain falls unevenly on the slopes, so some families' plots fail each year, and fencing steep ground costs a fortune."],
+         state: [40, "A ministry in the capital sets one grazing limit for every mountain. It doesn't fit these slopes, and one ranger can't watch them all."],
+         community: [88, "Herders agree how many cows each family may send, take turns watching the slopes, and fine anyone who sends extra."],
+         layered: [76, "It works, though the extra layer adds meetings and paperwork the herders didn't need."] } },
+  trout: { name: "Trout in Juniper Creek", d: "Miles of creek through open land.",
+    o: { market: [30, "Sold in stretches. Trout swim between stretches, so each owner races to catch them before the next owner does."],
+         state: [42, "One fishing limit for every creek in the country and one warden for the county. Poaching goes unnoticed."] } },
+  pool: { name: "The community pool", d: "Open every summer, with room for about 200 swimmers.",
+    o: { market: [74, "A company sells day passes. It works, though prices climb in July."],
+         club: [88, "Members' dues pay for lifeguards and upkeep, and membership is capped so the pool never gets too crowded."],
+         state: [62, "Taxes pay for it, so everyone pays whether they swim or not, and at noon in July it's packed shoulder to shoulder."] } },
+  mosquito: { name: "Mosquito spraying", d: "Keeping the river flats from breeding swarms.",
+    o: { market: [20, "Spraying one yard does little, so most households wait for their neighbors to pay. Only a few do, and the mosquitoes win."],
+         club: [30, "Members pay for spraying, but mosquitoes don't check membership. Non-members get the benefit free, so members drop out."],
+         state: [88, "The town sprays on a schedule and taxes everyone a little. Everyone benefits, so everyone pays."] } },
+  gardens: { name: "Family vegetable gardens", d: "Small plots behind each house.",
+    o: { market: [88, "Each family owns its plot and keeps what it grows, so each tends it carefully."],
+         state: [30, "A town garden office decides what everyone plants. Nobody tends a plot they don't control."],
+         community: [58, "Shared gardens mean endless meetings about who weeds and who harvests, for something easy to divide."] } },
+  canal: { name: "The irrigation canal", d: "One canal waters forty farms in turn.",
+    o: { market: [42, "Sold to a company that charges what it likes. Upstream farms take more than their share, and the company won't police it."],
+         state: [48, "An agency builds a modern headgate and sets the schedule from the capital. Farmers stop maintaining ditches they don't control."],
+         community: [86, "Farmers set the watering turns, elect a canal keeper, and each farmer watches the one before them in line."] } },
+  basin: { name: "Groundwater under five towns", d: "One aquifer, thousands of wells.",
+    o: { market: [32, "Every landowner races to pump before the neighbors do. The water table drops each year."],
+         state: [55, "A state agency sets one pumping limit, but it can't meter thousands of wells, and nobody feels the rule is theirs."],
+         community: [38, "Each town limits its own pumping, but the water moves underground, and the next town pumps what one saves."],
+         layered: [88, "Each town manages its wells, a basin association sets total pumping, and a court settles disputes. Each problem is handled at its own level."] } },
+  salmon: { name: "The salmon run", d: "Salmon swim up the river through three counties to spawn.",
+    o: { market: [30, "Sold stretch by stretch, the owners compete for the same fish as it passes."],
+         state: [58, "A distant agency sets one season for the whole river: too early upstream, too late downstream."],
+         community: [45, "Each town's fishers protect their own stretch, but fishers downstream catch the salmon before they arrive."],
+         layered: [86, "Each county's fishers manage their stretch, and a river council coordinates the catch along the whole run, from sea to spawning beds."] } },
+  ridge: { name: "Ridge Forest", d: "Used by the same 40 families for generations. They meet weekly at the mill.",
+    o: { market: [40, "Sold in lots, the forest is cut for quick cash by owners who don't live nearby."],
+         state: [45, "Rangers replace the families' rules with a national code. Families stop guarding a forest that's no longer theirs."],
+         community: [90, "The families already know the forest and each other, and their own rules are working. Leaving them in charge keeps what works."],
+         layered: [68, "A regional board adds outside rules and paperwork that clash with practices the families tested over generations."] } },
+  edge: { name: "Edge Forest", d: "Beside a fast-growing city. Thousands of newcomers a year, a highway through it.",
+    o: { market: [42, "Developers buy the lots nearest the road, and the forest shrinks by a subdivision a year."],
+         state: [56, "Rangers are stretched thin across a forest crossed by roads, and nobody nearby feels responsible."],
+         community: [35, "Few of the newcomers know each other, and nobody can tell who belongs. There's no trust to build rules on."],
+         layered: [84, "The state guards the boundary and runs a court for disputes, while neighborhood groups patrol their own sections and set local rules."] } }
+};
+
+/* ---------- state ---------- */
+const st = makeStore("juniperfalls", { hook: {}, hookRun: false, solved: [], stamps: {}, sort: {}, tests: {}, wrapPick: null });
+const S = st.s;
+
+/* ---------- stamp board (shared by round zero and missions 2 to 5) ---------- */
+function stampBoard(key, cfg) {
+  /* cfg: {el, cards, modes, labels, threshold, onRun(allOk)} */
+  if (!S.stamps[key]) S.stamps[key] = {};
+  const stamps = S.stamps[key];
+  let sel = cfg.modes[0], ran = false;
+  const el = cfg.el;
+  el.innerHTML = `
+    <div class="control"><div class="control-label">Pick a stamp, then tap a card to stamp it</div>
+      <div class="tray" role="radiogroup" aria-label="Stamps">${cfg.modes.map((m) => `<label class="stamp-pick mode-${m}"><input type="radio" name="tray-${key}" value="${m}"${m === sel ? " checked" : ""}><span>${esc(cfg.labels?.[m] || MODES[m].name)}<small>${esc(MODES[m].sub)}</small></span></label>`).join("")}</div></div>
+    <div class="cards" id="cards-${key}"></div>
+    <div class="choices"><button class="btn primary" id="run-${key}">Run ten years</button><span class="muted small" id="run-note-${key}" style="align-self:center"></span></div>`;
+  const draw = (results) => {
+    $("#cards-" + key).innerHTML = cfg.cards.map((id) => {
+      const r = RES[id], m = stamps[id], res = results && results[id];
+      const cls = res ? (res[0] >= cfg.threshold ? " ok" : " no") : "";
+      return `<button class="rcard${cls}${m ? " mode-" + m : ""}" data-card="${id}"${results ? " disabled" : ""} aria-label="${esc(r.name)}${m ? ", stamped " + (cfg.labels?.[m] || MODES[m].name) : ", not stamped"}">
+        <span class="mark${m ? "" : " empty"}">${m ? esc(cfg.labels?.[m] || MODES[m].name) : "No stamp"}</span>
+        <h4>${esc(r.name)}</h4><p>${esc(r.d)}</p>
+        ${res ? `<div class="res-out"><div class="bar"><i data-w="${res[0]}"></i><b style="left:calc(${cfg.threshold}% - 1px)"></b></div><span class="vt">${res[0] >= cfg.threshold ? "Thriving" : "Struggling"} · ${res[0]} of 100</span><p>${esc(res[1])}</p></div>` : ""}
+      </button>`;
+    }).join("");
+    if (results) requestAnimationFrame(() => requestAnimationFrame(() => $$("#cards-" + key + " .res-out i").forEach((i) => { i.style.width = i.dataset.w + "%"; })));
+    const missing = cfg.cards.filter((id) => !stamps[id]).length;
+    $("#run-" + key).textContent = results ? "Change the stamps" : "Run ten years";
+    $("#run-" + key).disabled = !results && missing > 0;
+    $("#run-note-" + key).textContent = !results && missing ? missing + " card" + (missing > 1 ? "s" : "") + " still unstamped" : "";
+  };
+  el.addEventListener("change", (e) => { if (e.target.name === "tray-" + key) sel = e.target.value; });
+  el.addEventListener("click", (e) => {
+    const c = e.target.closest("[data-card]");
+    if (c && !ran) { stamps[c.dataset.card] = sel; st.save(); draw(null); const b = $(`#cards-${key} [data-card="${c.dataset.card}"]`); if (b) b.focus(); }
+  });
+  $("#run-" + key).addEventListener("click", () => {
+    if (ran) { ran = false; draw(null); cfg.onReset && cfg.onReset(); return; }
+    const results = {}; cfg.cards.forEach((id) => { results[id] = RES[id].o[stamps[id]]; });
+    ran = true; draw(results);
+    cfg.onRun(cfg.cards.every((id) => results[id][0] >= cfg.threshold), results);
+  });
+  draw(null);
+  return { replay() { const results = {}; cfg.cards.forEach((id) => { results[id] = RES[id].o[stamps[id]]; }); ran = true; draw(results); } };
+}
+
+/* ---------- round zero ---------- */
+function renderHook() {
+  const p = $("#hook-panel");
+  p.innerHTML = `<div id="hook-board"></div>
+    <div class="debrief" id="hook-debrief" hidden>
+      <h3>Two clauses failed, whichever stamp they got</h3>
+      <p>Bread does well with owners and buyers, and the fireworks do well when the town pays for them. But the meadow and the creek struggle under either stamp. Selling them doesn't stop the overuse, and a distant state can't watch them.</p>
+      <p>The founders' essay was Garrett Hardin's "The Tragedy of the Commons" (1968). Hardin argued that people sharing a resource will overuse it, and that the remedies are private property or "mutual coercion, mutually agreed upon," which many readers took to mean government control. In <i>Governing the Commons</i> (1990), Elinor Ostrom showed that both were being treated as the only options, and documented communities around the world that governed shared resources successfully some other way.</p>
+      <p><b>Your job: write the real charter.</b> First learn what kind of thing each resource is, then find which arrangement fits it. The name of each idea comes only after you find it.</p>
+      <div class="choices"><button class="btn primary" data-go="m1">Start mission 1</button></div>
+    </div>`;
+  stampBoard("hook", {
+    el: $("#hook-board"), cards: ["bread", "fireworks", "meadow", "trout"], modes: ["market", "state"],
+    labels: { market: "Sell it to an owner", state: "The state runs it" }, threshold: 70,
+    onRun() { $("#hook-debrief").hidden = false; if (!S.hookRun) { S.hookRun = true; st.save(); strip("start"); } }
+  });
+  if (S.hookRun) $("#hook-debrief").hidden = false;
+}
+
+/* ---------- missions ---------- */
+const SORT_CARDS = {
+  bread: { ex: true, sub: true, fence: "Easy. The baker hands over a loaf only when you pay.", crowd: "Every loaf eaten is gone. More customers means more loaves must be baked." },
+  toll: { name: "The toll bridge", d: "Crosses the river at the edge of town.", ex: true, sub: false, fence: "Easy. A gate at each end takes payment.", crowd: "One more car crossing takes almost nothing from the next driver, at least until rush hour." },
+  stream: { name: "The town film library online", d: "Thousands of films for anyone with a login.", ex: true, sub: false, fence: "Easy. You need a password to log in.", crowd: "When you watch a film, it's still there for everyone else." },
+  fireworks: { ex: false, sub: false, fence: "Nearly impossible. Anyone in town can look up.", crowd: "Two hundred more people watching takes nothing from anyone's view." },
+  basin: { ex: false, sub: true, fence: "Very hard. Anyone with land can drill a well, and the water moves underground.", crowd: "Every gallon one farm pumps is a gallon nobody else can pump. The water table drops." },
+  trout: { ex: false, sub: true, fence: "Very hard. The creek runs for miles through open land.", crowd: "Every trout caught is one fewer for the next angler." }
+};
+const SORT_ORDER = ["bread", "toll", "stream", "fireworks", "basin", "trout"];
+const QUADS = [
+  { id: "ES", ex: true, sub: true, name: "Private goods" }, { id: "EN", ex: true, sub: false, name: "Club goods (toll goods)" },
+  { id: "NS", ex: false, sub: true, name: "Common-pool resources" }, { id: "NN", ex: false, sub: false, name: "Public goods" }
+];
+const sname = (id) => SORT_CARDS[id].name || RES[id].name, sdesc = (id) => SORT_CARDS[id].d || RES[id].d;
+
+const MISSIONS = [
+  { title: "Two tests", kind: "sort",
+    problem: "Before stamping anything, the charter committee wants to know what kind of thing each resource is. Run two tests on each card: try to keep people out, and add more users. Then file each card on the board.",
+    win: "Every card falls into one of four boxes, based on just two questions. Bread and the creek are both used up by each user, but only bread is easy to fence. The bridge and the film library are easy to fence and don't wear out with one more user. The fireworks are neither fenceable nor used up.",
+    p: { name: "Four types of goods",
+      line: "Two questions sort almost anything people share: can others be kept out at reasonable cost (excludability), and does one person's use leave less for others (subtractability)? The answers give private goods, club goods, common-pool resources and public goods.",
+      pattern: "Before deciding who should run something, ask the two questions: can people be kept out, and does using it leave less for others?",
+      field: "Vincent and Elinor Ostrom (1977) expanded the economists' split between private and public goods into four types, adding toll goods and common-pool resources, and used the term subtractability for whether use leaves less for others." } },
+  { title: "Markets, clubs and the state", kind: "stamp", cards: ["bread", "pool", "mosquito"], modes: ["market", "club", "state"], threshold: 70,
+    problem: "Three clauses are ready to stamp: the bakery's bread, the community pool and mosquito spraying. You now have a third stamp: a club, where members pay dues and non-members stay out. Find a stamp for each that keeps it thriving for ten years.",
+    win: "Each good found its match. Bread is easy to fence and gets used up, so a market works. The pool is easy to fence but doesn't get used up until it's crowded, so a club with capped membership works. Nobody can be kept from the benefit of spraying, so the town pays for it through taxes.",
+    p: { name: "Governance follows the good",
+      line: "Markets work well for private goods, clubs and tolls for goods that can be fenced but not used up, and public provision through taxes for goods nobody can be kept from.",
+      pattern: "Match the arrangement to the type of good: sell what can be fenced and used up, charge dues for what can be fenced and shared, and fund through taxes what can't be fenced at all.",
+      field: "James Buchanan (1965) explained how clubs can provide goods that members share but outsiders can be kept from. Ronald Coase (1974) added a twist: English lighthouses, the textbook public good, were long run privately and paid for with fees collected at ports, which made them partly fenceable." } },
+  { title: "The commons", kind: "stamp", cards: ["meadow", "gardens", "canal"], modes: ["market", "state", "community"], threshold: 70,
+    problem: "Now the hard clauses: the summer meadow, the family gardens and the irrigation canal. You have one new stamp, community: the users themselves make the rules, watch each other and enforce them. Find what works for each.",
+    win: "The gardens thrive as private plots, but the meadow and the canal thrive when their users govern them together. Those two are hard to fence and easy to use up, and their users know them best. Hardin's either-or left out this third option.",
+    p: { name: "Self-governance by the users",
+      line: "The people who use a common-pool resource can often make, monitor and enforce their own rules, an option that the choice between privatization and state control leaves out.",
+      pattern: "For a shared resource that's hard to fence and easy to use up, ask whether its users can govern it themselves before choosing between selling it and handing it to the state.",
+      field: "In Törbel, Switzerland, families have owned their gardens and vineyards privately for centuries while owning the summer meadows and forests in common. In Nepal, Wai Fung Lam (1998) found that many farmer-managed irrigation systems outperformed government-run systems with more modern equipment." } },
+  { title: "Too big for one village", kind: "stamp", cards: ["basin", "salmon", "meadow"], modes: ["market", "state", "community", "layered"], threshold: 70,
+    problem: "Juniper Falls shares some resources with its neighbors: the groundwater under five towns, and a salmon run that passes through three counties. The summer meadow is back too, as a check. You have one new stamp, layered: local groups govern what they know, inside a larger framework for what crosses their borders.",
+    win: "The groundwater and the salmon are too big for any one community and too varied for one distant agency. Layered arrangements let each town or county manage its own piece while a larger body handles what crosses lines. The meadow didn't need the extra layer: its own community already fit.",
+    p: { name: "Polycentric governance",
+      line: "Large common-pool resources can be governed by many overlapping units, with local groups nested inside larger arrangements and each handling problems at its own scale.",
+      pattern: "When a resource is bigger than any one community, keep local groups in charge of what they know best, and link them through larger bodies for what crosses their borders.",
+      field: "Southern California's groundwater basins, the subject of Ostrom's first research, came to be governed by water associations, special districts, courts and cities working together, with no single authority in charge." } },
+  { title: "Two forests", kind: "stamp", cards: ["ridge", "edge"], modes: ["market", "state", "community", "layered"], threshold: 80,
+    problem: "The last clauses cover two forests. Both are the same type of good, hard to fence and easy to use up. But Ridge Forest is used by 40 families who have known each other for generations, and Edge Forest sits beside a fast-growing city. The bar is higher this time: each must score at least 80.",
+    win: "Same type of good, two different answers. Ridge Forest's families already had working rules and trust, so leaving them in charge kept what works. Edge Forest has too many strangers for community rules alone, so it needs a larger layer to guard the boundary and settle disputes, with neighborhood groups inside it.",
+    p: { name: "No panaceas",
+      line: "No single form of governance works everywhere. What fits depends on the resource and on the people: how many there are, whether they trust each other, and what rules they already have.",
+      pattern: "Diagnose before you prescribe. Look at the resource, the users and the rules already in place, then choose the arrangement that fits this case.",
+      field: "In 2007 Ostrom warned against panaceas, one-size-fits-all fixes such as always privatizing or always regulating. She proposed a framework (2009) for diagnosing each case by looking at the resource, the users, the governance system and how they interact." } }
+];
+
+/* ---------- strip ---------- */
+function strip(current) {
+  const items = [{ id: "start", label: "Start", aria: "Round zero: charter day", done: S.hookRun }]
+    .concat(MISSIONS.map((m, i) => ({ id: "m" + (i + 1), label: String(i + 1), aria: "Mission " + (i + 1) + (S.solved.includes(i + 1) ? ": " + m.p.name : ""), done: S.solved.includes(i + 1) })))
+    .concat([{ id: "wrap", label: "Wrap-up", aria: "Wrap-up", done: S.solved.length === MISSIONS.length }]);
+  renderStrip(items, current, "Ideas found: " + S.solved.length + " of " + MISSIONS.length);
+}
+
+/* ---------- mission view ---------- */
+function renderMission(n) {
+  const m = MISSIONS[n - 1], solved = S.solved.includes(n);
+  $("#view-mission").innerHTML = `
+    <div class="prose"><p class="kicker">Mission ${n} of ${MISSIONS.length}</p><h2 id="h-mission" tabindex="-1">${esc(m.title)}</h2></div>
+    <div id="parts-slot">${partsRail(solved ? 4 : 1)}</div>
+    <div class="panel">${stepLabel("P", "Problem")}<p>${esc(m.problem)}</p></div>
+    <div class="panel">${stepLabel("A", m.kind === "sort" ? "Answer: test and file each card" : "Answer: stamp each clause")}<div id="work"></div></div>
+    <div class="panel" id="outcome" hidden aria-live="polite"></div>
+    <div id="reveal" hidden></div>
+    <div class="nav-row">
+      <button class="btn quiet" data-go="${n === 1 ? "start" : "m" + (n - 1)}">Back</button>
+      <button class="btn${solved ? " primary" : " quiet"}" id="next-btn" data-go="${n === MISSIONS.length ? "wrap" : "m" + (n + 1)}">${n === MISSIONS.length ? "Go to wrap-up" : "Next mission"}</button>
+    </div>`;
+  if (m.kind === "sort") renderSort(n);
+  else {
+    const board = stampBoard("m" + n, { el: $("#work"), cards: m.cards, modes: m.modes, threshold: m.threshold,
+      onRun: (ok, res) => showOutcome(n, ok, res), onReset: () => { $("#outcome").hidden = true; } });
+    if (solved && m.cards.every((id) => S.stamps["m" + n][id])) { board.replay(); const res = {}; m.cards.forEach((id) => { res[id] = RES[id].o[S.stamps["m" + n][id]]; }); showOutcome(n, m.cards.every((id) => res[id][0] >= m.threshold), res); }
+  }
+}
+function showOutcome(n, ok, res) {
+  const m = MISSIONS[n - 1], nOk = m.cards.filter((id) => res[id][0] >= m.threshold).length;
+  const out = $("#outcome"); out.hidden = false; out.className = "panel " + (ok ? "v-win" : "v-fail");
+  out.innerHTML = `${stepLabel("R", "Reasoning: what happened")}
+    <p class="verdict">${ok ? "Every clause thrived for ten years" : nOk + " of " + m.cards.length + " clauses thrived"}</p>
+    ${ok ? `<p class="feedback">${esc(m.win)}</p>` : `<p class="muted small">Read what happened on each struggling card, then change the stamps and run again.</p>`}`;
+  finish(n, ok);
+}
+function finish(n, ok) {
+  const m = MISSIONS[n - 1], rev = $("#reveal");
+  if (ok) {
+    if (!S.solved.includes(n)) { S.solved.push(n); S.solved.sort((a, b) => a - b); st.save(); }
+    strip("m" + n); $("#parts-slot").innerHTML = partsRail(4);
+    rev.hidden = false; rev.innerHTML = termCard(n, m.p, "From the research:");
+    const nb = $("#next-btn"); nb.classList.add("primary"); nb.classList.remove("quiet");
+  } else { $("#parts-slot").innerHTML = partsRail(2); rev.hidden = true; }
+}
+
+/* mission 1: test and sort */
+let sortSel = null;
+function renderSort(n) {
+  const solved = S.solved.includes(n);
+  const left = SORT_ORDER.filter((id) => !S.sort[id]);
+  if (!sortSel || S.sort[sortSel]) sortSel = left[0] || null;
+  const t = sortSel ? (S.tests[sortSel] || {}) : {}, c = sortSel ? SORT_CARDS[sortSel] : null, ready = t.fence && t.crowd;
+  $("#work").innerHTML = `
+    <div class="control"><div class="control-label">Cards to file</div>
+      <div class="picker">${SORT_ORDER.map((id) => `<button class="btn quiet${S.sort[id] ? " done" : ""}${id === sortSel ? " sel" : ""}" data-pick="${id}"${S.sort[id] ? " disabled" : ""}>${esc(sname(id))}</button>`).join("")}</div></div>
+    ${c ? `<div class="tests">
+      <p><b>${esc(sname(sortSel))}.</b> <span class="muted">${esc(sdesc(sortSel))}</span></p>
+      <div class="test-row"><button class="btn" data-test="fence">Test 1: try to keep people out</button>${t.fence ? `<p class="res">${esc(c.fence)}</p>` : ""}</div>
+      <div class="test-row"><button class="btn" data-test="crowd">Test 2: add 200 more users</button>${t.crowd ? `<p class="res">${esc(c.crowd)}</p>` : ""}</div>
+      <p class="hint muted" id="sort-hint" aria-live="polite">${ready ? "Now tap the box on the board where this card belongs." : "Run both tests to unlock the board."}</p>
+    </div>` : `<p class="muted">Every card is filed.</p>`}
+    <div class="board" role="group" aria-label="Sorting board">
+      <span></span><span class="hd">Using it leaves less for others</span><span class="hd">Using it leaves no less for others</span>
+      <span class="hd rh">Easy to keep people out</span>${quadHTML("ES", ready, solved)}${quadHTML("EN", ready, solved)}
+      <span class="hd rh">Hard to keep people out</span>${quadHTML("NS", ready, solved)}${quadHTML("NN", ready, solved)}
+    </div>`;
+  $$("#work [data-pick]").forEach((b) => b.addEventListener("click", () => { sortSel = b.dataset.pick; renderSort(n); }));
+  $$("#work [data-test]").forEach((b) => b.addEventListener("click", () => { S.tests[sortSel] = Object.assign({}, S.tests[sortSel], { [b.dataset.test]: true }); st.save(); renderSort(n); const nb = $(`#work [data-test="${b.dataset.test}"]`); if (nb) nb.focus(); }));
+  $$("#work [data-quad]").forEach((b) => b.addEventListener("click", () => placeCard(n, b.dataset.quad)));
+  if (SORT_ORDER.every((id) => S.sort[id])) {
+    const out = $("#outcome"); out.hidden = false; out.className = "panel v-win";
+    out.innerHTML = `${stepLabel("R", "Reasoning: what happened")}<p class="verdict">All six cards filed</p><p class="feedback">${esc(MISSIONS[0].win)}</p>`;
+    finish(n, true);
+  }
+}
+function quadHTML(q, ready, solved) {
+  const Q = QUADS.find((x) => x.id === q), cards = SORT_ORDER.filter((id) => S.sort[id] === q), named = solved || SORT_ORDER.every((id) => S.sort[id]);
+  return `<button class="quad${ready ? " live" : ""}" data-quad="${q}"${ready ? "" : " disabled"} aria-label="${named ? Q.name : "Unnamed box"}: ${Q.ex ? "easy" : "hard"} to keep people out, use ${Q.sub ? "leaves less" : "leaves no less"} for others">
+    <span class="qn${named ? "" : " hidden"}">${named ? esc(Q.name) : "?"}</span>${cards.map((id) => `<span class="chipx">${esc(sname(id))}</span>`).join("")}</button>`;
+}
+function placeCard(n, q) {
+  const c = SORT_CARDS[sortSel], Q = QUADS.find((x) => x.id === q);
+  if (Q.ex === c.ex && Q.sub === c.sub) { S.sort[sortSel] = q; st.save(); sortSel = null; renderSort(n); return; }
+  const wrongEx = Q.ex !== c.ex;
+  $("#sort-hint").textContent = "Not quite. Look again at test " + (wrongEx ? "1: " + c.fence : "2: " + c.crowd);
+  $("#sort-hint").classList.remove("muted");
+}
+
+/* ---------- wrap-up ---------- */
+const TRANSFER = [
+  { t: "Sell the water rights to whichever gardener bids the most.", fb: "The spigot would run dry for everyone else, and the gardeners would race each other for the rest. Water from one shared spigot is hard to divide into private pieces." },
+  { t: "Ask the city parks department to set a watering schedule from downtown.", fb: "A schedule written downtown won't know which beds need water when, and nobody will be there to see who skips their turn." },
+  { t: "The gardeners meet, set a watering rotation, and agree on what happens when someone skips their turn or overwaters.", win: true, fb: "Yes. The spigot is a small common-pool resource, and its users know it best. Rules they make and enforce themselves are most likely to fit and to be kept." },
+  { t: "Leave it alone. The gardeners are friendly and will work it out.", fb: "Friendly people still drain a shared spigot in August. Working it out means making rules, which is the step this option skips." }
+];
+function renderWrap() {
+  const el = $("#view-wrap"), all = S.solved.length === MISSIONS.length;
+  el.innerHTML = `
+    <div class="prose">
+      <p class="kicker">Wrap-up</p>
+      <h2 id="h-wrap" tabindex="-1">${all ? "The charter is signed" : "Ideas found so far: " + S.solved.length + " of " + MISSIONS.length}</h2>
+      <p class="lede">${all ? "Juniper Falls ended up with markets, clubs, the state, communities and layered arrangements, each where it fits. That's not indecision. It's a charter written by looking at each case." : "You can visit any mission from the strip above. The ideas you haven't found yet stay hidden until you do."}</p>
+    </div>
+    <div class="panel">
+      <h3 style="font-size:1.25rem">The charter at a glance</h3>
+      <div class="table-wrap"><table class="goods-table">
+        <thead><tr><th></th><th>Using it leaves less for others</th><th>Using it leaves no less for others</th></tr></thead>
+        <tbody>
+          <tr><th>Easy to keep people out</th><td><b>Private goods</b>Bread, gardens. Markets usually fit.</td><td><b>Club goods</b>The pool, the toll bridge. Clubs, dues and tolls fit.</td></tr>
+          <tr><th>Hard to keep people out</th><td><b>Common-pool resources</b>Meadow, canal, groundwater, forests. User communities, often layered, fit when the conditions are right.</td><td><b>Public goods</b>Fireworks, mosquito spraying. Public funding usually fits.</td></tr>
+        </tbody></table></div>
+      <div class="versus">
+        <div><h4>Hardin (1968)</h4><p>Shared resources will be overused. The fixes are private property or coercion from above.</p></div>
+        <div><h4>Ostrom (1990 onward)</h4><p>Users can often govern shared resources themselves, alone or in layers. No single fix works everywhere, so diagnose each case.</p></div>
+      </div>
+      <ol class="recap">${MISSIONS.map((m, i) => `<li class="${S.solved.includes(i + 1) ? "found" : ""}"><span class="n">${i + 1}</span><div><div class="t">${S.solved.includes(i + 1) ? esc(m.p.name) : "Not found yet"}</div><div class="d">${S.solved.includes(i + 1) ? esc(m.p.pattern) : "Solve mission " + (i + 1) + " to reveal it."}</div></div></li>`).join("")}</ol>
+    </div>
+    <div class="panel" id="transfer">
+      ${stepLabel("?", "One more clause: the community garden's spigot")}
+      <p>Thirty households share a community garden with one water spigot. Every August it runs dry by mid-afternoon, and arguments break out. Which first move fits what you learned?</p>
+      <div class="options" role="group" aria-label="Options">${TRANSFER.map((f, i) => `<button class="opt" data-tr="${i}"><span class="key">${"ABCD"[i]}</span><span>${esc(f.t)}</span></button>`).join("")}</div>
+      <p class="feedback" id="tr-fb" hidden aria-live="polite"></p>
+    </div>
+    <div class="nav-row"><button class="btn quiet" data-go="m5">Back to mission 5</button><button class="btn quiet" data-go="start">Back to the start</button></div>`;
+  el.querySelectorAll("[data-tr]").forEach((b) => b.addEventListener("click", () => {
+    const f = TRANSFER[+b.dataset.tr], fb = $("#tr-fb");
+    el.querySelectorAll("[data-tr]").forEach((x) => x.classList.remove("win", "tried", "picked"));
+    b.classList.add(f.win ? "win" : "tried");
+    $("#transfer").className = "panel " + (f.win ? "v-win" : "v-fail");
+    fb.hidden = false; fb.textContent = f.fb;
+  }));
+}
+
+/* ---------- routing ---------- */
+function route() {
+  const h = location.hash.slice(1), mm = /^m([1-5])$/.exec(h);
+  if (mm) { renderMission(+mm[1]); showView("view-mission"); strip(h); }
+  else if (h === "wrap") { renderWrap(); showView("view-wrap"); strip("wrap"); }
+  else { showView("view-start"); strip("start"); }
+  afterRoute();
+}
+window.addEventListener("hashchange", route);
+renderHook();
+route();
+</script>
+
+</body></html>
