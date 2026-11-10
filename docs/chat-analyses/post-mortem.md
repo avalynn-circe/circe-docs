@@ -11,7 +11,9 @@ Nov 10, 2026 · Avalynn Circe
 
 ## At a glance
 
+<!-- vale Circe.TrailingContrast = NO -->
 **In one sentence:** for three days, one client’s website assistant gave some visitors out-of-date insurance information and sent others to a contact form instead of a live person. It is fixed, and we are asking for approval of four safeguards so it does not happen again.
+<!-- vale Circe.TrailingContrast = YES -->
 
 **Fixed in three days; four safeguards need approval**
 
@@ -99,6 +101,7 @@ All times Central. The three changes landed within 48 hours of each other; detec
 
 Seven methods were used; no single one explained the incident, but together they separated three causes and ruled out two suspected ones (a model version change and a CRM outage).
 
+<!-- vale Circe.TrailingContrast = NO -->
 | Method | Question it answered | Key finding |
 | --- | --- | --- |
 | Transcript review (412 chats, Nov 2–5, coded against a 6-point rubric) | What exactly went wrong for visitors? | 58 wrong-payer answers, 60 misrouted handoffs, 71 insurance chats answered in free text instead of routed |
@@ -108,6 +111,7 @@ Seven methods were used; no single one explained the incident, but together they
 | Config version diff (prompt v14 vs v15) | What changed in the AI layer? | Routing rule moved from position 2 to position 6, after a 1,800-token knowledge block |
 | Controlled reproduction in staging (2×2 test, below) | Which change caused which symptom? | Prompt order alone cut route rate by 40 points; stale content alone caused wrong payers |
 | Client and agent interviews (3 admissions staff) | What did people see that logs missed? | Agents saw empty queues at 5 pm and assumed low traffic; visitors called the main line instead |
+<!-- vale Circe.TrailingContrast = YES -->
 
 **Sample webhook trace query** (Loki, anonymized labels):
 
@@ -125,7 +129,9 @@ Seven methods were used; no single one explained the incident, but together they
 | v14 (routing rule early) | 81% (0 wrong) | 79% (11 wrong) |
 | v15 (routing rule late) | 41% (0 wrong) | 36% (19 wrong) |
 
+<!-- vale Circe.TrailingContrast = NO -->
 The two causes are largely independent: prompt order drives routing, index content drives accuracy, and stale content does more harm when the bot answers instead of routing.
+<!-- vale Circe.TrailingContrast = YES -->
 
 ## Why it happened
 
@@ -141,19 +147,23 @@ The incident had three root causes and one shared contributing factor: no check 
 
 **Cause 2: Routing instruction buried in the system prompt.**
 
+<!-- vale Circe.TrailingContrast = NO -->
 1. The AI layer answered insurance questions itself instead of starting the Verify Insurance flow.
 2. In v15, the routing rule sat after the retrieved-knowledge block and the new tone guidance.
 3. With long retrieved context in between, the model weighted “answer from the knowledge” over “route this.”
 4. The edit was reviewed for wording, not tested for behavior.
 5. There is no regression set of routing test questions run before a prompt is published.
+<!-- vale Circe.TrailingContrast = YES -->
 
 **Cause 3: Business hours computed with a fixed offset.**
 
+<!-- vale Circe.TrailingContrast = NO -->
 1. Chats at 5–6 pm went to the after-hours form; chats at 7–8 am queued for agents who were not online.
 2. The webhook computed local time as UTC−5.
 3. Central time moved to UTC−6 on Nov 1 when daylight saving ended.
 4. The offset was hard-coded during a spring 2026 rebuild instead of read from the account’s time zone.
 5. Hours logic has no test that crosses a DST boundary.
+<!-- vale Circe.TrailingContrast = YES -->
 
 **Contributing factors**
 
@@ -180,11 +190,13 @@ All three causes were fixed by Nov 5; the open items prevent the same class of f
 
 ## Lessons learned
 
+<!-- vale Circe.TrailingContrast = NO -->
 - **Overlapping changes hide each other.** Three small changes in 48 hours produced one confusing picture. A shared change log would have pointed to all three on day one.
 - **Test behavior, not wording.** The prompt edit read well and broke routing. A short regression set catches what a read-through cannot.
 - **Where an instruction sits matters as much as what it says.** Rules that must always fire belong early and in a layer edits cannot move.
 - **Measure outcomes, not just uptime.** Nothing was “down,” so nothing alerted. Route rate and form completion are the real health signals for a conversion bot.
 - **What went well:** the 2×2 reproduction separated the causes in under two hours, and the client was told about affected visitors within a day of the incident being declared.
+<!-- vale Circe.TrailingContrast = YES -->
 
 ## Glossary
 

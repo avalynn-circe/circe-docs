@@ -23,9 +23,11 @@ Nov 10, 2026 · Avalynn Circe
 
 **What we learned, in plain terms**
 
+<!-- vale Circe.TrailingContrast = NO -->
 - **Say it simply.** Plain instructions with a one-line reason beat formal, legal-style wording, the same way a new hire follows a clear brief better than a policy manual.
 - **Put the must-follow rules first, and repeat them at the end.** When the rules came after a long block of reference material, the assistant often forgot them, like a key instruction buried on page 10.
 - **Build instructions from reusable blocks.** Instead of one long document, the assistant gets only the blocks it needs for each type of conversation, like a checklist matched to the task.
+<!-- vale Circe.TrailingContrast = YES -->
 
 **What we need from you**
 
@@ -141,10 +143,12 @@ Putting routing and safety rules before the retrieved knowledge, then restating 
 
 **What we saw in transcripts**
 
+<!-- vale Circe.TrailingContrast = NO -->
 - In O2 and O3, long knowledge blocks pulled the model into “answer mode”: it summarized the insurance page instead of starting the flow.
 - O3 missed one crisis message that arrived alongside a long insurance question; the model answered the insurance part first. That single miss disqualifies O3.
 - The end-of-prompt reminder in O4 is short (two sentences, about 40 tokens) and recovered most of the long-context loss.
 - Tone guidance placed last (O3) scored slightly higher on tone, but not enough to justify the routing loss.
+<!-- vale Circe.TrailingContrast = YES -->
 
 ## Test 3: Building from reusable blocks (prompt layering)
 

@@ -56,7 +56,9 @@ Two things to act on: 38 MM-04 leads are stuck waiting for a CRM token, and an e
 
 ## Leads over the last eight weeks
 
+<!-- vale Circe.TrailingContrast = NO -->
 All three verticals grew steadily through October; only behavioral health broke the trend this week, and the drop lines up with the routing incident rather than lower demand (BH conversations were up 3%).
+<!-- vale Circe.TrailingContrast = YES -->
 
 **Behavioral health leads fell 8.5% in the incident week** (leads captured per week)
 

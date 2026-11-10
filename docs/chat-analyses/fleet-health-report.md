@@ -122,6 +122,7 @@ Two bots are at risk and eight are on watch; every watch bot traces to one of th
 
 One SEV-2, one open SEV-3 and five fleet changes this week. Full write-up of the SEV-2 is in the sample post-mortem.
 
+<!-- vale Circe.TrailingContrast = NO -->
 | Date | Item | Bots | Detail |
 | --- | --- | --- | --- |
 | Nov 7 | SEV-3 opened: CRM sync failure | MM-04 | Client’s CRM API token expired; 38 leads queued and retrying. Waiting on client admin to reissue. |
@@ -131,6 +132,7 @@ One SEV-2, one open SEV-3 and five fleet changes this week. Full write-up of the
 | Nov 4 | Crawl exclusion rule | All 24 | Archive, legacy and dated paths excluded; 3 bots re-indexed, 41 stale pages removed. |
 | Nov 4 | SEV-2 declared | BH-03 | Wrong-payer answers and misrouted handoffs (Client A). Resolved Nov 6. |
 | Nov 2 | Template v15 published | 6 BH bots | Added tone guidance; moved the routing rule below the knowledge block. Rolled back by v16. |
+<!-- vale Circe.TrailingContrast = YES -->
 
 ## Watchlist and actions for next week
 
