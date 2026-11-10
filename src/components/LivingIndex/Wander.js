@@ -9,11 +9,12 @@ export default function Wander() {
   const match = usePageItem();
   if (!match) return null;
   const {section, item} = match;
-  const siblings = section.items.filter((x) => x !== item);
+  // Items that share a group (the blog posts) show only their own group here.
+  const siblings = section.items.filter((x) => x !== item && (!item.group || x.group === item.group));
   const others = sections.filter((s) => s !== section);
   return (
     <aside className={`li-wander li-c-${section.id}`} aria-label={`More ${section.name.toLowerCase()}`}>
-      <h3>More {section.name.toLowerCase()}</h3>
+      <h3>More {section.name.toLowerCase()}{item.group ? `: ${item.group}` : ''}</h3>
       <div className="li-sibs">
         {siblings.map((x) => (
           <ItemLink key={x.title} item={x} className="li-sib">

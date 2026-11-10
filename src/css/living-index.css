@@ -2,7 +2,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500&family=Newsreader:ital,opsz,wght@1,6..72,500&family=JetBrains+Mono:wght@500&display=swap');
 
 :root {
-  --li-i: #D9531A; --li-c: #1E6BD0; --li-w: #8A3A8E; --li-s: #22805A;
+  --li-i: #D9531A; --li-c: #1E6BD0; --li-w: #8A3A8E; --li-s: #22805A; --li-b: #9A6A00;
   --li-surface: var(--ifm-background-surface-color, #fff);
   --li-ink: var(--ifm-font-color-base);
   --li-muted: var(--ifm-color-emphasis-700);
@@ -12,10 +12,11 @@
   --li-code: 'JetBrains Mono', ui-monospace, Menlo, Consolas, monospace;
 }
 [data-theme='dark'] {
-  --li-i: #FF7E45; --li-c: #5AA6F5; --li-w: #D07BD4; --li-s: #4FC48E;
+  --li-i: #FF7E45; --li-c: #5AA6F5; --li-w: #D07BD4; --li-s: #4FC48E; --li-b: #E8B23A;
 }
 .li-c-i { --c: var(--li-i); } .li-c-c { --c: var(--li-c); }
 .li-c-w { --c: var(--li-w); } .li-c-s { --c: var(--li-s); }
+.li-c-b { --c: var(--li-b); }
 
 /* ---------- sidebar: stock menu, colored through category classNames ---------- */
 /* Docusaurus draws the caret in the link's ::after and rotates it, so the caret is left alone.
@@ -35,6 +36,7 @@
 .li-cat.li-c-c > .menu__list-item-collapsible > .menu__link::before { content: 'Diagnose'; }
 .li-cat.li-c-w > .menu__list-item-collapsible > .menu__link::before { content: 'Argue'; }
 .li-cat.li-c-s > .menu__list-item-collapsible > .menu__link::before { content: 'Inspect'; }
+.li-cat.li-c-b > .menu__list-item-collapsible > .menu__link::before { content: 'Read'; }
 /* a category rendered without the collapsible wrapper keeps the square on the link */
 .li-cat > .menu__link { display: flex; align-items: center; gap: 9px; font-weight: 700; }
 .li-cat > .menu__link::before { content: ''; width: 12px; height: 12px; border-radius: 3px; background: var(--c); flex: none; }
@@ -46,6 +48,8 @@
 .li-hint { color: var(--li-muted); font-size: .95rem; }
 .li-hint a { font-weight: 600; text-decoration: underline; text-underline-offset: 3px; color: var(--li-ink); }
 .li-wall { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+/* the fifth card (Blog posts) takes the full width so the wall has no gap */
+.li-wall > .li-spec:nth-child(odd):last-child { grid-column: 1 / -1; }
 @media (max-width: 996px) { .li-wall { grid-template-columns: minmax(0, 1fr); } }
 .li-spec { display: flex; flex-direction: column; min-width: 0; background: var(--li-surface); border: 1px solid var(--li-rule); border-radius: 18px; overflow: hidden; }
 .li-spec-top { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; padding: 16px 18px 0; }
@@ -87,6 +91,14 @@ a.li-row:hover .li-it { text-decoration: underline; text-underline-offset: 3px; 
 .li-haz-h { background: #F2C200; color: #12161F; font-weight: 800; font-size: 12px; letter-spacing: .14em; padding: 4px 10px; }
 .li-haz-b { font-size: 13px; padding: 8px 10px; line-height: 1.4; }
 .li-reuse { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+.li-blog-top { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+.li-blog-tag { font-family: var(--li-code); font-size: 10.5px; text-transform: uppercase; letter-spacing: .1em; color: var(--c); border: 1px solid var(--c); border-radius: 999px; padding: 2px 9px; }
+.li-blog-n { font-family: var(--li-code); font-size: 11px; color: var(--li-muted); }
+.li-blog-line { font-family: var(--li-display); font-weight: 500; font-size: 21px; line-height: 1.25; margin: 10px 0; }
+.li-blog-foot { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 6px 14px; font-size: 13px; }
+.li-blog-from { color: var(--li-muted); text-decoration: underline; text-underline-offset: 3px; }
+.li-blog-from:hover { color: var(--c); }
+.li-blog-next { background: none; border: 0; padding: 0; font: inherit; font-weight: 600; color: var(--c); cursor: pointer; }
 .li-reuse span { font-family: var(--li-code); font-size: 10.5px; border: 1px solid var(--li-rule); border-radius: 6px; padding: 2px 7px; background: var(--li-surface); color: var(--li-muted); }
 
 /* ---------- doc pages: banner and wander ---------- */

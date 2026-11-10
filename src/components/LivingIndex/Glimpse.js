@@ -1,4 +1,5 @@
 import React, {useState} from 'react';
+import Link from '@docusaurus/Link';
 
 // Each section shows a working slice of its own medium.
 
@@ -59,11 +60,31 @@ function HazardGlimpse() {
   );
 }
 
+function BlogGlimpse({g}) {
+  const [n, setN] = useState(0);
+  const total = g.lines.length;
+  const one = g.lines[n];
+  return (
+    <>
+      <div className="li-blog-top">
+        <span className="li-blog-tag">{one.tag}</span>
+        <span className="li-blog-n" aria-live="polite">{n + 1} of {total}</span>
+      </div>
+      <p className="li-blog-line">{one.line}</p>
+      <div className="li-blog-foot">
+        <Link className="li-blog-from" to={one.to}>{one.title}</Link>
+        <button type="button" className="li-blog-next" onClick={() => setN((n + 1) % total)}>Another line</button>
+      </div>
+    </>
+  );
+}
+
 export default function Glimpse({section}) {
   switch (section.id) {
     case 'i': return <LakeGlimpse />;
     case 'c': return <ChatGlimpse g={section.glimpse} />;
     case 'w': return <QuoteGlimpse g={section.glimpse} />;
+    case 'b': return <BlogGlimpse g={section.glimpse} />;
     default: return <HazardGlimpse />;
   }
 }

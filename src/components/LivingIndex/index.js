@@ -41,7 +41,7 @@ function SpecimenCard({section}) {
 
 export default function LivingIndex() {
   const {withBaseUrl} = useBaseUrlUtils();
-  // Tell Docusaurus this anchor exists, so the Wander chips pass onBrokenAnchors.
+  // Tells the broken-link checker that /#living-index exists, for the chips on every page.
   useBrokenLinks().collectAnchor('living-index');
   return (
     <div className="li-root" id="living-index">

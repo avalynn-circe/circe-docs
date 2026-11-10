@@ -6,6 +6,7 @@
 //   href     a static file under /static, without baseUrl (for example '/lessons/lake-wren.html')
 //   planned  true shows the item as "soon" with no link (keeps onBrokenLinks happy)
 //   how, min the verb and minutes shown beside the title
+//   group    optional; on a page, "More in this section" shows only items with the same group
 
 const sections = [
   {
@@ -83,6 +84,60 @@ const sections = [
         blurb: "A litigation platform's knowledge base where AI-drafted pages wait for a human check."},
       {title: 'Weather-aware AI skill', to: '/xweather-skill', how: 'Follow', min: 10,
         blurb: 'A tutorial on MCP, Claude Skills and the Vaisala Xweather MCP server.'},
+    ],
+  },
+  {
+    id: 'b',
+    name: 'Blog posts',
+    verb: 'Read',
+    promise: 'Sixteen articles written for F3 Wireless, from how a firm engages to testing a radio by radio.',
+    // The card's glimpse: opening lines from five posts, one at a time.
+    glimpse: {
+      lines: [
+        {tag: "LoRa", title: "DVT of a LoRa Radio", to: '/blog-posts/dvt-of-a-lora-radio', line: "The sensitivity floor that makes long-range deployment possible also makes the test setup difficult, because the receiver hears everything."},
+        {tag: "Lab Capability", title: "The Lab as the Iteration Loop", to: '/blog-posts/the-lab-as-the-iteration-loop', line: "The cost of that decision is not the lab bill. It is the iteration cycle."},
+        {tag: "Bluetooth", title: "DVT of a Bluetooth Radio", to: '/blog-posts/dvt-of-a-bluetooth-radio', line: "Bluetooth Low Energy and Bluetooth Classic share a name and almost nothing else."},
+        {tag: "Engaging F3", title: "What Equipment Does and Doesn’t Tell You About a Firm", to: '/blog-posts/equipment-and-expertise', line: "Anyone with capital can buy a spectrum analyzer."},
+        {tag: "Cellular", title: "DVT of a Cellular Radio", to: '/blog-posts/dvt-of-a-cellular-radio', line: "It transmits only in response to a network, which means the test setup has to bring the network along."},
+      ],
+    },
+    // group: posts with the same group are shown together under "More blog posts".
+    items: [
+      // The Firm
+      {title: "What F3 Is and What F3 Is Not", to: '/blog-posts/what-f3-is-and-is-not', how: 'Read', min: 6, group: "The Firm",
+        blurb: "Work for hire, customer-owned IP, the contrast with ODM lock-in, and what happens to the relationship after the certified prototype."},
+      {title: "What a Wireless Engagement Looks Like", to: '/blog-posts/what-an-engagement-looks-like', how: 'Read', min: 8, group: "The Firm",
+        blurb: "From the first requirements conversation to the certified prototype: the specialists involved, the artifacts produced, the way hours are tracked."},
+      {title: "Why Design Reuse Compresses the Schedule", to: '/blog-posts/why-design-reuse-compresses-schedule', how: 'Read', min: 6, group: "The Firm",
+        blurb: "Most of a connected product is built from blocks that have been built before. What reuses cleanly, what does not, and where the IP boundary falls."},
+      {title: "Project Risk and Who Carries It", to: '/blog-posts/project-risk-and-who-carries-it', how: 'Read', min: 6, group: "The Firm",
+        blurb: "Tariffs, chip shortages, regulatory changes, and design unknowns. Why product development risk is structurally the customer's."},
+      // DVT, Radio by Radio
+      {title: "Design Verification Test for Radio Products", to: '/blog-posts/dvt-for-radio-products', how: 'Read', min: 8, group: "DVT, Radio by Radio",
+        blurb: "What DVT is, what it covers, and why the certified-prototype milestone depends on it."},
+      {title: "What “Good Enough” Means for a Radio", to: '/blog-posts/good-enough-for-a-radio', how: 'Read', min: 7, group: "DVT, Radio by Radio",
+        blurb: "Link budget thinking, fade margin, and the relationship between the chip's data sheet, the design's measurements, and what ships."},
+      {title: "DVT of a Regular Radio", to: '/blog-posts/dvt-of-a-regular-radio', how: 'Read', min: 8, group: "DVT, Radio by Radio",
+        blurb: "Design verification for Bluetooth, Wi-Fi, LoRa, Zigbee, and other radios with predictable behavior under direct control."},
+      {title: "DVT of a Cellular Radio", to: '/blog-posts/dvt-of-a-cellular-radio', how: 'Read', min: 7, group: "DVT, Radio by Radio",
+        blurb: "A cellular radio transmits only in response to a network. The test setup has to bring the network along."},
+      {title: "DVT of GPS and GNSS Receivers", to: '/blog-posts/dvt-of-gps-and-gnss', how: 'Read', min: 7, group: "DVT, Radio by Radio",
+        blurb: "Why a parking lot is not a test environment, what a GPS signal generator does, and how firmware engineers test geofencing without driving anywhere."},
+      {title: "DVT of a Bluetooth Radio", to: '/blog-posts/dvt-of-a-bluetooth-radio', how: 'Read', min: 8, group: "DVT, Radio by Radio",
+        blurb: "Bluetooth Low Energy and Bluetooth Classic share a name and almost nothing else. The DVT setup and equipment differ."},
+      {title: "DVT of a Wi-Fi Radio", to: '/blog-posts/dvt-of-a-wifi-radio', how: 'Read', min: 9, group: "DVT, Radio by Radio",
+        blurb: "Wi-Fi is the first radio many engineers encounter where the modulation has amplitude content. The implications run through the whole transmit chain."},
+      {title: "DVT of a LoRa Radio", to: '/blog-posts/dvt-of-a-lora-radio', how: 'Read', min: 7, group: "DVT, Radio by Radio",
+        blurb: "LoRa trades data rate for receive sensitivity. The sensitivity floor that makes long-range deployment possible also makes the test setup difficult."},
+      // Lab, Manufacturing, Certification
+      {title: "Production Test of a Radio Product", to: '/blog-posts/production-test-of-a-radio', how: 'Read', min: 6, group: "Lab, Manufacturing, Certification",
+        blurb: "How manufacturing test asks a different question than DVT, what gets checked on every unit, and the failure modes that show up when it is done wrong."},
+      {title: "The Lab as the Iteration Loop", to: '/blog-posts/the-lab-as-the-iteration-loop', how: 'Read', min: 6, group: "Lab, Manufacturing, Certification",
+        blurb: "Why owning the equipment in-house changes the schedule. Anechoic chambers, antenna measurement systems, and the iteration cycle they make possible."},
+      {title: "What Equipment Does and Doesn’t Tell You About a Firm", to: '/blog-posts/equipment-and-expertise', how: 'Read', min: 6, group: "Lab, Manufacturing, Certification",
+        blurb: "Anyone with capital can buy a spectrum analyzer. Equipment is the floor of what a wireless engineering firm needs, not the ceiling."},
+      {title: "FCC Certification with a Pre-Certified Module", to: '/blog-posts/fcc-with-pre-certified-modules', how: 'Read', min: 5, group: "Lab, Manufacturing, Certification",
+        blurb: "When a pre-certified module covers the integrated product, when it does not, and the Class II permissive change path between the two."},
     ],
   },
 ];
