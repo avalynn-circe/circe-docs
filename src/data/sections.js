@@ -16,6 +16,10 @@ const sections = [
     items: [
       {title: 'Saving Lake Wren', href: '/lessons/lake-wren.html', how: 'Play', min: 5,
         blurb: 'Five households share a lake and work out the eight design principles for long-lasting commons.'},
+      {title: 'Crosscurrents', href: '/lessons/crosscurrents.html', how: 'Play', min: 10,
+        blurb: 'Map your own values and find the pairs that pull against each other.'},
+      {title: 'Desire Lines', href: '/lessons/desire-lines.html', how: 'Play', min: 8,
+        blurb: 'Name your ideal, make a run of choices, and see how close you got.'},
       {title: 'Larkspur in Layers', href: '/lessons/larkspur-in-layers.html', how: 'Play', min: 6,
         blurb: 'Redraw police, lab and flood districts to see why polycentric governance works.'},
       {title: 'The Kettle Street Fund', href: '/lessons/kettle-street-fund.html', how: 'Play', min: 6,
@@ -24,10 +28,6 @@ const sections = [
         blurb: 'Match each resource to market, club, state, community or layered governance.'},
       {title: 'All four lessons, explained', to: '/interactive-lessons', how: 'Read', min: 2,
         blurb: 'What the Ostrom lessons teach and how they were built.'},
-      {title: 'Crosscurrents', planned: true, how: 'Play', min: 10,
-        blurb: 'Map your own values and find the pairs that pull against each other.'},
-      {title: 'Desire Lines', planned: true, how: 'Play', min: 8,
-        blurb: 'Name your ideal, make a run of choices, and see how close you got.'},
     ],
   },
   {

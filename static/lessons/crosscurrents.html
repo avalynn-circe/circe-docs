@@ -1,0 +1,1025 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<title>Crosscurrents</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=Literata:ital,opsz,wght@0,7..72,400;0,7..72,600;1,7..72,400&family=DM+Mono:wght@400;500&display=swap">
+</head><body>
+<style>
+/* Layout: one reading column with a sticky strip of stops; the hands-on stops pair a question card with a live map of the person's values, drawn like a chart of crossing water currents. */
+:root {
+  --bg: #EDF1F2; --surface: #FAFCFC; --ink: #15232A; --muted: #52656E; --line: #C9D4D8;
+  --tide: #0D6971; --tide-soft: #D9ECEE; --on-tide: #FFFFFF;
+  --plum: #8B3474; --plum-soft: #F2E0EC;
+  --chart: #E3EBEC; --contour: #CFDCDF;
+  --font-display: "Syne", "Avenir Next", "Segoe UI", system-ui, sans-serif;
+  --font-body: "Literata", Georgia, "Times New Roman", serif;
+  --font-mono: "DM Mono", ui-monospace, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0E161A; --surface: #152027; --ink: #E1E9EB; --muted: #93A7AF; --line: #293A42;
+    --tide: #5BC2C8; --tide-soft: #15343A; --on-tide: #0E161A;
+    --plum: #E68BC8; --plum-soft: #3A1F33;
+    --chart: #12252B; --contour: #1C333A;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0E161A; --surface: #152027; --ink: #E1E9EB; --muted: #93A7AF; --line: #293A42;
+  --tide: #5BC2C8; --tide-soft: #15343A; --on-tide: #0E161A;
+  --plum: #E68BC8; --plum-soft: #3A1F33;
+  --chart: #12252B; --contour: #1C333A;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--ink); font-family: var(--font-body); font-size: 17px; line-height: 1.6; -webkit-text-size-adjust: 100%; }
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--bg); }
+.gutter { max-width: 860px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+h1, h2, h3, h4 { font-family: var(--font-display); text-wrap: balance; margin: 0; }
+p { margin: 0; }
+button, input, select, textarea { font: inherit; color: inherit; }
+:focus-visible { outline: 3px solid var(--tide); outline-offset: 2px; border-radius: 6px; }
+.kicker { font-family: var(--font-mono); font-size: 0.74rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+.muted { color: var(--muted); }
+.small { font-size: 0.9rem; }
+
+.masthead { padding-block: 34px 18px; display: grid; gap: 12px; }
+.masthead-top { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 16px; align-items: end; }
+.masthead h1 { font-size: clamp(1.9rem, 8.4vw, 4.6rem); font-weight: 800; line-height: 0.92; letter-spacing: -0.035em; }
+.masthead h1 .a { color: var(--tide); }
+.masthead h1 .b { color: var(--plum); }
+.masthead .sub { color: var(--muted); max-width: 60ch; }
+.currents { width: 120px; height: 84px; }
+.currents path { fill: none; stroke-width: 5; stroke-linecap: round; stroke-dasharray: 14 10; animation: flow 3.2s linear infinite; }
+.currents .ca { stroke: var(--tide); }
+.currents .cb { stroke: var(--plum); animation-direction: reverse; }
+@keyframes flow { to { stroke-dashoffset: -48; } }
+@media (max-width: 480px) { .currents { display: none; } }
+
+.strip { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: var(--bg); border-bottom: 1px solid var(--line); }
+.strip .gutter { padding-block: 10px; display: grid; gap: 6px; }
+.strip-row { display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; padding: 3px 2px; }
+.strip-row::-webkit-scrollbar { display: none; }
+.chip { flex: 0 0 auto; height: 38px; padding: 0 13px; border-radius: 999px; border: 1.5px solid var(--line); background: var(--surface); font-family: var(--font-mono); font-size: 0.82rem; color: var(--muted); cursor: pointer; display: inline-flex; align-items: center; gap: 6px; }
+.chip:hover { border-color: var(--tide); color: var(--ink); }
+.chip.done { background: var(--tide-soft); border-color: var(--tide); color: var(--ink); }
+.chip.current { border-color: var(--ink); border-width: 2.5px; color: var(--ink); }
+.strip-meta { font-size: 0.8rem; color: var(--muted); display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; font-family: var(--font-mono); }
+
+main { padding-block: 26px 44px; }
+.view { display: grid; gap: 22px; }
+.view h2 { font-size: clamp(1.75rem, 5.6vw, 2.5rem); font-weight: 700; line-height: 1.05; letter-spacing: -0.02em; }
+.view h2:focus { outline: none; }
+.lede { font-size: 1.08rem; max-width: 62ch; }
+.prose { display: grid; gap: 12px; max-width: 64ch; }
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 18px; display: grid; gap: 16px; min-width: 0; }
+@media (min-width: 640px) { .panel { padding: 24px; } }
+.banner { border: 1.5px dashed var(--plum); background: var(--plum-soft); border-radius: 12px; padding: 10px 14px; display: flex; flex-wrap: wrap; gap: 10px; align-items: center; justify-content: space-between; font-size: 0.95rem; }
+
+.btn { border: 1.5px solid var(--tide); background: var(--surface); color: var(--ink); border-radius: 10px; padding: 10px 16px; cursor: pointer; font-weight: 600; min-height: 44px; text-align: center; }
+.btn:hover { background: var(--tide-soft); }
+.btn.primary { background: var(--tide); color: var(--on-tide); border-color: var(--tide); }
+.btn.primary:hover { filter: brightness(1.07); }
+.btn.quiet { border-color: var(--line); font-weight: 400; }
+.btn:disabled { opacity: 0.45; cursor: not-allowed; }
+.row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.row.between { justify-content: space-between; }
+
+.parts { display: flex; flex-wrap: wrap; gap: 6px; list-style: none; padding: 0; margin: 0; }
+.parts li { font-size: 0.76rem; padding: 4px 9px; border-radius: 999px; border: 1px solid var(--line); color: var(--muted); display: inline-flex; gap: 6px; align-items: center; }
+.parts li b { font-family: var(--font-mono); font-weight: 500; }
+.parts li.on { border-color: var(--ink); color: var(--ink); }
+.parts li.now { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+
+/* hook */
+.choice-list { display: grid; gap: 8px; }
+.opt { text-align: left; border: 1.5px solid var(--line); background: var(--surface); border-radius: 12px; padding: 13px 15px; cursor: pointer; display: grid; gap: 2px; }
+.opt:hover { border-color: var(--tide); }
+.opt[aria-pressed="true"] { border-color: var(--ink); border-width: 2px; background: var(--tide-soft); }
+.opt small { color: var(--muted); font-size: 0.9rem; }
+.rate { display: grid; gap: 6px; }
+.rate-q { font-weight: 600; }
+.scale { display: flex; flex-wrap: wrap; gap: 6px; }
+.scale button { border: 1.5px solid var(--line); background: var(--surface); border-radius: 999px; padding: 6px 12px; min-height: 40px; cursor: pointer; font-size: 0.9rem; }
+.scale button:hover { border-color: var(--tide); }
+.scale button[aria-pressed="true"] { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+.story { border-left: 4px solid var(--tide); padding-left: 14px; }
+.debrief { border-top: 1px dashed var(--line); padding-top: 16px; display: grid; gap: 12px; }
+.debrief h3 { font-size: 1.45rem; color: var(--plum); }
+
+/* pick */
+.deck { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 8px; }
+.card { text-align: left; border: 1.5px solid var(--line); background: var(--surface); border-radius: 12px; padding: 10px 12px; cursor: pointer; display: grid; gap: 2px; min-width: 0; }
+.card:hover { border-color: var(--tide); }
+.card b { font-family: var(--font-display); font-size: 1.02rem; }
+.card span { color: var(--muted); font-size: 0.82rem; line-height: 1.35; }
+.card[aria-pressed="true"] { background: var(--tide); border-color: var(--tide); color: var(--on-tide); }
+.card[aria-pressed="true"] span { color: var(--on-tide); opacity: 0.85; }
+.add-own { display: flex; flex-wrap: wrap; gap: 8px; }
+.add-own input { flex: 1 1 200px; min-width: 0; border: 1.5px solid var(--line); background: var(--surface); border-radius: 10px; padding: 10px 12px; min-height: 44px; }
+.count { font-family: var(--font-mono); font-size: 0.9rem; }
+
+/* weigh */
+.tokens-left { display: flex; align-items: baseline; gap: 10px; }
+.tokens-left .num { font-family: var(--font-display); font-weight: 800; font-size: 2.6rem; line-height: 1; color: var(--tide); font-variant-numeric: tabular-nums; }
+.weigh-list { display: grid; gap: 10px; }
+.weigh { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 6px 12px; align-items: center; padding-block: 8px; border-bottom: 1px solid var(--line); }
+.weigh:last-child { border-bottom: 0; }
+.weigh .nm { font-family: var(--font-display); font-weight: 700; }
+.pips { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: 3px; min-height: 12px; }
+.pips i { width: 12px; height: 12px; border-radius: 50%; background: var(--tide); }
+.stepper { display: inline-flex; align-items: center; gap: 6px; }
+.stepper button { width: 40px; height: 40px; border-radius: 50%; border: 1.5px solid var(--line); background: var(--surface); cursor: pointer; font-size: 1.2rem; line-height: 1; }
+.stepper button:hover:not(:disabled) { border-color: var(--tide); }
+.stepper button:disabled { opacity: 0.35; cursor: not-allowed; }
+.stepper output { font-family: var(--font-mono); min-width: 2ch; text-align: center; font-variant-numeric: tabular-nums; }
+
+/* tug */
+.tug-grid { display: grid; gap: 18px; }
+@media (min-width: 760px) { .tug-grid { grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr); align-items: start; } }
+.progress { height: 6px; border-radius: 3px; background: var(--line); overflow: hidden; }
+.progress i { display: block; height: 100%; background: var(--tide); transition: width .4s ease; }
+.versus { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); gap: 8px; align-items: stretch; }
+.versus .or { align-self: center; font-family: var(--font-mono); font-size: 0.8rem; color: var(--muted); }
+.side { text-align: left; border: 2px solid var(--line); background: var(--surface); border-radius: 14px; padding: 14px; cursor: pointer; display: grid; gap: 6px; align-content: start; min-width: 0; }
+.side:hover { border-color: var(--tide); }
+.side b { font-family: var(--font-display); font-size: 1.2rem; overflow-wrap: anywhere; }
+.side span { font-size: 0.92rem; color: var(--muted); }
+.side[aria-pressed="true"] { border-color: var(--tide); background: var(--tide-soft); }
+.side[aria-pressed="true"] span { color: var(--ink); }
+.clash { display: grid; gap: 6px; }
+.clash button { text-align: left; border: 1.5px solid var(--line); background: var(--surface); border-radius: 10px; padding: 9px 12px; min-height: 44px; cursor: pointer; display: flex; align-items: center; gap: 10px; }
+.clash button:hover { border-color: var(--tide); }
+.clash button[aria-pressed="true"] { border-color: var(--ink); background: var(--bg); font-weight: 600; }
+.clash .glyph { width: 46px; height: 14px; flex: 0 0 auto; }
+.clash .glyph path { fill: none; stroke-width: 2.5; stroke-linecap: round; }
+.q { font-weight: 600; }
+
+/* map */
+.map-box { display: grid; gap: 10px; min-width: 0; }
+.map { width: 100%; max-width: 460px; height: auto; display: block; margin: 0 auto; }
+.map .sea { fill: var(--chart); }
+.map .contour { fill: none; stroke: var(--contour); stroke-width: 1; }
+.map .edge-x { stroke: var(--plum); fill: none; stroke-linecap: round; stroke-dasharray: 7 5; }
+.map .edge-a { stroke: var(--tide); fill: none; stroke-linecap: round; }
+.map .node { fill: var(--surface); stroke: var(--ink); stroke-width: 2; }
+.map .node.hot { stroke: var(--plum); stroke-width: 3; }
+.map .lbl { fill: var(--ink); font-family: var(--font-display); font-weight: 700; font-size: 13px; paint-order: stroke; stroke: var(--chart); stroke-width: 4px; stroke-linejoin: round; }
+.map .tok { fill: var(--muted); font-family: var(--font-mono); font-size: 10px; }
+.map .ring-lbl { fill: var(--muted); font-family: var(--font-mono); font-size: 9.5px; }
+.map .slot { fill: none; stroke: var(--contour); stroke-width: 1; }
+.map .rimdot { fill: var(--tide); }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 0.84rem; color: var(--muted); justify-content: center; }
+.legend span { display: inline-flex; align-items: center; gap: 6px; }
+.legend i { display: inline-block; width: 24px; height: 0; border-top: 2.5px solid; }
+.legend .x i { border-color: var(--plum); border-top-style: dashed; }
+.legend .a i { border-color: var(--tide); }
+.legend .s i { width: 12px; height: 12px; border: 2px solid var(--ink); border-radius: 50%; }
+.fit { font-family: var(--font-mono); font-size: 0.84rem; color: var(--muted); text-align: center; }
+.pairs-out { display: grid; gap: 12px; }
+@media (min-width: 640px) { .pairs-out { grid-template-columns: 1fr 1fr; } }
+.plist { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+.plist li { display: flex; justify-content: space-between; gap: 10px; padding: 8px 0; border-bottom: 1px solid var(--line); }
+.plist li:last-child { border-bottom: 0; }
+.plist .tag { font-family: var(--font-mono); font-size: 0.78rem; color: var(--muted); white-space: nowrap; }
+.plist h4, .pairs-out h4 { font-size: 1.05rem; }
+.hx { color: var(--plum); }
+.ha { color: var(--tide); }
+
+/* gap */
+.slope-wrap { overflow-x: auto; }
+.slope { width: 100%; max-width: 440px; height: auto; display: block; margin: 0 auto; }
+.slope text { fill: var(--ink); font-family: var(--font-display); font-weight: 700; font-size: 13px; }
+.slope .hd { fill: var(--muted); font-family: var(--font-mono); font-weight: 400; font-size: 10.5px; letter-spacing: 0.06em; }
+.slope .n { fill: var(--muted); font-family: var(--font-mono); font-weight: 400; font-size: 11px; }
+.slope line { stroke: var(--line); stroke-width: 2; }
+.slope line.big { stroke: var(--plum); stroke-width: 3.5; }
+.slope circle { fill: var(--surface); stroke: var(--ink); stroke-width: 2; }
+.slope circle.big { stroke: var(--plum); }
+.insight { border-radius: 12px; padding: 12px 14px; background: var(--plum-soft); display: grid; gap: 6px; }
+.insight.calm { background: var(--tide-soft); }
+.insight b { font-family: var(--font-display); }
+
+/* name */
+.field { display: grid; gap: 6px; }
+.field label { font-weight: 600; }
+.field input, .field select, .field textarea { border: 1.5px solid var(--line); background: var(--surface); border-radius: 10px; padding: 10px 12px; min-height: 44px; width: 100%; }
+.field textarea { min-height: 72px; resize: vertical; }
+.statement { border: 2px solid var(--ink); border-radius: 16px; padding: 18px; background: var(--surface); display: grid; gap: 10px; }
+.statement p.say { font-size: 1.12rem; line-height: 1.55; }
+.statement .blank { color: var(--muted); }
+.statement .va { color: var(--tide); font-weight: 600; }
+.statement .vb { color: var(--plum); font-weight: 600; }
+
+/* learn */
+.step-label { display: flex; gap: 10px; align-items: center; }
+.step-label .letter { font-family: var(--font-mono); font-weight: 500; width: 28px; height: 28px; border-radius: 50%; background: var(--ink); color: var(--bg); display: inline-flex; align-items: center; justify-content: center; font-size: 0.85rem; flex: 0 0 auto; }
+.step-label .name { font-family: var(--font-display); font-weight: 700; font-size: 1.12rem; }
+.term { border: 2px dashed var(--tide); border-radius: 16px; padding: 20px; background: var(--tide-soft); display: grid; gap: 10px; }
+.term .num { font-family: var(--font-display); font-weight: 800; font-size: 2.6rem; line-height: 0.8; color: var(--tide); }
+.term h3 { font-size: clamp(1.35rem, 4.4vw, 1.8rem); line-height: 1.1; }
+.term .line { font-size: 1.05rem; }
+.term .syn { border-top: 1px solid var(--line); padding-top: 12px; display: grid; gap: 8px; }
+.term .pattern { font-family: var(--font-display); font-weight: 600; font-size: 1.05rem; line-height: 1.4; }
+.term .fieldnote { color: var(--muted); font-size: 0.95rem; }
+.term .fieldnote b { color: var(--ink); }
+.check { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; counter-reset: c; }
+.check li { counter-increment: c; display: grid; grid-template-columns: 34px 1fr; gap: 12px; align-items: start; }
+.check li::before { content: counter(c); width: 34px; height: 34px; border-radius: 50%; background: var(--plum); color: var(--surface); font-family: var(--font-mono); display: inline-flex; align-items: center; justify-content: center; }
+.keylist { margin: 0; display: grid; gap: 14px; min-width: 0; }
+.keylist > div { display: grid; gap: 2px; }
+.keylist dt { font-family: var(--font-display); font-weight: 700; display: flex; align-items: center; gap: 8px; }
+.keylist dd { margin: 0; color: var(--muted); font-size: 0.95rem; }
+.sw { display: inline-block; width: 24px; height: 0; border-top: 2.5px solid; flex: 0 0 auto; }
+.sw.x { border-color: var(--plum); border-top-style: dashed; }
+.sw.a { border-color: var(--tide); }
+.sw.c { width: 14px; height: 14px; border: 2px solid var(--ink); border-radius: 50%; }
+.sw.d { width: 14px; height: 14px; border: 2px dashed var(--muted); border-radius: 50%; }
+.asks { margin: 0; padding-left: 1.4em; display: grid; gap: 12px; max-width: 64ch; }
+.asks li::marker { font-family: var(--font-mono); color: var(--plum); }
+.asks b { font-family: var(--font-display); }
+.compare { display: grid; gap: 16px; }
+@media (min-width: 700px) { .compare { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: start; } }
+
+details.how { border: 1px solid var(--line); border-radius: 12px; padding: 10px 14px; background: var(--surface); }
+details.how summary { cursor: pointer; font-weight: 600; }
+details.how p { margin-top: 8px; color: var(--muted); max-width: 64ch; }
+footer { border-top: 1px solid var(--line); padding-block: 22px 40px; color: var(--muted); font-size: 0.88rem; display: grid; gap: 6px; }
+footer b { color: var(--ink); }
+footer ul { margin: 0; padding-left: 1.1em; display: grid; gap: 3px; }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+</style>
+
+<header class="masthead gutter">
+  <p class="kicker">An interactive lesson · Self-discovery with multidimensional scaling</p>
+  <div class="masthead-top">
+    <h1><span class="a">Cross</span><span class="b">currents</span></h1>
+    <svg class="currents" viewBox="0 0 120 84" aria-hidden="true"><path class="ca" d="M4 70 C 40 70, 60 14, 116 14"/><path class="cb" d="M4 14 C 40 14, 60 70, 116 70"/></svg>
+  </div>
+  <p class="sub">You hold more than one value, so sometimes they pull in different directions. Face your own values two at a time, watch a real statistics method draw the map of where they collide, and then learn why that ache has a name.</p>
+</header>
+
+<nav class="strip" aria-label="Lesson progress">
+  <div class="gutter">
+    <div class="strip-row" id="strip"></div>
+    <div class="strip-meta"><span id="strip-count">Stops done: 0 of 8</span><span>Structured with the PARTS Method</span></div>
+  </div>
+</nav>
+
+<main class="gutter" id="main">
+  <section class="view" id="view-start" aria-labelledby="h-start">
+    <ol class="parts" aria-label="PARTS steps"><li class="now" aria-current="step"><b>P</b>Problem</li><li><b>A</b>Answer</li><li><b>R</b>Reasoning</li><li><b>T</b>Terms</li><li><b>S</b>Syntax</li></ol>
+    <div class="prose">
+      <p class="kicker">Round zero · The Saturday problem</p>
+      <h2 id="h-start" tabindex="-1">Thursday night, two good things collide</h2>
+      <p class="lede">Weeks ago you promised your oldest friend you'd help them move on Saturday. Tonight a client offers paid work worth a month of rent, but only if you start Saturday morning. What do you do?</p>
+    </div>
+    <div class="panel" id="hook">
+      <div class="choice-list" role="group" aria-label="Your choice">
+        <button class="opt" data-hook="friend" aria-pressed="false"><b>Help my friend move</b><small>Keep the promise.</small></button>
+        <button class="opt" data-hook="work" aria-pressed="false"><b>Take the paid work</b><small>Cover next month.</small></button>
+        <button class="opt" data-hook="both" aria-pressed="false"><b>Look for a way to do both</b><small>Make a call and see.</small></button>
+      </div>
+      <p class="story" id="hook-story" aria-live="polite">Pick what you'd really do. There's no right answer.</p>
+      <div id="hook-rate" hidden>
+        <div class="rate">
+          <p class="rate-q">How true is this of you? "I keep my promises to the people I love."</p>
+          <div class="scale" data-rate="0"></div>
+        </div>
+        <div class="rate" style="margin-top:14px">
+          <p class="rate-q">And this? "I make sure I'm financially secure."</p>
+          <div class="scale" data-rate="1"></div>
+        </div>
+      </div>
+      <div class="debrief" id="hook-debrief" hidden></div>
+    </div>
+    <details class="how">
+      <summary>What happens to my answers?</summary>
+      <p>Everything you choose or write stays in this browser tab. Nothing is sent anywhere, and closing the tab erases it. This is a reflection exercise, not a test. It doesn't score you, label you, or say anything about your health.</p>
+    </details>
+  </section>
+  <section class="view" id="view-dyn" hidden></section>
+</main>
+
+<footer class="gutter">
+  <p>Instructional design by <b>Avalynn Circe</b>.</p>
+  <p>A reflection exercise, not a psychological test. Ideas are paraphrased from these sources:</p>
+  <ul>
+    <li>Leon Festinger, <i>A Theory of Cognitive Dissonance</i> (1957).</li>
+    <li>Leon Festinger and James M. Carlsmith, "Cognitive Consequences of Forced Compliance," <i>Journal of Abnormal and Social Psychology</i> (1959).</li>
+    <li>Paul A. Samuelson, "A Note on the Pure Theory of Consumer's Behaviour," <i>Economica</i> (1938).</li>
+    <li>Shalom H. Schwartz, "Universals in the Content and Structure of Values," <i>Advances in Experimental Social Psychology</i>, vol. 25 (1992).</li>
+    <li>Warren S. Torgerson, "Multidimensional Scaling: I. Theory and Method," <i>Psychometrika</i> (1952).</li>
+    <li>Barry Johnson, <i>Polarity Management</i> (1992).</li>
+    <li>Isaiah Berlin, "Two Concepts of Liberty" (1958).</li>
+  </ul>
+</footer>
+
+<script>
+/* ---------- helpers ---------- */
+const $ = (s, el = document) => el.querySelector(s);
+const $$ = (s, el = document) => Array.from(el.querySelectorAll(s));
+const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+const reduceMotion = () => window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+const KEY = "crosscurrents";
+const fresh = () => ({ hook: { choice: null, r: [null, null] }, picked: [], custom: [], tokens: {}, pairs: {}, pairIdx: 0, name: { pair: null, a: "", b: "", move: "" }, seen: [], example: false });
+let S = fresh();
+try { const v = JSON.parse(sessionStorage.getItem(KEY) || "null"); if (v && typeof v === "object") S = Object.assign(fresh(), v); } catch (e) {}
+function save() { try { sessionStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} }
+
+/* ---------- values ---------- */
+/* sz: slot on Schwartz's value circle. 0 self-direction, 1 stimulation, 2 hedonism, 3 achievement, 4 power, 5 security, 6 conformity and tradition, 7 benevolence, 8 universalism */
+const SLOTS = ["Self-direction", "Stimulation", "Hedonism", "Achievement", "Power", "Security", "Conformity and tradition", "Benevolence", "Universalism"];
+const VALUES = [
+  ["freedom", "Freedom", "Keep your time and choices your own", 0],
+  ["curiosity", "Curiosity", "Chase a question just to understand it", 0],
+  ["creativity", "Creativity", "Make something new, even if it's messy", 0],
+  ["independence", "Independence", "Handle it yourself, your own way", 0],
+  ["adventure", "Adventure", "Say yes to something new and a little scary", 1],
+  ["spontaneity", "Spontaneity", "Drop the plan and follow the moment", 1],
+  ["pleasure", "Pleasure", "Enjoy yourself without earning it first", 2],
+  ["achievement", "Achievement", "Finish the hard goal and do it well", 3],
+  ["recognition", "Recognition", "Have your work seen and credited", 3],
+  ["wealth", "Wealth", "Take the option that pays more", 4],
+  ["influence", "Influence", "Be the one who shapes the decision", 4],
+  ["security", "Security", "Choose the steady path with a safety net", 5],
+  ["health", "Health", "Protect your sleep, body and energy", 5],
+  ["belonging", "Belonging", "Show up where your people are", 5],
+  ["order", "Order", "Keep things planned and predictable", 5],
+  ["duty", "Duty", "Do what's expected of you, even when it's dull", 6],
+  ["tradition", "Tradition", "Keep the customs you grew up with", 6],
+  ["humility", "Humility", "Let someone else take the spotlight", 6],
+  ["faith", "Faith", "Act from your spiritual or moral grounding", 6],
+  ["loyalty", "Loyalty", "Stand by your people, even at a cost", 7],
+  ["family", "Family", "Put family first", 7],
+  ["kindness", "Kindness", "Ease someone else's load", 7],
+  ["honesty", "Honesty", "Say the true thing, even when it's awkward", 7],
+  ["fairness", "Fairness", "Make sure everyone gets an even shake", 8],
+  ["nature", "Nature", "Protect the living world", 8],
+  ["calm", "Calm", "Keep your inner peace", 8]
+].map(([id, name, phrase, sz]) => ({ id, name, phrase, sz }));
+const val = (id) => VALUES.find((v) => v.id === id) || S.custom.find((c) => c.id === id) || { id, name: id, phrase: "", sz: null };
+const pkey = (a, b) => [a, b].sort().join("|");
+const tok = (id) => S.tokens[id] || 0;
+const CLASH = [
+  ["They help each other", "M2 7 C 14 2, 32 2, 44 7"],
+  ["They rarely collide", "M2 7 L 44 7"],
+  ["They sometimes collide", "M2 4 L 18 4 M28 10 L 44 10"],
+  ["They often collide", "M2 2 L 18 8 M28 6 L 44 12"],
+  ["They constantly pull apart", "M18 7 L 2 7 M28 7 L 44 7 M8 2 L 2 7 L 8 12 M38 2 L 44 7 L 38 12"]
+];
+const DIST = [0.6, 1.6, 2.6, 3.6, 4.6];
+
+function hash(str) { let h = 2166136261; for (let i = 0; i < str.length; i++) { h ^= str.charCodeAt(i); h = Math.imul(h, 16777619); } return h >>> 0; }
+function pairList() {
+  const ids = S.picked.slice(), out = [];
+  for (let i = 0; i < ids.length; i++) for (let j = i + 1; j < ids.length; j++) out.push([ids[i], ids[j]]);
+  /* spread pairs so the same value rarely appears twice in a row */
+  const seed = ids.join(",");
+  out.sort((p, q) => hash(seed + p.join()) - hash(seed + q.join()));
+  for (let k = 1; k < out.length; k++) {
+    const prev = out[k - 1];
+    if (out[k].some((x) => prev.includes(x))) {
+      const m = out.findIndex((p, i) => i > k && !p.some((x) => prev.includes(x)));
+      if (m > 0) [out[k], out[m]] = [out[m], out[k]];
+    }
+  }
+  return out.map((p) => (hash(seed + p[0] + p[1]) & 1 ? [p[1], p[0]] : p));
+}
+const answered = (p) => { const r = S.pairs[pkey(p[0], p[1])]; return !!(r && r.win && r.clash != null); };
+
+/* ---------- classical MDS (Torgerson) ---------- */
+function jacobi(M) {
+  const n = M.length, a = M.map((r) => r.slice()), v = M.map((_, i) => M.map((__, j) => (i === j ? 1 : 0)));
+  for (let sweep = 0; sweep < 80; sweep++) {
+    let off = 0;
+    for (let p = 0; p < n; p++) for (let q = p + 1; q < n; q++) off += a[p][q] * a[p][q];
+    if (off < 1e-14) break;
+    for (let p = 0; p < n; p++) for (let q = p + 1; q < n; q++) {
+      const apq = a[p][q];
+      if (Math.abs(apq) < 1e-15) continue;
+      const theta = (a[q][q] - a[p][p]) / (2 * apq);
+      const t = (theta >= 0 ? 1 : -1) / (Math.abs(theta) + Math.sqrt(theta * theta + 1));
+      const c = 1 / Math.sqrt(t * t + 1), s = t * c;
+      for (let k = 0; k < n; k++) { const kp = a[k][p], kq = a[k][q]; a[k][p] = c * kp - s * kq; a[k][q] = s * kp + c * kq; }
+      for (let k = 0; k < n; k++) { const pk = a[p][k], qk = a[q][k]; a[p][k] = c * pk - s * qk; a[q][k] = s * pk + c * qk; }
+      for (let k = 0; k < n; k++) { const kp = v[k][p], kq = v[k][q]; v[k][p] = c * kp - s * kq; v[k][q] = s * kp + c * kq; }
+    }
+  }
+  return { values: a.map((r, i) => r[i]), vectors: v };
+}
+function cmds(D) {
+  const n = D.length, D2 = D.map((r) => r.map((x) => x * x));
+  const rm = D2.map((r) => r.reduce((s, x) => s + x, 0) / n), gm = rm.reduce((s, x) => s + x, 0) / n;
+  const B = D2.map((r, i) => r.map((x, j) => -0.5 * (x - rm[i] - rm[j] + gm)));
+  const { values, vectors } = jacobi(B);
+  const order = values.map((l, i) => [l, i]).sort((x, y) => y[0] - x[0]);
+  const pos = values.filter((l) => l > 1e-9).reduce((s, l) => s + l, 0);
+  const top = order.slice(0, 2);
+  const coords = Array.from({ length: n }, (_, i) => top.map(([l, k]) => vectors[i][k] * Math.sqrt(Math.max(l, 0))));
+  const fit = pos > 0 ? top.reduce((s, [l]) => s + Math.max(l, 0), 0) / pos : 1;
+  return { coords, fit };
+}
+let prevMap = {};
+function layout(ids) {
+  const D = ids.map((a) => ids.map((b) => {
+    if (a === b) return 0;
+    const r = S.pairs[pkey(a, b)];
+    return DIST[r && r.clash != null ? r.clash : 2];
+  }));
+  let { coords, fit } = cmds(D);
+  const cen = (P) => { const m = [0, 0]; P.forEach((p) => { m[0] += p[0] / P.length; m[1] += p[1] / P.length; }); return P.map((p) => [p[0] - m[0], p[1] - m[1]]); };
+  coords = cen(coords);
+  const r = Math.max(1e-9, ...coords.map((p) => Math.hypot(p[0], p[1])));
+  coords = coords.map((p) => [p[0] / r, p[1] / r]);
+  /* rotate or reflect to match the last drawing, so the map shifts instead of spinning */
+  const shared = ids.map((id, i) => [i, prevMap[id]]).filter((x) => x[1]);
+  if (shared.length >= 2) {
+    const best = [false, true].map((flip) => {
+      let A = 0, B = 0;
+      shared.forEach(([i, [u, v]]) => { const x = coords[i][0], y = flip ? -coords[i][1] : coords[i][1]; A += u * x + v * y; B += v * x - u * y; });
+      return { flip, th: Math.atan2(B, A), score: Math.hypot(A, B) };
+    }).sort((p, q) => q.score - p.score)[0];
+    const c = Math.cos(best.th), s = Math.sin(best.th);
+    coords = coords.map(([x, y]) => { y = best.flip ? -y : y; return [x * c - y * s, x * s + y * c]; });
+  }
+  ids.forEach((id, i) => { prevMap[id] = coords[i]; });
+  return { coords, fit };
+}
+
+/* ---------- map drawing ---------- */
+const shown = {};
+const tweens = {};
+function nodeR(id) { return 9 + tok(id) * 0.75; }
+function drawMap(svg, ids, opts = {}) {
+  if (!svg) return 0;
+  const W = 400, cx = 200, cy = 200, R = 138;
+  const { coords, fit } = layout(ids);
+  const target = {}; ids.forEach((id, i) => { target[id] = [cx + coords[i][0] * R, cy + coords[i][1] * R]; });
+  ids.forEach((id) => { if (!shown[id]) shown[id] = target[id].slice(); });
+  const edges = [];
+  for (let i = 0; i < ids.length; i++) for (let j = i + 1; j < ids.length; j++) {
+    const r = S.pairs[pkey(ids[i], ids[j])];
+    if (r && r.clash != null && (r.clash >= 3 || r.clash === 0)) edges.push([ids[i], ids[j], r.clash]);
+  }
+  const hot = new Set(opts.hot || []);
+  let s = `<rect class="sea" x="0" y="0" width="${W}" height="${W}" rx="18"/>`;
+  [40, 80, 120, 160, 200].forEach((rr) => { s += `<circle class="contour" cx="${cx}" cy="${cy}" r="${rr}"/>`; });
+  s += `<g class="edges">${edges.map(([a, b, c]) => `<line data-a="${a}" data-b="${b}" class="${c >= 3 ? "edge-x" : "edge-a"}" stroke-width="${c === 4 ? 3.5 : c === 3 ? 2.2 : 3}"/>`).join("")}</g>`;
+  s += `<g class="nodes">${ids.map((id) => `<g data-id="${id}"><circle class="node${hot.has(id) ? " hot" : ""}" r="${nodeR(id).toFixed(1)}"/><text class="lbl" text-anchor="middle">${esc(val(id).name)}</text></g>`).join("")}</g>`;
+  svg.innerHTML = s;
+  const place = () => {
+    $$(".nodes g", svg).forEach((g) => {
+      const id = g.dataset.id, [x, y] = shown[id], r = nodeR(id);
+      g.querySelector("circle").setAttribute("cx", x.toFixed(1)); g.querySelector("circle").setAttribute("cy", y.toFixed(1));
+      const t = g.querySelector("text"), below = y < 330;
+      t.setAttribute("x", Math.max(44, Math.min(356, x)).toFixed(1));
+      t.setAttribute("y", (below ? y + r + 15 : y - r - 7).toFixed(1));
+    });
+    $$(".edges line", svg).forEach((l) => {
+      const a = shown[l.dataset.a], b = shown[l.dataset.b];
+      l.setAttribute("x1", a[0].toFixed(1)); l.setAttribute("y1", a[1].toFixed(1)); l.setAttribute("x2", b[0].toFixed(1)); l.setAttribute("y2", b[1].toFixed(1));
+    });
+  };
+  const from = {}; ids.forEach((id) => { from[id] = shown[id].slice(); });
+  const key = svg.id;
+  if (tweens[key]) cancelAnimationFrame(tweens[key]);
+  if (reduceMotion()) { ids.forEach((id) => { shown[id] = target[id].slice(); }); place(); }
+  else {
+    const t0 = performance.now(), dur = 650;
+    const step = (now) => {
+      const k = Math.min(1, (now - t0) / dur), e = 1 - Math.pow(1 - k, 3);
+      ids.forEach((id) => { shown[id] = [from[id][0] + (target[id][0] - from[id][0]) * e, from[id][1] + (target[id][1] - from[id][1]) * e]; });
+      place();
+      if (k < 1) tweens[key] = requestAnimationFrame(step);
+    };
+    place(); tweens[key] = requestAnimationFrame(step);
+  }
+  svg.setAttribute("aria-label", "Map of your values. " + (edges.filter((e) => e[2] >= 3).map((e) => val(e[0]).name + " pulls against " + val(e[1]).name).join(". ") || "No strong collisions marked yet."));
+  return fit;
+}
+const legendHTML = `<div class="legend"><span class="x"><i></i>Often or constantly collide</span><span class="a"><i></i>Help each other</span><span class="s"><i></i>Bigger circle, more tokens</span></div>`;
+
+/* ---------- PARTS rail and strip ---------- */
+const PARTS = [["P", "Problem"], ["A", "Answer"], ["R", "Reasoning"], ["T", "Terms"], ["S", "Syntax"]];
+function rail(stage) {
+  return `<ol class="parts" aria-label="PARTS steps">${PARTS.map(([l, n], i) => `<li class="${i < stage ? "on" : ""}${i === stage ? " now" : ""}"${i === stage ? ' aria-current="step"' : ""}><b>${l}</b>${n}</li>`).join("")}</ol>`;
+}
+const STOPS = [
+  ["start", "Start"], ["pick", "1 Pick"], ["weigh", "2 Weigh"], ["tug", "3 Tug"],
+  ["map", "4 Map"], ["gap", "5 Gaps"], ["name", "6 Name it"], ["learn", "Learn"]
+];
+function stopDone(id) {
+  const P = pairList();
+  return {
+    start: S.hook.r[0] != null && S.hook.r[1] != null,
+    pick: S.picked.length >= 4,
+    weigh: S.picked.length >= 4 && left() === 0,
+    tug: P.length > 0 && P.every(answered),
+    map: S.seen.includes("map"), gap: S.seen.includes("gap"),
+    name: !!(S.name.a || S.name.b || S.name.move),
+    learn: S.seen.includes("learn")
+  }[id];
+}
+function renderStrip(current) {
+  const row = $("#strip");
+  row.innerHTML = STOPS.map(([id, label]) => `<button class="chip${stopDone(id) ? " done" : ""}${id === current ? " current" : ""}" data-go="${id}"${id === current ? ' aria-current="step"' : ""}>${esc(label)}</button>`).join("");
+  $("#strip-count").textContent = "Stops done: " + STOPS.filter(([id]) => stopDone(id)).length + " of " + STOPS.length;
+  const cur = row.querySelector(".current"); if (cur) cur.scrollIntoView({ block: "nearest", inline: "nearest" });
+}
+function go(id) { if (location.hash.slice(1) === id) route(); else location.hash = id; }
+document.addEventListener("click", (e) => { const b = e.target.closest("[data-go]"); if (b) go(b.dataset.go); });
+
+/* ---------- start / hook ---------- */
+const HOOK_STORY = {
+  friend: "You show up Saturday with tape and coffee. Your friend hugs you in the empty kitchen. On Monday you check your bank balance and wince a little.",
+  work: "You take the work and send your friend money for movers. They text back that it's fine. You're not completely sure it is.",
+  both: "You call the client and ask to start Sunday instead. This time they say yes. Not every collision has a way through, but more do than it feels like in the moment. Hold on to that. It comes back at the end."
+};
+const SCALE = ["Not me", "A little", "Somewhat", "Mostly", "Very me"];
+function renderHook() {
+  $$("#hook [data-hook]").forEach((b) => b.setAttribute("aria-pressed", String(S.hook.choice === b.dataset.hook)));
+  $("#hook-story").textContent = S.hook.choice ? HOOK_STORY[S.hook.choice] : "Pick what you'd really do. There's no right answer.";
+  $("#hook-rate").hidden = !S.hook.choice;
+  $$("#hook [data-rate]").forEach((el) => {
+    const q = +el.dataset.rate;
+    el.innerHTML = SCALE.map((t, i) => `<button data-q="${q}" data-v="${i + 1}" aria-pressed="${S.hook.r[q] === i + 1}">${t}</button>`).join("");
+  });
+  const done = S.hook.r[0] != null && S.hook.r[1] != null, d = $("#hook-debrief");
+  d.hidden = !(S.hook.choice && done);
+  if (!d.hidden) {
+    const both = S.hook.r[0] >= 4 && S.hook.r[1] >= 4;
+    d.innerHTML = `<h3>${both ? "You said both are very you" : "Two of your values met on Saturday"}</h3>
+      <p>${both ? "That's the point. On an ordinary week, keeping promises and staying secure live side by side without trouble. This Saturday they collided, and one of them had to give, or you had to get creative." : "On an ordinary week these two live side by side without trouble. This Saturday they collided, and one of them had to give, or you had to get creative."}</p>
+      <p>That small ache has a name, and you'll learn it at the end. First, map your own crosscurrents. You'll pick the values that matter to you, weigh them, and face them two at a time. A real statistics method called multidimensional scaling will draw the map: values that pull against each other drift apart, and values that help each other drift together.</p>
+      <div class="row"><button class="btn primary" data-go="pick">Start mapping my values</button><button class="btn quiet" id="load-example">See an example map first</button></div>`;
+  }
+  renderStrip("start");
+}
+$("#hook").addEventListener("click", (e) => {
+  const h = e.target.closest("[data-hook]");
+  if (h) { S.hook.choice = h.dataset.hook; save(); renderHook(); return; }
+  const r = e.target.closest("[data-q]");
+  if (r) { S.hook.r[+r.dataset.q] = +r.dataset.v; save(); renderHook(); if (S.hook.r[0] != null && S.hook.r[1] != null) $("#hook-debrief").scrollIntoView({ block: "nearest", behavior: reduceMotion() ? "auto" : "smooth" }); }
+});
+
+/* ---------- example data ---------- */
+function loadExample() {
+  const keep = S.hook;
+  S = fresh(); S.hook = keep; S.example = true;
+  S.picked = ["freedom", "security", "family", "achievement", "honesty", "calm"];
+  S.tokens = { family: 5, honesty: 5, freedom: 4, security: 3, achievement: 2, calm: 1 };
+  [["freedom", "security", "freedom", 4], ["freedom", "family", "family", 3], ["freedom", "achievement", "freedom", 1], ["freedom", "honesty", "honesty", 0],
+   ["freedom", "calm", "calm", 1], ["security", "family", "security", 1], ["security", "achievement", "achievement", 3], ["security", "honesty", "security", 2],
+   ["security", "calm", "security", 0], ["family", "achievement", "achievement", 4], ["family", "honesty", "family", 1], ["family", "calm", "family", 0],
+   ["achievement", "honesty", "achievement", 2], ["achievement", "calm", "achievement", 4], ["honesty", "calm", "honesty", 1]
+  ].forEach(([a, b, w, c]) => { S.pairs[pkey(a, b)] = { win: w, clash: c }; });
+  S.pairIdx = 14;
+  S.name = { pair: pkey("achievement", "family"), a: "my sense that I'm capable and still growing", b: "the people who knew me before any of it", move: "one work-free dinner on Thursday" };
+  prevMap = {};
+  save(); go("map");
+}
+document.addEventListener("click", (e) => { if (e.target.closest("#load-example")) loadExample(); });
+function clearAll() { const keep = S.hook; S = fresh(); S.hook = keep; prevMap = {}; Object.keys(shown).forEach((k) => delete shown[k]); save(); }
+const exampleBanner = () => S.example ? `<div class="banner"><span>You're looking at example answers, not yours.</span><button class="btn" data-clear-example>Start my own</button></div>` : "";
+document.addEventListener("click", (e) => { if (e.target.closest("[data-clear-example]")) { clearAll(); go("pick"); } });
+
+/* ---------- views ---------- */
+const V = $("#view-dyn");
+function needValues(stage, msg) {
+  V.innerHTML = `${rail(stage)}<div class="prose"><h2 tabindex="-1">${msg}</h2><p class="lede">This stop needs at least four values to work with.</p></div><div class="row"><button class="btn primary" data-go="pick">Pick my values</button><button class="btn quiet" id="load-example">See an example instead</button></div>`;
+}
+function left() { return 20 - S.picked.reduce((s, id) => s + tok(id), 0); }
+
+function viewPick() {
+  const n = S.picked.length;
+  V.innerHTML = `${rail(0)}${exampleBanner()}
+    <div class="prose"><p class="kicker">Stop 1 of 6 · Pick</p><h2 tabindex="-1">Which values are really yours?</h2>
+    <p class="lede">Choose 4 to 7 values that actually guide your choices, not the ones you feel you should have. Six works well.</p></div>
+    <div class="panel">
+      <div class="row between"><span class="count" id="pick-count" aria-live="polite"></span><span class="muted small" id="pick-note"></span></div>
+      <div class="deck" id="deck">${VALUES.concat(S.custom).map((v) => `<button class="card" data-pick="${v.id}" aria-pressed="${S.picked.includes(v.id)}"><b>${esc(v.name)}</b><span>${esc(v.phrase)}</span></button>`).join("")}</div>
+      <form class="add-own" id="add-own"><label class="sr" for="own-name">Add a value of your own</label><input id="own-name" maxlength="24" placeholder="Add your own, like Play or Justice" autocomplete="off"><button class="btn" type="submit">Add</button></form>
+      <div class="row between"><button class="btn quiet" id="load-example">Use example answers</button><button class="btn primary" id="pick-next" data-go="weigh">Weigh them</button></div>
+    </div>`;
+  const sync = () => {
+    const k = S.picked.length;
+    $("#pick-count").textContent = k + " of 7 chosen";
+    $("#pick-note").textContent = k < 4 ? "Pick at least " + (4 - k) + " more." : k === 7 ? "That's the most. Unpick one to swap." : "";
+    $("#pick-next").disabled = k < 4;
+    $$("#deck [data-pick]").forEach((b) => b.setAttribute("aria-pressed", String(S.picked.includes(b.dataset.pick))));
+  };
+  $("#deck").addEventListener("click", (e) => {
+    const b = e.target.closest("[data-pick]"); if (!b) return;
+    const id = b.dataset.pick, i = S.picked.indexOf(id);
+    if (S.example) { S.example = false; }
+    if (i >= 0) { S.picked.splice(i, 1); delete S.tokens[id]; }
+    else if (S.picked.length < 7) S.picked.push(id);
+    S.pairIdx = 0; save(); sync(); renderStrip("pick");
+  });
+  $("#add-own").addEventListener("submit", (e) => {
+    e.preventDefault();
+    const name = $("#own-name").value.trim().replace(/\s+/g, " ");
+    if (!name) return;
+    if (VALUES.concat(S.custom).some((v) => v.name.toLowerCase() === name.toLowerCase())) { $("#pick-note").textContent = name + " is already on the list."; return; }
+    const id = "own" + (Date.now() % 1e7);
+    S.custom.push({ id, name, phrase: "Honor " + name.toLowerCase(), sz: null });
+    if (S.picked.length < 7) S.picked.push(id);
+    save(); viewPick(); renderStrip("pick"); $("#own-name").focus();
+  });
+  sync();
+  if (n === 0) {}
+}
+
+function viewWeigh() {
+  if (S.picked.length < 4) return needValues(0, "Pick your values first");
+  V.innerHTML = `${rail(0)}${exampleBanner()}
+    <div class="prose"><p class="kicker">Stop 2 of 6 · Weigh</p><h2 tabindex="-1">Spend 20 tokens</h2>
+    <p class="lede">Give more tokens to the values that matter most to you. This is what you'd say if someone asked. Later you'll see what your choices say.</p></div>
+    <div class="panel">
+      <div class="tokens-left"><span class="num" id="left"></span><span class="muted">tokens left to spend</span></div>
+      <div class="weigh-list" id="weigh">${S.picked.map((id) => `<div class="weigh" data-id="${id}"><span class="nm">${esc(val(id).name)}</span>
+        <span class="stepper"><button data-d="-1" aria-label="One less token for ${esc(val(id).name)}">&minus;</button><output id="t-${id}" aria-live="polite"></output><button data-d="1" aria-label="One more token for ${esc(val(id).name)}">+</button></span>
+        <span class="pips" aria-hidden="true"></span></div>`).join("")}</div>
+      <div class="row between"><button class="btn quiet" data-go="pick">Back</button><button class="btn primary" id="weigh-next" data-go="tug"></button></div>
+    </div>`;
+  const sync = () => {
+    const l = left();
+    $("#left").textContent = l;
+    S.picked.forEach((id) => {
+      const row = $(`.weigh[data-id="${id}"]`);
+      $("output", row).textContent = tok(id);
+      $(".pips", row).innerHTML = "<i></i>".repeat(tok(id));
+      $('[data-d="-1"]', row).disabled = tok(id) === 0;
+      $('[data-d="1"]', row).disabled = l === 0;
+    });
+    const b = $("#weigh-next"); b.disabled = l !== 0; b.textContent = l === 0 ? "Face them two at a time" : "Spend all 20 to go on";
+  };
+  $("#weigh").addEventListener("click", (e) => {
+    const b = e.target.closest("[data-d]"); if (!b) return;
+    const id = b.closest(".weigh").dataset.id, d = +b.dataset.d;
+    if (d > 0 && left() === 0) return;
+    S.tokens[id] = Math.max(0, tok(id) + d); save(); sync(); renderStrip("weigh");
+  });
+  sync();
+}
+
+function viewTug() {
+  if (S.picked.length < 4) return needValues(0, "Pick your values first");
+  const P = pairList();
+  S.pairIdx = Math.max(0, Math.min(P.length - 1, S.pairIdx || 0));
+  const [a, b] = P[S.pairIdx], k = pkey(a, b), r = S.pairs[k] || {};
+  const done = P.filter(answered).length;
+  V.innerHTML = `${rail(0)}${exampleBanner()}
+    <div class="prose"><p class="kicker">Stop 3 of 6 · Tug</p><h2 tabindex="-1">Two at a time</h2>
+    <p class="lede">For each pair, choose one, then say how the two really get along in your life. Watch the map: every answer moves it.</p></div>
+    <div class="tug-grid">
+      <div class="panel">
+        <div class="row between"><span class="kicker">Pair ${S.pairIdx + 1} of ${P.length}</span><span class="kicker">${done} answered</span></div>
+        <div class="progress" aria-hidden="true"><i style="width:${(done / P.length) * 100}%"></i></div>
+        <p class="q">This month there's only room for one. Which do you choose?</p>
+        <div class="versus" role="group" aria-label="Choose one">
+          <button class="side" data-win="${a}" aria-pressed="${r.win === a}"><b>${esc(val(a).name)}</b><span>${esc(val(a).phrase)}</span></button>
+          <span class="or">or</span>
+          <button class="side" data-win="${b}" aria-pressed="${r.win === b}"><b>${esc(val(b).name)}</b><span>${esc(val(b).phrase)}</span></button>
+        </div>
+        <p class="q">In your actual life, how do ${esc(val(a).name)} and ${esc(val(b).name)} get along?</p>
+        <div class="clash" role="group" aria-label="How they get along">${CLASH.map(([t, d], i) => `<button data-clash="${i}" aria-pressed="${r.clash === i}"><svg class="glyph" viewBox="0 0 46 14" aria-hidden="true"><path d="${d}" stroke="${i === 0 ? "var(--tide)" : i >= 3 ? "var(--plum)" : "var(--muted)"}"/></svg>${t}</button>`).join("")}</div>
+        <div class="row between">
+          <button class="btn quiet" id="tug-back"${S.pairIdx === 0 ? " disabled" : ""}>Previous pair</button>
+          <button class="btn primary" id="tug-next"></button>
+        </div>
+      </div>
+      <div class="panel map-box">
+        <svg class="map" id="tug-map" viewBox="0 0 400 400" role="img"></svg>
+        ${legendHTML}
+      </div>
+    </div>`;
+  const syncNext = () => {
+    const rr = S.pairs[k] || {}, ok = rr.win && rr.clash != null, last = S.pairIdx === P.length - 1;
+    const next = $("#tug-next");
+    const remaining = P.filter((p) => !answered(p)).length;
+    next.textContent = last ? (remaining ? "Skip to my map" : "See my map") : ok ? "Next pair" : "Skip this pair";
+    next.classList.toggle("primary", ok || (last && !remaining));
+  };
+  drawMap($("#tug-map"), S.picked, { hot: [a, b] });
+  syncNext();
+  V.querySelector(".tug-grid").addEventListener("click", (e) => {
+    const w = e.target.closest("[data-win]"), c = e.target.closest("[data-clash]");
+    if (!w && !c) return;
+    S.pairs[k] = Object.assign({}, S.pairs[k]);
+    if (w) { S.pairs[k].win = w.dataset.win; $$("[data-win]", V).forEach((x) => x.setAttribute("aria-pressed", String(x === w))); }
+    if (c) { S.pairs[k].clash = +c.dataset.clash; $$("[data-clash]", V).forEach((x) => x.setAttribute("aria-pressed", String(x === c))); drawMap($("#tug-map"), S.picked, { hot: [a, b] }); }
+    S.example = false; save(); syncNext(); renderStrip("tug");
+    if (answered([a, b])) { const d2 = P.filter(answered).length; $(".progress i", V).style.width = (d2 / P.length) * 100 + "%"; $$(".kicker", V)[2].textContent = d2 + " answered"; }
+  });
+  $("#tug-back").addEventListener("click", () => { S.pairIdx--; save(); viewTug(); focusQ(); });
+  $("#tug-next").addEventListener("click", () => {
+    if (S.pairIdx === P.length - 1) { go("map"); return; }
+    S.pairIdx++; save(); viewTug(); focusQ();
+  });
+}
+function focusQ() { const s = $(".side", V); if (s) s.focus({ preventScroll: true }); const top = $("#main").getBoundingClientRect().top + window.scrollY - 90; if (window.scrollY > top) window.scrollTo({ top: Math.max(0, top), behavior: "auto" }); }
+
+function strongest(ids) {
+  const out = [];
+  for (let i = 0; i < ids.length; i++) for (let j = i + 1; j < ids.length; j++) {
+    const r = S.pairs[pkey(ids[i], ids[j])];
+    if (r && r.clash != null) out.push({ a: ids[i], b: ids[j], clash: r.clash, w: tok(ids[i]) + tok(ids[j]) });
+  }
+  return out;
+}
+function viewMap() {
+  if (S.picked.length < 4) return needValues(1, "Your map needs values");
+  const P = pairList(), done = P.filter(answered).length, all = strongest(S.picked);
+  const xs = all.filter((p) => p.clash >= 3).sort((p, q) => q.clash - p.clash || q.w - p.w).slice(0, 4);
+  const al = all.filter((p) => p.clash === 0).sort((p, q) => q.w - p.w).slice(0, 4);
+  V.innerHTML = `${rail(1)}${exampleBanner()}
+    <div class="prose"><p class="kicker">Stop 4 of 6 · Map</p><h2 tabindex="-1">Your map of crosscurrents</h2>
+    <p class="lede">Values that pull against each other sit far apart. Values that help each other sit close. Read the distances only: up, down, left and right mean nothing on their own.</p>
+    ${done < P.length ? `<p class="muted">You've answered ${done} of ${P.length} pairs. Unanswered pairs count as "sometimes collide" until you get to them.</p>` : ""}</div>
+    <div class="panel map-box">
+      <svg class="map" id="big-map" viewBox="0 0 400 400" role="img"></svg>
+      ${legendHTML}
+      <p class="fit" id="fit"></p>
+      <p class="muted small" style="text-align:center">The Learn stop at the end explains every part of this map, with questions about yours.</p>
+    </div>
+    <div class="pairs-out">
+      <div class="panel"><h4 class="hx">Strongest crosscurrents</h4>${xs.length ? `<ul class="plist">${xs.map((p) => `<li><span>${esc(val(p.a).name)} and ${esc(val(p.b).name)}</span><span class="tag">${p.clash === 4 ? "constantly" : "often"}</span></li>`).join("")}</ul>` : `<p class="muted">You didn't mark any pair as colliding often. Your values seem to have found a way to share the room.</p>`}</div>
+      <div class="panel"><h4 class="ha">Strongest allies</h4>${al.length ? `<ul class="plist">${al.map((p) => `<li><span>${esc(val(p.a).name)} and ${esc(val(p.b).name)}</span><span class="tag">help each other</span></li>`).join("")}</ul>` : `<p class="muted">No pairs marked as helping each other yet. Allies are worth noticing too. They're where you get energy.</p>`}</div>
+    </div>
+    <div class="row between"><button class="btn quiet" data-go="tug">${done < P.length ? "Finish the pairs" : "Change an answer"}</button><button class="btn primary" data-go="gap">What you said versus what you chose</button></div>`;
+  const fit = drawMap($("#big-map"), S.picked);
+  $("#fit").textContent = "This flat map shows about " + Math.round(fit * 100) + "% of the pattern in your answers.";
+}
+
+function ranks(scores) {
+  const ids = Object.keys(scores).sort((a, b) => scores[b] - scores[a] || val(a).name.localeCompare(val(b).name));
+  const r = {}; ids.forEach((id, i) => { r[id] = i + 1; }); return { order: ids, r };
+}
+function winsOf(id) {
+  let w = 0, m = 0;
+  S.picked.forEach((o) => { if (o === id) return; const r = S.pairs[pkey(id, o)]; if (r && r.win) { m++; if (r.win === id) w++; } });
+  return { w, m };
+}
+function loops() {
+  const ids = S.picked, out = [];
+  const beats = (x, y) => { const r = S.pairs[pkey(x, y)]; return r && r.win === x; };
+  const has = (x, y) => { const r = S.pairs[pkey(x, y)]; return r && r.win; };
+  for (let i = 0; i < ids.length; i++) for (let j = i + 1; j < ids.length; j++) for (let k = j + 1; k < ids.length; k++) {
+    const [a, b, c] = [ids[i], ids[j], ids[k]];
+    if (!has(a, b) || !has(b, c) || !has(a, c)) continue;
+    if (beats(a, b) && beats(b, c) && beats(c, a)) out.push([a, b, c]);
+    else if (beats(b, a) && beats(c, b) && beats(a, c)) out.push([a, c, b]);
+  }
+  return out;
+}
+function viewGap() {
+  if (S.picked.length < 4) return needValues(1, "This stop needs your values");
+  const said = {}, chose = {};
+  S.picked.forEach((id) => { said[id] = tok(id); const { w, m } = winsOf(id); chose[id] = m ? w / m : 0; });
+  const A = ranks(said), B = ranks(chose), n = S.picked.length;
+  const H = 46 + n * 38, xL = 162, xR = 238;
+  const yOf = (rk) => 40 + (rk - 1) * 38 + 12;
+  let svg = `<text class="hd" x="${xL}" y="18" text-anchor="middle">WHAT YOU SAID</text><text class="hd" x="${xR}" y="18" text-anchor="middle">WHAT YOU CHOSE</text>`;
+  S.picked.forEach((id) => {
+    const big = Math.abs(A.r[id] - B.r[id]) >= 2, y1 = yOf(A.r[id]), y2 = yOf(B.r[id]);
+    svg += `<line class="${big ? "big" : ""}" x1="${xL}" y1="${y1}" x2="${xR}" y2="${y2}"/>`;
+  });
+  S.picked.forEach((id) => {
+    const big = Math.abs(A.r[id] - B.r[id]) >= 2, y1 = yOf(A.r[id]), y2 = yOf(B.r[id]), { w, m } = winsOf(id);
+    svg += `<circle class="${big ? "big" : ""}" cx="${xL}" cy="${y1}" r="6"/><circle class="${big ? "big" : ""}" cx="${xR}" cy="${y2}" r="6"/>`;
+    svg += `<text x="${xL - 14}" y="${y1 + 4}" text-anchor="end">${esc(val(id).name)} <tspan class="n">${tok(id)}</tspan></text>`;
+    svg += `<text x="${xR + 14}" y="${y2 + 4}"><tspan class="n">${w}/${m}</tspan> ${esc(val(id).name)}</text>`;
+  });
+  const up = S.picked.filter((id) => A.r[id] - B.r[id] >= 2), down = S.picked.filter((id) => B.r[id] - A.r[id] >= 2);
+  const L = loops();
+  const ins = [];
+  down.forEach((id) => { const { w, m } = winsOf(id); ins.push(`<div class="insight"><b>${esc(val(id).name)}: said more than chosen</b><p>You gave it ${tok(id)} tokens, but it won ${w} of ${m} matchups. It might be an ideal you're reaching for, or a value that daily life keeps outvoting. Either can be true, and only you can tell which.</p></div>`); });
+  up.forEach((id) => { const { w, m } = winsOf(id); ins.push(`<div class="insight"><b>${esc(val(id).name)}: chosen more than said</b><p>It won ${w} of ${m} matchups, though you gave it only ${tok(id)} token${tok(id) === 1 ? "" : "s"}. It may matter more to you than you say out loud. Is that a value you'd like to own more openly, or one that's pushing others aside?</p></div>`); });
+  if (!up.length && !down.length) ins.push(`<div class="insight calm"><b>Your words and choices line up</b><p>What you said and what you chose rank your values in nearly the same order. That often means values you've already tested in real life.</p></div>`);
+  L.slice(0, 2).forEach(([a, b, c]) => ins.push(`<div class="insight"><b>Your choices made a loop</b><p>${esc(val(a).name)} beat ${esc(val(b).name)}, ${esc(val(b).name)} beat ${esc(val(c).name)}, and ${esc(val(c).name)} beat ${esc(val(a).name)}. An economist would call that inconsistent. It usually means the right answer depends on the situation, which is a very human way to hold values.</p></div>`));
+  V.innerHTML = `${rail(1)}${exampleBanner()}
+    <div class="prose"><p class="kicker">Stop 5 of 6 · Gaps</p><h2 tabindex="-1">What you said versus what you chose</h2>
+    <p class="lede">On the left, your values ranked by the tokens you gave them. On the right, ranked by how often each one won when you had to choose. Steep lines are gaps.</p></div>
+    <div class="panel"><div class="slope-wrap"><svg class="slope" viewBox="0 0 400 ${H}" role="img" aria-label="Slope chart comparing token ranks with choice ranks">${svg}</svg></div>
+    <p class="muted small">Numbers on the left are tokens. Numbers on the right are matchups won out of matchups answered.</p></div>
+    <div class="view" style="gap:10px">${ins.join("")}</div>
+    <div class="row between"><button class="btn quiet" data-go="map">Back to the map</button><button class="btn primary" data-go="name">Name your crosscurrent</button></div>`;
+}
+
+function tensions() {
+  return strongest(S.picked).sort((p, q) => q.clash - p.clash || q.w - p.w);
+}
+function viewName() {
+  if (S.picked.length < 4) return needValues(1, "This stop needs your values");
+  const T = tensions().slice(0, 5);
+  if (!S.name.pair || !T.some((t) => pkey(t.a, t.b) === S.name.pair)) S.name.pair = T.length ? pkey(T[0].a, T[0].b) : null;
+  if (!S.name.pair) { V.innerHTML = `${rail(1)}<div class="prose"><h2 tabindex="-1">Answer a few pairs first</h2><p class="lede">This stop builds on the pairs you mark as colliding.</p></div><div class="row"><button class="btn primary" data-go="tug">Go to the pairs</button></div>`; return; }
+  const [a, b] = S.name.pair.split("|");
+  const top = T[0], quiet = top.clash < 2;
+  V.innerHTML = `${rail(1)}${exampleBanner()}
+    <div class="prose"><p class="kicker">Stop 6 of 6 · Name it</p><h2 tabindex="-1">Put your crosscurrent in your own words</h2>
+    <p class="lede">${quiet ? "None of your pairs collide often, which is worth celebrating. Pick the pair that comes closest and explore it anyway." : "Your strongest collision is preselected. Choose another if a different pair feels more alive right now."}</p></div>
+    <div class="panel">
+      <div class="field"><label for="n-pair">The two values</label><select id="n-pair">${T.map((t) => `<option value="${pkey(t.a, t.b)}"${pkey(t.a, t.b) === S.name.pair ? " selected" : ""}>${esc(val(t.a).name)} and ${esc(val(t.b).name)}</option>`).join("")}</select></div>
+      <div class="field"><label for="n-a">When I lean toward ${esc(val(a).name)}, what am I protecting?</label><input id="n-a" maxlength="140" value="${esc(S.name.a)}" placeholder="A few words, like my sense of being myself" autocomplete="off"></div>
+      <div class="field"><label for="n-b">When I lean toward ${esc(val(b).name)}, what am I protecting?</label><input id="n-b" maxlength="140" value="${esc(S.name.b)}" placeholder="A few words, like the people who count on me" autocomplete="off"></div>
+      <div class="field"><label for="n-move">One small move that honors both, even a little</label><textarea id="n-move" maxlength="200" placeholder="Remember Saturday? Sometimes there's a third way.">${esc(S.name.move)}</textarea></div>
+    </div>
+    <div class="statement" aria-live="polite"><p class="kicker">Your crosscurrent, in your words</p><p class="say" id="say"></p>
+      <div class="row"><button class="btn" id="copy">Copy my words</button><span class="muted small" id="copy-note"></span></div></div>
+    <div class="row between"><button class="btn quiet" data-go="gap">Back</button><button class="btn primary" data-go="learn">Why this happens, and what it's called</button></div>`;
+  const blank = (t) => t ? esc(t) : `<span class="blank">______</span>`;
+  const sync = () => {
+    $("#say").innerHTML = `Part of me leans toward <span class="va">${esc(val(a).name)}</span> because it protects ${blank(S.name.a)}. Part of me leans toward <span class="vb">${esc(val(b).name)}</span> because it protects ${blank(S.name.b)}. Both parts are mine. This week I'll try ${blank(S.name.move)}.`;
+  };
+  $("#n-pair").addEventListener("change", (e) => { S.name.pair = e.target.value; S.name.a = ""; S.name.b = ""; save(); viewName(); });
+  [["n-a", "a"], ["n-b", "b"], ["n-move", "move"]].forEach(([id, k]) => $("#" + id).addEventListener("input", (e) => { S.name[k] = e.target.value; S.example = false; save(); sync(); renderStrip("name"); }));
+  $("#copy").addEventListener("click", () => {
+    const text = $("#say").textContent;
+    const note = $("#copy-note");
+    const fallback = () => { const r = document.createRange(); r.selectNodeContents($("#say")); const sel = getSelection(); sel.removeAllRanges(); sel.addRange(r); note.textContent = "Selected. Copy it with your device's copy command."; };
+    try { navigator.clipboard.writeText(text).then(() => { note.textContent = "Copied."; }, fallback); } catch (err) { fallback(); }
+  });
+  sync();
+}
+
+const TERMS = [
+  { name: "Cognitive dissonance", line: "The uneasy feeling of holding two beliefs, values or actions that don't fit together.",
+    pattern: "When a choice leaves an ache, look for the two things that don't fit, instead of deciding one of them was never real.",
+    field: "Leon Festinger introduced the idea in 1957. In a famous 1959 study with James Carlsmith, people paid $1 to tell a stranger that a dull task was fun later rated the task as more enjoyable than people paid $20. With so little reason for the fib, they eased the dissonance by quietly changing their own opinion." },
+  { name: "Stated and revealed preferences", line: "What you say you value, and what your choices show you value, can differ.",
+    pattern: "Compare your words with your calendar, your spending and your actual choices. Where they differ, get curious before you get critical.",
+    field: "Economist Paul Samuelson proposed in 1938 that preferences can be read from the choices people actually make. In this lesson, your tokens were your stated preferences and your matchups were your revealed ones." },
+  { name: "The circle of values", line: "Some values sit side by side and support each other. Others sit across from each other and pull apart.",
+    pattern: "When two values keep colliding, check whether they sit on opposite sides of the circle. If they do, the tension is built in. It isn't a flaw in you.",
+    field: "Shalom Schwartz surveyed people in many countries and found ten basic values arranged in a circle. Self-direction and stimulation sit opposite conformity, tradition and security. Achievement and power sit opposite benevolence and universalism." },
+  { name: "Multidimensional scaling", line: "A method that turns a table of distances into a map, placing similar things close together and different things far apart.",
+    pattern: "If you can say how far apart every pair of things feels, multidimensional scaling can draw the picture. Read the distances, not the directions.",
+    field: "Warren Torgerson published classical multidimensional scaling in 1952. This page uses his method: it squares your distances, centers them, and keeps the two strongest dimensions. Schwartz found his circle with a close relative called smallest space analysis." },
+  { name: "Polarity", line: "A tension between two goods that you manage over time instead of solving once.",
+    pattern: "For a polarity, ask what each side gives you, what overdoing each side costs, and what early signs tell you it's time to lean the other way.",
+    field: "Barry Johnson's book Polarity Management (1992) describes pairs like stability and change as ongoing tensions. Leaning hard into one side for long enough brings back the very problems the other side was solving." }
+];
+const stepLabel = (l, name) => `<div class="step-label"><span class="letter">${l}</span><span class="name">${name}</span></div>`;
+function circleSVG(ids) {
+  const cx = 200, cy = 200, R = 128;
+  const ang = (slot) => (-90 + slot * 40) * Math.PI / 180;
+  let s = `<rect class="sea" x="0" y="0" width="400" height="400" rx="18"/><circle class="contour" cx="${cx}" cy="${cy}" r="${R}"/>`;
+  SLOTS.forEach((nm, i) => {
+    const a0 = ang(i - 0.5), x = cx + Math.cos(a0) * R, y = cy + Math.sin(a0) * R;
+    s += `<line class="slot" x1="${cx}" y1="${cy}" x2="${x.toFixed(1)}" y2="${y.toFixed(1)}"/>`;
+    const a = ang(i), lx = cx + Math.cos(a) * (R + 30), ly = cy + Math.sin(a) * (R + 30);
+    const words = nm === "Conformity and tradition" ? ["Conformity,", "tradition"] : [nm];
+    s += `<text class="ring-lbl" text-anchor="middle" x="${lx.toFixed(1)}" y="${(ly - (words.length - 1) * 5).toFixed(1)}">${words.map((w, k) => `<tspan x="${lx.toFixed(1)}" dy="${k ? 11 : 0}">${w}</tspan>`).join("")}</text>`;
+  });
+  const mapped = ids.filter((id) => val(id).sz != null), pos = {};
+  const bySlot = {}; mapped.forEach((id) => { (bySlot[val(id).sz] = bySlot[val(id).sz] || []).push(id); });
+  Object.entries(bySlot).forEach(([slot, list]) => list.forEach((id, k) => {
+    const a = ang(+slot + (k - (list.length - 1) / 2) * 0.32), rr = R - 26;
+    pos[id] = [cx + Math.cos(a) * rr, cy + Math.sin(a) * rr];
+  }));
+  for (let i = 0; i < mapped.length; i++) for (let j = i + 1; j < mapped.length; j++) {
+    const r = S.pairs[pkey(mapped[i], mapped[j])];
+    if (r && r.clash != null && r.clash >= 3) { const p = pos[mapped[i]], q = pos[mapped[j]]; s += `<line class="edge-x" stroke-width="2.2" x1="${p[0].toFixed(1)}" y1="${p[1].toFixed(1)}" x2="${q[0].toFixed(1)}" y2="${q[1].toFixed(1)}"/>`; }
+  }
+  mapped.forEach((id) => { const [x, y] = pos[id]; s += `<circle class="node" cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="7"/><text class="lbl" text-anchor="middle" x="${Math.max(40, Math.min(360, cx + (x - cx) * 0.62)).toFixed(1)}" y="${(cy + (y - cy) * 0.62 + 4).toFixed(1)}">${esc(val(id).name)}</text>`; });
+  return s;
+}
+function compareNotes(ids) {
+  const mapped = ids.filter((id) => val(id).sz != null), out = { shared: [], personal: [], bridge: [] };
+  const cd = (a, b) => { const d = Math.abs(val(a).sz - val(b).sz); return Math.min(d, 9 - d); };
+  for (let i = 0; i < mapped.length; i++) for (let j = i + 1; j < mapped.length; j++) {
+    const a = mapped[i], b = mapped[j], r = S.pairs[pkey(a, b)];
+    if (!r || r.clash == null) continue;
+    const d = cd(a, b), nm = esc(val(a).name) + " and " + esc(val(b).name);
+    if (d >= 3 && r.clash >= 3) out.shared.push(nm);
+    else if (d <= 1 && r.clash >= 3) out.personal.push(nm);
+    else if (d >= 3 && r.clash <= 1) out.bridge.push(nm);
+  }
+  return out;
+}
+function readingHTML(ids) {
+  const { coords, fit } = layout(ids);
+  const nm = (id) => `<b>${esc(val(id).name)}</b>`;
+  let far = null, near = null;
+  for (let i = 0; i < ids.length; i++) for (let j = i + 1; j < ids.length; j++) {
+    const d = Math.hypot(coords[i][0] - coords[j][0], coords[i][1] - coords[j][1]);
+    if (!far || d > far.d) far = { a: ids[i], b: ids[j], d };
+    if (!near || d < near.d) near = { a: ids[i], b: ids[j], d };
+  }
+  const rad = ids.map((id, i) => [id, Math.hypot(coords[i][0], coords[i][1])]).sort((p, q) => p[1] - q[1]);
+  const center = rad[0][0];
+  const big = ids.slice().sort((p, q) => tok(q) - tok(p))[0];
+  const bigHot = ids.some((o) => o !== big && ((S.pairs[pkey(big, o)] || {}).clash || 0) >= 3);
+  const pct = Math.round(fit * 100);
+  const fitRead = pct >= 80 ? "That's a close fit, so you can trust the distances."
+    : pct >= 60 ? "That's a fair fit. Most distances are right, but a few pairs may sit a little closer or farther than you rated them. The lines are always exact."
+    : "That's a loose fit. Your answers have more shape than a flat page can hold, so lean on the lines, which come straight from your answers.";
+  const open = pairList().filter((p) => !answered(p)).length;
+  return `<div class="panel">
+    ${stepLabel("A", "Answer: how to read your map")}
+    <p class="muted">Your map is a picture of your own answers, nothing more. Here's what each part means.</p>
+    <div class="compare">
+      <div class="map-box"><svg class="map" id="learn-map" viewBox="0 0 400 400" role="img"></svg>${legendHTML}</div>
+      <dl class="keylist">
+        <div><dt>Distance</dt><dd>The map is built from distance alone. The farther apart two values sit, the more you said they collide. The closer they sit, the better you said they get along. Up, down, left and right mean nothing. If you did this again, the map might come out turned or flipped, with the same distances.</dd></div>
+        <div><dt><span class="sw x"></span>Dashed line</dt><dd>You said these two often collide. A thicker line means you said they constantly pull apart.</dd></div>
+        <div><dt><span class="sw a"></span>Solid line</dt><dd>You said these two help each other. They're allies you can lean on.</dd></div>
+        <div><dt>No line</dt><dd>You said these two rarely or sometimes collide.${open ? ` You skipped ${open} pair${open === 1 ? "" : "s"}, and skipped pairs count as "sometimes."` : ""}</dd></div>
+        <div><dt><span class="sw c"></span>Circle size</dt><dd>How many of your 20 tokens you gave that value. Size shows what you said matters most. It doesn't change where a value sits.</dd></div>
+        <div><dt><span class="sw d"></span>Middle and edge</dt><dd>A value near the middle sits at a similar distance from most of the others. It may be a steadying value that gets along with everything, or one you rated "sometimes" across the board. A value near the edge has at least one strong pull, toward an ally or away from a rival.</dd></div>
+        <div><dt>The fit number</dt><dd>A flat map has only two directions, and your answers may need more to show perfectly. This one shows about ${pct}% of the pattern in your answers. ${fitRead}</dd></div>
+      </dl>
+    </div>
+    <div class="prose"><h3>Questions for your map</h3><p class="muted">There are no right answers. Sit with whichever one catches you.</p></div>
+    <ol class="asks">
+      <li>${nm(far.a)} and ${nm(far.b)} sit farthest apart on your map. When did these two last pull on you at the same time? What did you choose, and how did it feel a day later?</li>
+      <li>${nm(near.a)} and ${nm(near.b)} sit closest together. How could leaning on this pair help you when the far pair pulls?</li>
+      <li>${nm(center)} sits nearest the middle. Does it act like a steady keel for the rest, or is it a value you haven't thought much about?</li>
+      <li>${bigHot ? `${nm(big)} got the most tokens, and it has a dashed line to at least one other value. Big values on a dashed line are where choices tend to hurt most. What would help you choose on purpose there?` : `${nm(big)} got the most tokens and has no dashed lines. It may fit easily with the rest of your life. Is that true day to day?`}</li>
+      <li>If you could move one value on this map, which would you move, and closer to what?</li>
+    </ol>
+  </div>`;
+}
+function viewLearn() {
+  const ids = S.picked, has = ids.length >= 4;
+  const C = has ? compareNotes(ids) : null;
+  const custom = ids.filter((id) => val(id).sz == null);
+  V.innerHTML = `${rail(2)}${exampleBanner()}
+    <div class="prose"><p class="kicker">Learn · Reading your map</p><h2 tabindex="-1">What your map is telling you</h2></div>
+    ${has ? readingHTML(ids) : `<div class="panel"><p>Pick at least four values and face them in pairs to get a map you can read here.</p><div class="row"><button class="btn primary" data-go="pick">Pick my values</button><button class="btn quiet" id="load-example">See an example</button></div></div>`}
+    <div class="panel">
+      ${stepLabel("R", "Reasoning: why tensions are normal")}
+      <div class="prose">
+        <p>Caring about more than one good thing means those things will sometimes compete for the same Saturday. Philosopher Isaiah Berlin argued that not all good things fit together, and that choosing between real goods is part of a human life, not a mistake in it.</p>
+        <p>When a choice goes against one of your values, you feel it. People tend to ease that feeling in a few common ways: they change what they do, change what they believe, add a reason that makes it fit, or decide it didn't matter much. The first two can be growth. The last two are worth noticing, because over time they can quietly rewrite what you care about.</p>
+        <p>Your map shows where those collisions happen for you. Values far apart on it are your crosscurrents. They aren't problems to fix. They're the places where you get to choose on purpose.</p>
+      </div>
+    </div>
+    ${has ? `<div class="panel">
+      <div class="prose"><h3>Your map next to the research circle</h3><p class="muted">Researchers found that values sit in a circle. Here are your values placed on that circle, with the collisions you marked drawn as dashed lines. Lines that cut across the middle match what most people feel. Short lines near the edge are tensions more personal to you.</p></div>
+      <div class="compare">
+        <div class="map-box"><svg class="map" viewBox="0 0 400 400" role="img" aria-label="Your values on Schwartz's circle of values">${circleSVG(ids)}</svg></div>
+        <div class="view" style="gap:12px">
+          ${C.shared.length ? `<div class="insight calm"><b>Shared by many people</b><p>${C.shared.join("; ")}. These sit on opposite sides of the circle, so the pull you feel is one most people feel.</p></div>` : ""}
+          ${C.personal.length ? `<div class="insight"><b>More personal to you</b><p>${C.personal.join("; ")}. These usually sit side by side, yet they collide in your life. Something in your circumstances is pulling them apart, and that's worth getting curious about.</p></div>` : ""}
+          ${C.bridge.length ? `<div class="insight calm"><b>Bridges you've built</b><p>${C.bridge.join("; ")}. These usually pull apart, but you said they rarely collide or even help each other. You've found a way to hold them together.</p></div>` : ""}
+          ${!C.shared.length && !C.personal.length && !C.bridge.length ? `<p class="muted">Your answers don't line up strongly with or against the circle. That's common with a small set of values.</p>` : ""}
+          ${custom.length ? `<p class="muted small">Values you added yourself (${custom.map((id) => esc(val(id).name)).join(", ")}) don't have a place on the research circle, so they're left off this drawing.</p>` : ""}
+        </div>
+      </div>
+    </div>` : ""}
+    ${TERMS.map((t, i) => `<div class="term">${stepLabel("T", "Terms: an idea you just used")}<div class="num" aria-hidden="true">${i + 1}</div><h3>${esc(t.name)}</h3><p class="line">${esc(t.line)}</p>
+      <div class="syn">${stepLabel("S", "Syntax: the pattern to reuse")}<p class="pattern">${esc(t.pattern)}</p><p class="fieldnote"><b>From the research.</b> ${esc(t.field)}</p></div></div>`).join("")}
+    <div class="panel">
+      ${stepLabel("S", "Syntax: the Crosscurrent Check")}
+      <p class="muted">The next time a choice leaves an ache, walk these five steps.</p>
+      <ol class="check">
+        <li><span>Name both values. Say them out loud or write them down.</span></li>
+        <li><span>Say what each one protects for you.</span></li>
+        <li><span>Ask what this situation needs most right now.</span></li>
+        <li><span>Look for one small move that honors both, the way Saturday sometimes has a Sunday.</span></li>
+        <li><span>Let one win today, and notice the signs that it's time to lean back the other way.</span></li>
+      </ol>
+    </div>
+    <div class="panel">
+      <h3>Start again or clear your answers</h3>
+      <p class="muted">Values shift with seasons of life. Try this again in a few months and compare maps. Your answers stay in this tab until you close it or clear them.</p>
+      <div class="row"><button class="btn" data-go="pick">Change my values</button><button class="btn quiet" id="clear">Clear my answers</button></div>
+    </div>`;
+  if (has) drawMap($("#learn-map"), ids);
+  const cl = $("#clear");
+  cl.addEventListener("click", () => {
+    if (cl.dataset.armed) { clearAll(); S.hook = { choice: null, r: [null, null] }; save(); go("start"); return; }
+    cl.dataset.armed = "1"; cl.textContent = "Tap again to clear everything";
+    setTimeout(() => { if (cl.isConnected) { delete cl.dataset.armed; cl.textContent = "Clear my answers"; } }, 4000);
+  });
+}
+
+/* ---------- router ---------- */
+const VIEWS = { pick: viewPick, weigh: viewWeigh, tug: viewTug, map: viewMap, gap: viewGap, name: viewName, learn: viewLearn };
+let first = true;
+function route() {
+  let id = location.hash.slice(1);
+  if (!VIEWS[id] && id !== "start") id = "start";
+  if (id === "start") { $("#view-start").hidden = false; V.hidden = true; renderHook(); }
+  else {
+    $("#view-start").hidden = true; V.hidden = false; VIEWS[id]();
+    if (["map", "gap", "learn"].includes(id) && !S.seen.includes(id)) { S.seen.push(id); save(); }
+    renderStrip(id);
+  }
+  if (!first) {
+    const top = $("#main").getBoundingClientRect().top + window.scrollY - 90;
+    window.scrollTo({ top: Math.max(0, top), behavior: "auto" });
+    const h = document.querySelector("main .view:not([hidden]) h2"); if (h) h.focus({ preventScroll: true });
+  }
+  first = false;
+}
+window.addEventListener("hashchange", route);
+route();
+</script>
+
+</body></html>

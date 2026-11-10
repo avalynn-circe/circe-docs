@@ -18,17 +18,26 @@
 .li-c-w { --c: var(--li-w); } .li-c-s { --c: var(--li-s); }
 
 /* ---------- sidebar: stock menu, colored through category classNames ---------- */
-.li-cat > .menu__list-item-collapsible > .menu__link,
-.li-cat > .menu__link { display: flex; align-items: center; gap: 9px; font-weight: 700; }
-.li-cat > .menu__list-item-collapsible > .menu__link::before,
-.li-cat > .menu__link::before { content: ''; width: 12px; height: 12px; border-radius: 3px; background: var(--c); flex: none; }
-.li-cat > .menu__list-item-collapsible > .menu__link::after {
-  margin-left: auto; font-family: var(--li-code); font-size: 10.5px; text-transform: uppercase; letter-spacing: .1em; color: var(--c);
+/* Docusaurus draws the caret in the link's ::after and rotates it, so the caret is left alone.
+   The color square sits on the flex wrapper, and the verb label uses the link's ::before. */
+.li-cat > .menu__list-item-collapsible { align-items: center; }
+.li-cat > .menu__list-item-collapsible::before {
+  content: ''; width: 12px; height: 12px; border-radius: 3px; background: var(--c); flex: none;
+  margin-left: var(--ifm-menu-link-padding-horizontal, .75rem);
 }
-.li-cat.li-c-i > .menu__list-item-collapsible > .menu__link::after { content: 'Play'; }
-.li-cat.li-c-c > .menu__list-item-collapsible > .menu__link::after { content: 'Diagnose'; }
-.li-cat.li-c-w > .menu__list-item-collapsible > .menu__link::after { content: 'Argue'; }
-.li-cat.li-c-s > .menu__list-item-collapsible > .menu__link::after { content: 'Inspect'; }
+.li-cat > .menu__list-item-collapsible > .menu__link { display: flex; align-items: center; font-weight: 700; padding-left: 9px; }
+.li-cat > .menu__list-item-collapsible > .menu__link::before {
+  order: 1; margin-left: auto; padding-left: 10px; font-family: var(--li-code); font-size: 10.5px;
+  text-transform: uppercase; letter-spacing: .1em; color: var(--c); white-space: nowrap;
+}
+.li-cat > .menu__list-item-collapsible > .menu__link::after { order: 2; margin-left: 8px; }
+.li-cat.li-c-i > .menu__list-item-collapsible > .menu__link::before { content: 'Play'; }
+.li-cat.li-c-c > .menu__list-item-collapsible > .menu__link::before { content: 'Diagnose'; }
+.li-cat.li-c-w > .menu__list-item-collapsible > .menu__link::before { content: 'Argue'; }
+.li-cat.li-c-s > .menu__list-item-collapsible > .menu__link::before { content: 'Inspect'; }
+/* a category rendered without the collapsible wrapper keeps the square on the link */
+.li-cat > .menu__link { display: flex; align-items: center; gap: 9px; font-weight: 700; }
+.li-cat > .menu__link::before { content: ''; width: 12px; height: 12px; border-radius: 3px; background: var(--c); flex: none; }
 .li-cat > .menu__list { margin-left: 15px; padding-left: 8px; border-left: 2px solid color-mix(in srgb, var(--c) 45%, transparent); }
 .li-cat .menu__link--active:not(.menu__link--sublist) { background: color-mix(in srgb, var(--c) 14%, transparent); color: var(--li-ink); }
 

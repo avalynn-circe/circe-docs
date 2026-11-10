@@ -1,0 +1,871 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<title>Desire Lines</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,600;1,6..72,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
+</head><body>
+<style>
+/* Layout: one reading column styled like a landscape architect's site plan. Hands-on stops first (plant a gate, walk 25 choices), then a park plan where the paved path to your ideal sits beside the trail your choices actually wore into the grass. */
+:root {
+  --bg: #ECEFE4; --surface: #F9FAF4; --ink: #1C251E; --muted: #56635A; --line: #C8D0C0;
+  --grass: #DCE6CF; --grass-mark: #B6C8A3; --paved: #CDCFC6; --paved-edge: #A2A59B;
+  --gate: #2D5B86; --gate-soft: #DCE6F0; --on-gate: #FFFFFF;
+  --trail: #A4511C; --trail-soft: #EED9C4; --on-trail: #FFFFFF;
+  --font-display: "Bricolage Grotesque", "Avenir Next", "Segoe UI", system-ui, sans-serif;
+  --font-body: "Newsreader", Georgia, "Times New Roman", serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #11160F; --surface: #192017; --ink: #E2E8DC; --muted: #9DAA98; --line: #2E3A2B;
+    --grass: #1B2918; --grass-mark: #2E4628; --paved: #3B4038; --paved-edge: #5A6056;
+    --gate: #8DBBE8; --gate-soft: #1B2D3E; --on-gate: #0D1620;
+    --trail: #E89D60; --trail-soft: #3D2918; --on-trail: #1A1008;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #11160F; --surface: #192017; --ink: #E2E8DC; --muted: #9DAA98; --line: #2E3A2B;
+  --grass: #1B2918; --grass-mark: #2E4628; --paved: #3B4038; --paved-edge: #5A6056;
+  --gate: #8DBBE8; --gate-soft: #1B2D3E; --on-gate: #0D1620;
+  --trail: #E89D60; --trail-soft: #3D2918; --on-trail: #1A1008;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--ink); font-family: var(--font-body); font-size: 18px; line-height: 1.55; -webkit-text-size-adjust: 100%; }
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--bg); }
+.gutter { max-width: 780px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+h1, h2, h3, h4 { font-family: var(--font-display); text-wrap: balance; margin: 0; }
+p { margin: 0; }
+button, input, select, textarea { font: inherit; color: inherit; }
+:focus-visible { outline: 3px solid var(--gate); outline-offset: 2px; border-radius: 6px; }
+.kicker { font-family: var(--font-mono); font-size: 0.72rem; letter-spacing: 0.09em; text-transform: uppercase; color: var(--muted); }
+.muted { color: var(--muted); }
+.small { font-size: 0.9rem; }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+.masthead { padding-block: 30px 14px; display: grid; gap: 10px; }
+.masthead h1 { font-size: clamp(2.6rem, 12vw, 5.2rem); font-weight: 800; line-height: 0.9; letter-spacing: -0.04em; }
+.masthead h1 span { color: var(--trail); }
+.masthead .sub { color: var(--muted); max-width: 58ch; font-size: 1.05rem; }
+
+.strip { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: var(--bg); border-bottom: 1px solid var(--line); }
+.strip .gutter { padding-block: 9px; display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; }
+.strip .gutter::-webkit-scrollbar { display: none; }
+.chip { flex: 0 0 auto; height: 38px; padding: 0 14px; border-radius: 999px; border: 1.5px solid var(--line); background: var(--surface); font-family: var(--font-mono); font-size: 0.8rem; color: var(--muted); cursor: pointer; display: inline-flex; align-items: center; gap: 7px; }
+.chip:hover:not(:disabled) { border-color: var(--gate); color: var(--ink); }
+.chip.done { border-color: var(--gate); color: var(--ink); }
+.chip.done::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--gate); }
+.chip.current { border-color: var(--ink); border-width: 2.5px; color: var(--ink); }
+.chip:disabled { opacity: 0.5; cursor: not-allowed; }
+
+main { padding-block: 26px 44px; }
+.view { display: grid; gap: 22px; }
+.view h2 { font-size: clamp(1.7rem, 6vw, 2.5rem); font-weight: 800; line-height: 1.04; letter-spacing: -0.025em; }
+.view h2:focus { outline: none; }
+.lede { font-size: 1.1rem; max-width: 60ch; }
+.prose { display: grid; gap: 12px; max-width: 62ch; }
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 18px; display: grid; gap: 16px; min-width: 0; }
+@media (min-width: 640px) { .panel { padding: 24px; } }
+.banner { border: 1.5px dashed var(--trail); background: var(--trail-soft); border-radius: 12px; padding: 10px 14px; display: flex; flex-wrap: wrap; gap: 10px; align-items: center; justify-content: space-between; font-size: 0.95rem; }
+
+.btn { border: 1.5px solid var(--gate); background: var(--surface); color: var(--ink); border-radius: 10px; padding: 10px 16px; cursor: pointer; font-family: var(--font-display); font-weight: 600; min-height: 46px; text-align: center; }
+.btn:hover:not(:disabled) { background: var(--gate-soft); }
+.btn.primary { background: var(--gate); color: var(--on-gate); }
+.btn.primary:hover:not(:disabled) { filter: brightness(1.08); background: var(--gate); }
+.btn.quiet { border-color: var(--line); font-weight: 600; }
+.btn:disabled { opacity: 0.45; cursor: not-allowed; }
+.row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.row.between { justify-content: space-between; }
+
+.parts { display: flex; flex-wrap: wrap; gap: 6px; list-style: none; padding: 0; margin: 0; }
+.parts li { font-size: 0.76rem; padding: 4px 9px; border-radius: 999px; border: 1px solid var(--line); color: var(--muted); display: inline-flex; gap: 6px; align-items: center; font-family: var(--font-mono); }
+.parts li b { font-weight: 500; }
+.parts li.on { border-color: var(--ink); color: var(--ink); }
+.parts li.now { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+
+/* hero plan */
+.plan-hero { display: grid; gap: 10px; }
+.plan-hero svg { width: 100%; height: auto; display: block; border-radius: 12px; }
+.caption { font-size: 0.95rem; color: var(--muted); max-width: 62ch; }
+.caption b { color: var(--ink); font-family: var(--font-display); }
+
+/* svg shared */
+.g-grass { fill: var(--grass); }
+.g-mark { stroke: var(--grass-mark); stroke-width: 1.3; fill: none; stroke-linecap: round; }
+.g-paved { stroke: var(--paved); fill: none; stroke-linecap: round; stroke-linejoin: round; }
+.g-joint { stroke: var(--paved-edge); fill: none; }
+.g-wear { stroke: var(--trail-soft); fill: none; stroke-linecap: round; stroke-linejoin: round; }
+.g-trail { stroke: var(--trail); fill: none; stroke-linecap: round; stroke-linejoin: round; }
+.g-bldg { fill: var(--surface); stroke: var(--ink); stroke-width: 1.5; }
+.g-lbl { fill: var(--ink); font-family: var(--font-mono); font-size: 10px; paint-order: stroke; stroke: var(--grass); stroke-width: 4px; stroke-linejoin: round; }
+.g-lbl.t { fill: var(--trail); }
+.g-lbl.g { fill: var(--gate); }
+.g-big { font-family: var(--font-display); font-weight: 800; font-size: 15px; }
+
+/* gate picker */
+.deck { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 8px; }
+.card { text-align: left; border: 1.5px solid var(--line); background: var(--surface); border-radius: 12px; padding: 11px 13px; cursor: pointer; display: grid; gap: 3px; min-width: 0; }
+.card:hover { border-color: var(--gate); }
+.card b { font-family: var(--font-display); font-size: 1.05rem; }
+.card span { color: var(--muted); font-size: 0.86rem; line-height: 1.35; }
+.card[aria-pressed="true"] { background: var(--gate); border-color: var(--gate); color: var(--on-gate); }
+.card[aria-pressed="true"] span { color: var(--on-gate); opacity: 0.88; }
+.field { display: grid; gap: 6px; min-width: 0; }
+.field label { font-weight: 600; }
+.field input, .field select, .field textarea { border: 1.5px solid var(--line); background: var(--surface); border-radius: 10px; padding: 10px 12px; min-height: 46px; width: 100%; }
+.field textarea { min-height: 70px; resize: vertical; }
+.mapnote { font-size: 0.95rem; border-left: 3px solid var(--gate); padding-left: 12px; }
+.chosen { font-family: var(--font-display); font-weight: 800; font-size: 1.3rem; color: var(--gate); }
+
+/* walk */
+.steps-row { display: flex; flex-wrap: wrap; gap: 5px; }
+.steps-row i { width: 11px; height: 15px; border-radius: 50% 50% 45% 45%; background: var(--line); display: inline-block; transform: rotate(var(--r, -8deg)); }
+.steps-row i.on { background: var(--ink); }
+.steps-row i.now { background: var(--trail); }
+.qcard { display: grid; gap: 16px; }
+.qtext { font-family: var(--font-display); font-weight: 600; font-size: clamp(1.3rem, 4.6vw, 1.7rem); line-height: 1.18; letter-spacing: -0.01em; }
+.opts { display: grid; gap: 8px; }
+.opt { text-align: left; border: 1.5px solid var(--line); background: var(--surface); border-radius: 12px; padding: 13px 15px; cursor: pointer; display: grid; grid-template-columns: 26px minmax(0, 1fr); gap: 10px; align-items: start; font-size: 1.02rem; min-height: 50px; }
+.opt:hover { border-color: var(--gate); }
+.opt .k { font-family: var(--font-mono); font-size: 0.78rem; color: var(--muted); border: 1px solid var(--line); border-radius: 6px; height: 24px; display: inline-flex; align-items: center; justify-content: center; }
+.opt[aria-pressed="true"] { border-color: var(--ink); border-width: 2px; background: var(--bg); }
+.opt[aria-pressed="true"] .k { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+.hint { font-size: 0.92rem; color: var(--muted); }
+
+/* trail map */
+.trail-grid { display: grid; gap: 18px; }
+@media (min-width: 720px) { .trail-grid { grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr); align-items: start; } }
+.map { width: 100%; max-width: 400px; height: auto; display: block; margin: 0 auto; border-radius: 12px; }
+.map .fp { cursor: pointer; }
+.map .fp circle.dot { stroke-width: 2; }
+.map .fp.toward circle.dot { fill: var(--gate); stroke: var(--gate); }
+.map .fp.part circle.dot { fill: var(--surface); stroke: var(--ink); }
+.map .fp.away circle.dot { fill: var(--trail); stroke: var(--trail); }
+.map .fp text { font-family: var(--font-mono); font-size: 9px; text-anchor: middle; dominant-baseline: central; pointer-events: none; }
+.map .fp.toward text { fill: var(--on-gate); }
+.map .fp.part text { fill: var(--ink); }
+.map .fp.away text { fill: var(--on-trail); }
+.map .fp.sel circle.ring { stroke: var(--ink); stroke-width: 2; fill: none; }
+.map .fp:focus { outline: none; }
+.map .fp:focus-visible circle.ring { stroke: var(--gate); stroke-width: 3; fill: none; }
+.map .gatepost { fill: var(--gate); }
+.map .arch { stroke: var(--gate); stroke-width: 3; fill: none; stroke-linecap: round; }
+.map .rival-mark { fill: var(--trail-soft); stroke: var(--trail); stroke-width: 2; }
+.map .end { fill: none; stroke: var(--ink); stroke-width: 1.5; stroke-dasharray: 3 3; }
+.map .start { fill: var(--ink); }
+.draw .g-trail, .draw .g-wear { animation: wear 1.8s ease-out both; }
+.draw .fp { animation: pop .3s ease-out both; animation-delay: calc(var(--i) * 70ms + 0.5s); }
+@keyframes wear { from { stroke-dashoffset: var(--len); } to { stroke-dashoffset: 0; } }
+@keyframes pop { from { opacity: 0; transform: scale(0.4); } to { opacity: 1; transform: scale(1); } }
+.map .fp { transform-box: fill-box; transform-origin: center; }
+
+.keylist { margin: 0; display: grid; gap: 12px; min-width: 0; }
+.keylist > div { display: grid; gap: 2px; }
+.keylist dt { font-family: var(--font-display); font-weight: 600; display: flex; align-items: center; gap: 9px; }
+.keylist dd { margin: 0; color: var(--muted); font-size: 0.93rem; line-height: 1.4; }
+.sw { display: inline-block; flex: 0 0 auto; }
+.sw.paved { width: 26px; height: 9px; border-radius: 5px; background: var(--paved); border: 1px solid var(--paved-edge); }
+.sw.trail { width: 26px; height: 9px; border-radius: 5px; background: var(--trail-soft); position: relative; }
+.sw.trail::after { content: ""; position: absolute; left: 2px; right: 2px; top: 3px; border-top: 2.5px solid var(--trail); }
+.sw.dot { width: 14px; height: 14px; border-radius: 50%; border: 2px solid; }
+.sw.dot.t { background: var(--gate); border-color: var(--gate); }
+.sw.dot.p { background: var(--surface); border-color: var(--ink); }
+.sw.dot.a { background: var(--trail); border-color: var(--trail); }
+
+.detail { border: 1.5px solid var(--line); border-radius: 12px; padding: 14px; display: grid; gap: 8px; background: var(--bg); }
+.detail .q { font-family: var(--font-display); font-weight: 600; line-height: 1.25; }
+.detail .pick { border-left: 3px solid var(--ink); padding-left: 10px; }
+.detail .ideal-pick { border-left: 3px solid var(--gate); padding-left: 10px; }
+.detail .tag { font-family: var(--font-mono); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); }
+
+.score { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+.score .num { font-family: var(--font-display); font-weight: 800; font-size: clamp(3.4rem, 15vw, 5rem); line-height: 0.85; color: var(--gate); font-variant-numeric: tabular-nums; letter-spacing: -0.04em; }
+.tri { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+.tri div { border: 1px solid var(--line); border-radius: 10px; padding: 10px; display: grid; gap: 2px; }
+.tri b { font-family: var(--font-display); font-size: 1.6rem; line-height: 1; font-variant-numeric: tabular-nums; }
+.tri span { font-size: 0.85rem; color: var(--muted); line-height: 1.3; }
+.tri .t b { color: var(--gate); }
+.tri .a b { color: var(--trail); }
+.howto { font-size: 0.93rem; color: var(--muted); }
+
+.rival-name { font-family: var(--font-display); font-weight: 800; font-size: clamp(1.8rem, 7vw, 2.6rem); color: var(--trail); line-height: 1; letter-spacing: -0.02em; }
+.moments { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+.moments li { border-top: 1px dashed var(--line); padding-top: 10px; display: grid; gap: 4px; font-size: 0.97rem; }
+.moments .q { font-family: var(--font-display); font-weight: 600; }
+.moments .you { color: var(--trail); }
+.moments .held { color: var(--gate); }
+.bars { display: grid; gap: 8px; }
+.bar { display: grid; grid-template-columns: minmax(0, 7.5em) minmax(0, 1fr) 3.2em; gap: 10px; align-items: center; font-size: 0.95rem; }
+.bar .track { height: 10px; border-radius: 5px; background: var(--line); overflow: hidden; }
+.bar .track i { display: block; height: 100%; background: var(--trail); border-radius: 5px; }
+.bar.gate .track i { background: var(--gate); }
+.bar output { font-family: var(--font-mono); font-size: 0.85rem; text-align: right; font-variant-numeric: tabular-nums; }
+.bar .nm { font-family: var(--font-display); font-weight: 600; overflow-wrap: anywhere; }
+
+/* learn */
+.step-label { display: flex; gap: 10px; align-items: center; }
+.step-label .letter { font-family: var(--font-mono); font-weight: 500; width: 30px; height: 30px; border-radius: 50%; background: var(--ink); color: var(--bg); display: inline-flex; align-items: center; justify-content: center; font-size: 0.85rem; flex: 0 0 auto; }
+.step-label .name { font-family: var(--font-display); font-weight: 800; font-size: 1.2rem; }
+.terms { display: grid; gap: 12px; }
+@media (min-width: 640px) { .terms { grid-template-columns: 1fr 1fr; } }
+.term { border: 1.5px solid var(--line); border-radius: 14px; padding: 16px; background: var(--surface); display: grid; gap: 8px; align-content: start; }
+.term h3 { font-size: 1.25rem; line-height: 1.1; }
+.term .src { font-family: var(--font-mono); font-size: 0.74rem; color: var(--muted); }
+.term .you { border-top: 1px dashed var(--line); padding-top: 8px; font-size: 0.95rem; }
+.term .you b { font-family: var(--font-display); }
+.fence { display: grid; gap: 8px; }
+.fence button { text-align: left; border: 1.5px solid var(--line); background: var(--surface); border-radius: 12px; padding: 12px 14px; cursor: pointer; display: grid; gap: 2px; }
+.fence button:hover { border-color: var(--gate); }
+.fence button b { font-family: var(--font-display); }
+.fence button span { color: var(--muted); font-size: 0.92rem; }
+.fence button[aria-pressed="true"] { border-color: var(--ink); border-width: 2px; background: var(--bg); }
+.reply { border-left: 3px solid var(--gate); padding-left: 12px; }
+.statement { border: 2px solid var(--ink); border-radius: 14px; padding: 18px; background: var(--surface); display: grid; gap: 12px; }
+.statement .say { font-size: 1.15rem; line-height: 1.6; }
+.statement .vi { color: var(--gate); font-weight: 600; }
+.statement .vr { color: var(--trail); font-weight: 600; }
+.statement .blank { color: var(--muted); border-bottom: 1.5px dashed var(--muted); }
+.asks { margin: 0; padding-left: 1.4em; display: grid; gap: 12px; max-width: 62ch; }
+.asks li::marker { font-family: var(--font-mono); color: var(--trail); }
+
+details.how { border: 1px solid var(--line); border-radius: 12px; padding: 10px 14px; background: var(--surface); }
+details.how summary { cursor: pointer; font-weight: 600; }
+details.how p { margin-top: 8px; color: var(--muted); max-width: 62ch; }
+footer { border-top: 1px solid var(--line); padding-block: 22px 40px; color: var(--muted); font-size: 0.88rem; display: grid; gap: 6px; }
+footer b { color: var(--ink); }
+footer ul { margin: 0; padding-left: 1.1em; display: grid; gap: 3px; }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+</style>
+
+<header class="masthead gutter">
+  <p class="kicker">An interactive lesson · Stated values and revealed choices</p>
+  <h1>Desire <span>Lines</span></h1>
+  <p class="sub">Name the ideal you want to live by. Then make 25 ordinary choices that never mention it. At the end, see the path your ideal would have paved, next to the trail your choices actually wore into the grass.</p>
+</header>
+
+<nav class="strip" aria-label="Lesson stops"><div class="gutter" id="strip"></div></nav>
+
+<main class="gutter" id="main"><section class="view" id="view" aria-live="off"></section></main>
+
+<footer class="gutter">
+  <p>Instructional design by <b>Avalynn Circe</b>. Structured with the PARTS Method: Problem, Answer, Reasoning, Terms, Syntax.</p>
+  <p>A reflection exercise, not a psychological test. Ideas are paraphrased from these sources:</p>
+  <ul>
+    <li>Leon Festinger, <i>A Theory of Cognitive Dissonance</i> (1957).</li>
+    <li>Paul A. Samuelson, "A Note on the Pure Theory of Consumer's Behaviour," <i>Economica</i> (1938).</li>
+    <li>James Blake, "Overcoming the 'Value-Action Gap' in Environmental Policy," <i>Local Environment</i> (1999).</li>
+    <li>Chris Argyris and Donald Schön, <i>Theory in Practice: Increasing Professional Effectiveness</i> (1974).</li>
+    <li>The term "desire line" comes from landscape architecture and urban planning.</li>
+  </ul>
+</footer>
+
+<script>
+const VALUES = [
+  ["generosity","Generosity","I want to give freely of my time and money",1,"generous give giving share sharing help helping neighbor neighbour service serve charity kind kindness"],
+  ["honesty","Honesty","I want to tell the truth, even when it costs me",1,"honest honesty truth truthful integrity authentic authenticity candid sincere transparent"],
+  ["courage","Courage","I want to do the brave thing, not the safe thing",1,"brave bravery courage bold fearless risk speak stand up confident"],
+  ["freedom","Freedom","I want my life and time to be my own",1,"free freedom independent independence autonomy choice own boss"],
+  ["creativity","Creativity","I want to make things that didn't exist before",1,"create creative creativity make art write music build design imagine maker"],
+  ["growth","Growth","I want to keep learning and stretching",1,"learn learning grow growth curious curiosity improve wisdom knowledge study better"],
+  ["health","Health","I want to take care of my body and mind",1,"health healthy fit fitness body wellbeing wellness strong sleep exercise energy"],
+  ["connection","Connection","I want to be close to the people I love",1,"connect connection close love family friends friendship relationship belong community together"],
+  ["presence","Presence","I want to be here for my life, not rushing through it",1,"present presence mindful mindfulness calm peace slow attention here now still"],
+  ["fairness","Fairness","I want to treat people justly and stand up for it",1,"fair fairness justice just equality equity rights stand activism"],
+  ["simplicity","Simplicity","I want to live lightly, with less",1,"simple simply simplicity minimal minimalism less light frugal declutter enough"],
+  ["adventure","Adventure","I want to say yes to the unknown",1,"adventure adventurous explore travel new unknown spontaneous wander bold"],
+  ["security","Security","I want a steady life with a safety net",1,"secure security safe safety stable stability savings steady prepared"],
+  ["achievement","Achievement","I want to do excellent work and finish what I start",1,"achieve achievement success excellent excellence ambition ambitious accomplish goal career master"],
+  ["comfort","Comfort","",0,"comfort cozy easy ease relax rest"],
+  ["approval","Approval","",0,"approval liked respected admired popular accepted"]
+];
+const Q = [
+ ["sat","Saturday morning, and nothing is planned.",[
+  ["Sleep in, then a long breakfast with a podcast.",{comfort:3,presence:1}],
+  ["Text a friend you haven't seen in months and offer to meet for coffee.",{connection:3,courage:1}],
+  ["Finally start the project you keep sketching in margins.",{creativity:3,growth:1,achievement:1}],
+  ["Clear the inbox so Monday is lighter.",{achievement:2,security:1,presence:-1}]]],
+ ["credit","In a meeting, a coworker presents an idea that was mostly yours as their own.",[
+  ["Say, lightly, right there: \"Glad that landed, it grew out of my draft last week.\"",{honesty:2,courage:3,fairness:2,approval:-1}],
+  ["Let it go. It isn't worth the friction.",{comfort:2,approval:1,courage:-2,fairness:-1}],
+  ["Message them afterward, privately, to set the record straight.",{honesty:2,fairness:2,courage:1,connection:1}],
+  ["Mention it to your manager so the credit lands where it belongs.",{achievement:2,fairness:1,security:1,connection:-1}]]],
+ ["windfall","An unexpected $500 lands in your account.",[
+  ["Straight into savings.",{security:3,simplicity:1}],
+  ["A weekend somewhere you've never been.",{adventure:3,freedom:1,presence:1,security:-1}],
+  ["Quietly cover a friend's overdue bill.",{generosity:3,connection:2,security:-1}],
+  ["The class you've been eyeing for a year.",{growth:3,creativity:1}],
+  ["A really good mattress.",{comfort:3,health:1}]]],
+ ["bizidea","A friend has already quit their job for a business idea, and asks what you honestly think.",[
+  ["Tell them the two things that worry you, kindly and plainly.",{honesty:3,courage:2,connection:1,approval:-1}],
+  ["Cheer them on. They need support now, not doubts.",{approval:2,connection:1,comfort:1,honesty:-2}],
+  ["Ask questions until they find the weak spots themselves.",{connection:2,honesty:1,growth:1}],
+  ["Offer to help with the part you're good at, for free.",{generosity:3,connection:2}]]],
+ ["evening","Your evening after a draining day.",[
+  ["The walk you promised yourself.",{health:3,presence:1}],
+  ["Couch, takeout, one more episode.",{comfort:3,health:-1}],
+  ["Call someone you love just to hear their voice.",{connection:3}],
+  ["Answer the two emails that keep nagging at you.",{achievement:2,security:1,health:-1,presence:-2}]]],
+ ["promo","You're offered a promotion: more money and status, and much less of the work you actually enjoy.",[
+  ["Take it. You can find the joy somewhere else.",{achievement:3,security:2,approval:1,creativity:-1}],
+  ["Turn it down and stay with the work you love.",{creativity:2,freedom:2,presence:1,security:-1,achievement:-1}],
+  ["Ask them to shape the role around what you do best.",{courage:2,honesty:1,freedom:1,achievement:1}],
+  ["Take it for a year to build savings, then reassess.",{security:3,achievement:1}]]],
+ ["cashier","In the parking lot you notice the cashier undercharged you by $20.",[
+  ["Walk back in and pay it.",{honesty:3,fairness:2,comfort:-1}],
+  ["Drive off. Their mistake, and you're running late.",{comfort:2,security:1,honesty:-2,fairness:-1}],
+  ["Settle it next time you're in.",{honesty:1,fairness:1,comfort:1}]]],
+ ["neighbor","A neighbor you barely know is moving and asks the street for help on Saturday.",[
+  ["Show up with gloves.",{generosity:3,connection:2,comfort:-1}],
+  ["Send pizza for the helpers instead.",{generosity:2,comfort:1}],
+  ["Pretend you didn't see the message.",{comfort:2,freedom:1,generosity:-2,connection:-1}],
+  ["Come for one hour, then leave on time.",{generosity:1,connection:1,health:1}]]],
+ ["trip","You're invited on a last-minute trip with people you don't know well.",[
+  ["Go. You'll figure it out.",{adventure:3,courage:2,connection:1,security:-1}],
+  ["Decline. You'd rather have the quiet weekend you know you'll enjoy.",{comfort:2,presence:1,security:1,adventure:-2}],
+  ["Go, but book your own room and a way home.",{adventure:2,security:2,freedom:1}],
+  ["Find out who else is going before you decide.",{approval:2,security:1}]]],
+ ["closet","A closet stuffed with things you never use.",[
+  ["Give it all away this weekend.",{simplicity:3,generosity:2}],
+  ["Sell the good stuff online first.",{security:2,achievement:1,simplicity:1}],
+  ["Buy better storage bins.",{comfort:2,security:1,simplicity:-2}],
+  ["Leave it. Someday you'll want those things.",{security:1,comfort:1,simplicity:-1,presence:-1}]]],
+ ["chat","In the group chat, someone posts a cruel joke about a person who isn't there.",[
+  ["Reply \"Not cool\" in the chat.",{courage:3,fairness:3,honesty:1,approval:-2}],
+  ["Don't react, and mute the chat.",{comfort:2,approval:1,courage:-1,fairness:-1}],
+  ["Message the person who posted it, privately.",{fairness:2,connection:2,courage:1,honesty:1}],
+  ["Send a laughing emoji so it isn't awkward.",{approval:3,connection:1,honesty:-2,fairness:-2}]]],
+ ["talk","You're asked to give a talk on something you know well, to a room of 200.",[
+  ["Yes, even though your stomach drops.",{courage:3,growth:2,achievement:1}],
+  ["Yes, if you can share the stage with a co-presenter.",{connection:2,courage:1,security:1}],
+  ["No. Suggest a colleague who would love the chance.",{generosity:2,comfort:1,courage:-1,growth:-1}],
+  ["No. Offer to write it up as an article instead.",{creativity:2,comfort:2,growth:1,courage:-1}]]],
+ ["phone","Your phone buzzes during dinner with someone you care about.",[
+  ["Leave it face down until dinner is over.",{presence:3,connection:2}],
+  ["Glance quickly, in case it's work.",{security:2,achievement:1,presence:-2}],
+  ["Answer it. It might be important.",{approval:1,security:1,presence:-3,connection:-1}]]],
+ ["doctor","Your doctor suggests cutting back on something you love: sugar, wine or late nights.",[
+  ["Cut it out completely, starting tonight.",{health:3,achievement:1,comfort:-2}],
+  ["Cut back a little and see how it goes.",{health:2,comfort:1}],
+  ["Keep it. Life is short.",{comfort:2,freedom:2,presence:1,health:-2}],
+  ["Read the research before you decide anything.",{growth:2,health:1,freedom:1}]]],
+ ["city","A free afternoon in a city you're visiting.",[
+  ["Wander with no map.",{adventure:3,freedom:2,presence:2}],
+  ["The top-rated museum, ticket booked in advance.",{growth:2,security:2}],
+  ["Find a cafe and sketch or write.",{creativity:3,presence:2}],
+  ["Back to the hotel to rest and get some work done.",{comfort:2,achievement:2,adventure:-2}]]],
+ ["ontrack","Your manager wants you to tell a client the project is \"on track.\" It's two weeks behind.",[
+  ["Give the client the real date and a plan.",{honesty:3,courage:2,fairness:1,security:-1}],
+  ["Say \"on track\" and work weekends to catch up.",{achievement:2,approval:2,security:1,honesty:-2,health:-2}],
+  ["Push back with your manager first.",{courage:2,honesty:2,security:-1}],
+  ["Say \"on track\" and hope it works out.",{security:2,comfort:1,approval:1,honesty:-3}]]],
+ ["cancel","A friend cancels on you for the third time in a row.",[
+  ["Tell them it stings and ask what's going on.",{honesty:3,courage:2,connection:2}],
+  ["Say \"No worries!\" and quietly stop inviting them.",{comfort:2,approval:1,honesty:-2,connection:-2}],
+  ["Assume they're struggling and drop off soup.",{generosity:3,connection:2}],
+  ["Make the plan with someone more reliable.",{security:2,freedom:1}]]],
+ ["skill","One new skill to learn this year.",[
+  ["An instrument, purely for the joy of it.",{creativity:3,presence:1,growth:1}],
+  ["A certification that raises your pay.",{security:3,achievement:2,growth:1}],
+  ["The language of a place you dream of living.",{adventure:2,growth:2,freedom:2}],
+  ["First aid, or something else that helps other people.",{generosity:3,security:1,growth:1}]]],
+ ["online","Online, a stranger is confidently wrong about something you know a lot about.",[
+  ["Write a careful reply with sources.",{honesty:2,fairness:2,approval:1,presence:-1}],
+  ["Close the app and go outside.",{presence:3,health:2,simplicity:1}],
+  ["Screenshot it for your friends to laugh at.",{approval:2,connection:1,fairness:-1}],
+  ["Make a clear explainer post of your own.",{creativity:2,achievement:2,approval:1}]]],
+ ["rent","Your rent goes up 15 percent.",[
+  ["Pay it. Moving is too much upheaval.",{comfort:2,security:2,freedom:-1}],
+  ["Move somewhere smaller and cheaper.",{simplicity:3,freedom:2,security:1,comfort:-2}],
+  ["Organize with the other tenants to push back.",{fairness:3,courage:2,connection:2}],
+  ["Pick up extra work to cover it.",{achievement:2,security:2,health:-1,presence:-1}]]],
+ ["slipping","A colleague is going through a hard time, and their work keeps landing on your desk.",[
+  ["Pick it up quietly.",{generosity:3,connection:1,health:-1}],
+  ["Raise it with your manager so the load is shared fairly.",{fairness:2,honesty:1,security:1,connection:-1}],
+  ["Take them to lunch and ask how they're really doing.",{connection:3,generosity:1,presence:1}],
+  ["Do your own work only. It isn't your job.",{comfort:2,freedom:1,health:1,generosity:-2}]]],
+ ["upgrade","Your phone is three years old and works fine. The new model just came out.",[
+  ["Keep it until it dies.",{simplicity:3,security:1}],
+  ["Upgrade now. You've earned it.",{comfort:2,approval:2,simplicity:-2}],
+  ["Trade it in for a refurbished one at half the price.",{security:2,simplicity:1}],
+  ["Upgrade, and give the old one to someone who needs a phone.",{generosity:2,comfort:1}]]],
+ ["climb","A friend suggests learning to rock climb together, starting next week.",[
+  ["Yes, even though heights scare you.",{adventure:3,courage:2,health:1,connection:1}],
+  ["Suggest a hike you both already know instead.",{connection:2,comfort:2,health:1,adventure:-1}],
+  ["Say yes, then quietly cancel the day before.",{comfort:2,approval:1,honesty:-2,adventure:-1}],
+  ["Say no. It's just not your thing.",{honesty:1,freedom:1,adventure:-2}]]],
+ ["sunny","Weekend chores are piling up, and the sun is finally out.",[
+  ["Chores first, then outside if there's time.",{achievement:2,security:1,presence:-1}],
+  ["Leave the chores and drive somewhere you've never been.",{adventure:3,freedom:2,presence:1,achievement:-1}],
+  ["Get rid of half the stuff that makes the chores.",{simplicity:3,freedom:1}],
+  ["Do the chores with the windows open and music on.",{presence:2,comfort:1}]]],
+ ["hour","A free hour and a blank page.",[
+  ["Make something nobody asked for.",{creativity:3,freedom:2}],
+  ["Knock out the to-do list.",{achievement:3,security:1}],
+  ["Do nothing at all. Stare out the window.",{presence:3,simplicity:1,comfort:1}],
+  ["Read something that's hard for you.",{growth:3}]]]
+];
+
+
+/* ---------- helpers ---------- */
+const $ = (s, el = document) => el.querySelector(s);
+const $$ = (s, el = document) => Array.from(el.querySelectorAll(s));
+const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+const reduceMotion = () => window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+function hash(str) { let h = 2166136261; for (let i = 0; i < str.length; i++) { h ^= str.charCodeAt(i); h = Math.imul(h, 16777619); } return h >>> 0; }
+
+/* ---------- data ---------- */
+const VAL = VALUES.map(([id, name, ideal, offer, words]) => ({ id, name, ideal, offer: !!offer, words: words.split(" ") }));
+const vById = (id) => VAL.find((v) => v.id === id);
+const QS = Q.map(([id, text, opts]) => ({ id, text, opts: opts.map(([t, w]) => ({ t, w })) }));
+/* what each value hands you in the moment, used to explain why a rival wins */
+const GIVES = {
+  generosity: "the glow of having helped", honesty: "a clean conscience", courage: "the rush of having done the hard thing",
+  freedom: "your time back in your own hands", creativity: "the pleasure of making something", growth: "the feeling of getting better",
+  health: "energy and a body that feels good", connection: "warmth with people you love", presence: "a moment you actually get to live",
+  fairness: "the sense that things are right", simplicity: "lightness and less to manage", adventure: "a story worth telling",
+  security: "a safety net you can feel right now", achievement: "progress you can point to", comfort: "rest and ease, tonight",
+  approval: "smooth faces and no awkward silence"
+};
+
+/* ---------- state (this browser tab only) ---------- */
+const KEY = "desire-lines";
+const fresh = () => ({ ideal: null, label: "", custom: "", answers: {}, idx: 0, seed: Math.floor(Math.random() * 1e9), fence: null, pat: { when: "", step: "" }, scoreAs: null, example: false, seen: [] });
+let S = fresh();
+try { const v = JSON.parse(sessionStorage.getItem(KEY) || "null"); if (v && typeof v === "object") S = Object.assign(fresh(), v); } catch (e) {}
+function save() { try { sessionStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} }
+const answeredCount = () => QS.filter((q) => S.answers[q.id] != null).length;
+const walkDone = () => answeredCount() === QS.length;
+const idealName = () => (S.label ? S.label : S.ideal ? vById(S.ideal).name : "your ideal");
+const scored = () => S.scoreAs || S.ideal;
+
+/* ---------- scoring ---------- */
+/* Each option carries weights across 16 values. For any chosen ideal, a question counts only if its options differ on that value.
+   A step's alignment is where the chosen option sits between the least and most ideal option (0 to 1).
+   When a step falls short, the "winner" is the value the chosen option gained most on, compared with the ideal's best option. */
+function scoreWalk(ideal, answers) {
+  const steps = [];
+  QS.forEach((q, qi) => {
+    const c = answers[q.id]; if (c == null) return;
+    const w = q.opts.map((o) => o.w[ideal] || 0), max = Math.max(...w), min = Math.min(...w);
+    if (max - min < 1) return;
+    const s = (w[c] - min) / (max - min);
+    const b = w.indexOf(max);
+    let winner = null, best = 0;
+    if (s < 1) {
+      VAL.forEach((v) => {
+        if (v.id === ideal) return;
+        const d = (q.opts[c].w[v.id] || 0) - (q.opts[b].w[v.id] || 0);
+        const tie = d === best && winner && (q.opts[c].w[v.id] || 0) > (q.opts[c].w[winner] || 0);
+        if (d > best || tie) { best = d; winner = v.id; }
+      });
+    }
+    /* what a fully aligned choice gave up, for "where you held the line" */
+    let cost = 0, gaveUp = null, gmax = 0;
+    if (s === 1) {
+      VAL.forEach((v) => {
+        if (v.id === ideal) return;
+        const other = Math.max(...q.opts.map((o, i) => (i === c ? -9 : o.w[v.id] || 0)));
+        const g = Math.max(0, other - (q.opts[c].w[v.id] || 0));
+        cost += g; if (g > gmax) { gmax = g; gaveUp = v.id; }
+      });
+    }
+    steps.push({ q, qi, c, b, s, winner, cost, gaveUp });
+  });
+  const score = steps.length ? steps.reduce((t, x) => t + x.s, 0) / steps.length : 0;
+  const tally = {};
+  steps.forEach((x) => { if (x.winner) { tally[x.winner] = tally[x.winner] || { w: 0, n: 0 }; tally[x.winner].w += 1 - x.s; tally[x.winner].n += 1; } });
+  const ranked = Object.entries(tally).sort((a, b) => b[1].w - a[1].w || b[1].n - a[1].n);
+  const rival = ranked.length ? ranked[0][0] : null;
+  const held = steps.filter((x) => x.s === 1 && x.cost > 0).sort((a, b) => b.cost - a.cost);
+  return { steps, score, tally, ranked, rival, held };
+}
+function revealed(answers) {
+  return VAL.map((v) => { const r = scoreWalk(v.id, answers); return { id: v.id, n: r.steps.length, score: r.score }; })
+    .filter((x) => x.n >= 5).sort((a, b) => b.score - a.score);
+}
+const pct = (x) => Math.round(x * 100);
+const optOrder = (q) => q.opts.map((_, i) => i).sort((a, b) => hash(S.seed + q.id + a) - hash(S.seed + q.id + b));
+
+/* ---------- custom ideal mapping ---------- */
+function guessValue(text) {
+  const words = text.toLowerCase().match(/[a-z]+/g) || [];
+  let best = null, bestN = 0;
+  VAL.filter((v) => v.offer).forEach((v) => {
+    let n = 0;
+    words.forEach((w) => { if (w.length < 3) return; v.words.forEach((k) => { if (w === k || (w.length >= 4 && k.length >= 4 && (w.startsWith(k) || k.startsWith(w)))) n++; }); });
+    if (n > bestN) { bestN = n; best = v.id; }
+  });
+  return best;
+}
+
+/* ---------- strip and PARTS rail ---------- */
+const STOPS = [["gate", "1 Gate"], ["walk", "2 Walk"], ["trail", "3 Trail"], ["why", "4 Why"]];
+const PARTS = [["P", "Problem"], ["A", "Answer"], ["R", "Reasoning"], ["T", "Terms"], ["S", "Syntax"]];
+function rail(stage) {
+  return `<ol class="parts" aria-label="PARTS steps">${PARTS.map(([l, n], i) => `<li class="${i < stage ? "on" : ""}${i === stage ? " now" : ""}"${i === stage ? ' aria-current="step"' : ""}><b>${l}</b>${n}</li>`).join("")}</ol>`;
+}
+function stopDone(id) { return { gate: !!S.ideal, walk: walkDone(), trail: S.seen.includes("trail"), why: S.seen.includes("why") }[id]; }
+function stopOpen(id) { return { gate: true, walk: !!S.ideal, trail: walkDone(), why: walkDone() }[id]; }
+function renderStrip(cur) {
+  $("#strip").innerHTML = STOPS.map(([id, label]) => `<button class="chip${stopDone(id) ? " done" : ""}${id === cur ? " current" : ""}" data-go="${id}"${id === cur ? ' aria-current="step"' : ""}${stopOpen(id) ? "" : " disabled"}>${label}</button>`).join("");
+}
+function go(id) { if (location.hash.slice(1) === id) route(); else location.hash = id; }
+document.addEventListener("click", (e) => { const b = e.target.closest("[data-go]"); if (b && !b.disabled) go(b.dataset.go); });
+const exampleBanner = () => S.example ? `<div class="banner"><span>You're looking at an example walk, not your own answers.</span><button class="btn" data-restart>Start my own</button></div>` : "";
+document.addEventListener("click", (e) => { if (e.target.closest("[data-restart]")) { S = fresh(); save(); go("gate"); } });
+
+/* ---------- hero plan: the classic desire line ---------- */
+function marks(w, h, seed, n) {
+  let s = ""; for (let i = 0; i < n; i++) { const x = (hash(seed + "x" + i) % 1000) / 1000 * w, y = (hash(seed + "y" + i) % 1000) / 1000 * h; s += `M${x.toFixed(1)} ${y.toFixed(1)} l2 -4 l2 4 `; } return `<path class="g-mark" d="${s}"/>`;
+}
+const HERO = `<svg viewBox="0 0 340 196" role="img" aria-label="A park lawn. A paved path turns a right angle around the grass to reach the library door. A worn dirt trail cuts straight across the lawn to the same door.">
+  <rect class="g-grass" x="0" y="0" width="340" height="196" rx="12"/>${marks(340, 196, "hero", 70)}
+  <rect class="g-bldg" x="246" y="10" width="82" height="34" rx="3"/><text class="g-lbl" x="287" y="31" text-anchor="middle" style="stroke:var(--surface)">LIBRARY</text>
+  <path class="g-paved" d="M18 170 L292 170 L292 46" stroke-width="15"/><path class="g-joint" d="M18 170 L292 170 L292 46" stroke-width="15" stroke-dasharray="1.2 15"/>
+  <path class="g-wear" d="M22 166 C 90 150, 170 120, 286 50" stroke-width="12"/><path class="g-trail" d="M22 166 C 90 150, 170 120, 286 50" stroke-width="2.4" stroke-dasharray="5 4"/>
+  <text class="g-lbl" x="120" y="190">THE PAVED PATH</text>
+  <text class="g-lbl t" x="104" y="122" transform="rotate(-21 104 122)">THE DESIRE LINE</text>
+</svg>`;
+
+/* ---------- views ---------- */
+const V = $("#view");
+
+function viewGate() {
+  const offered = VAL.filter((v) => v.offer);
+  const guess = S.custom ? guessValue(S.custom) : null;
+  V.innerHTML = `${rail(0)}${exampleBanner()}
+    <div class="plan-hero">${HERO}
+      <p class="caption">Walk through any park and you'll find them: bare dirt trails cutting across the lawn beside the paved path. Planners call them <b>desire lines</b>. The paved path is where someone decided people should walk. The desire line is where their feet actually went.</p>
+    </div>
+    <div class="prose"><p class="kicker">Stop 1 of 4 · Plant your gate</p>
+      <h2 tabindex="-1">What do you want your life to walk toward?</h2>
+      <p class="lede">Most of us can name our ideal in a word. Fewer of us have checked whether our Tuesday afternoons agree. Pick the one ideal you'd most like your choices to serve, or write your own.</p></div>
+    <div class="panel">
+      <div class="deck" id="deck">${offered.map((v) => `<button class="card" data-ideal="${v.id}" aria-pressed="${S.ideal === v.id && !S.label}"><b>${v.name}</b><span>${esc(v.ideal)}</span></button>`).join("")}</div>
+      <div class="field"><label for="own">Or put it in your own words</label><input id="own" maxlength="60" placeholder="For example: be a good neighbor" value="${esc(S.custom)}" autocomplete="off"></div>
+      <div id="own-map"></div>
+      <div id="gate-sum" aria-live="polite"></div>
+      <div class="row between"><button class="btn quiet" id="example">See an example walk</button><button class="btn primary" id="gate-go">Start walking</button></div>
+    </div>
+    <details class="how"><summary>What happens to my answers?</summary><p>Everything stays in this browser tab. Nothing is sent anywhere, and closing the tab erases it. This is a reflection exercise, not a test. It doesn't label you or say anything about your health. The gap it shows is normal; almost everyone has one.</p></details>`;
+  const sync = () => {
+    $$("#deck [data-ideal]").forEach((b) => b.setAttribute("aria-pressed", String(S.ideal === b.dataset.ideal && !S.label)));
+    const om = $("#own-map");
+    if (S.custom.trim()) {
+      const g = guessValue(S.custom);
+      om.innerHTML = `<div class="field"><label for="own-as">${g ? "That sounds closest to this value. Change it if it's not right." : "Which value is it closest to? This decides how your choices are scored."}</label>
+        <select id="own-as"><option value="">Choose the closest value</option>${offered.map((v) => `<option value="${v.id}"${(S.label && S.ideal === v.id) ? " selected" : ""}>${v.name}: ${esc(v.ideal)}</option>`).join("")}</select></div>`;
+      $("#own-as").addEventListener("change", (e) => { S.ideal = e.target.value || null; S.label = S.ideal ? S.custom.trim() : ""; S.scoreAs = null; save(); sync(); renderStrip("gate"); });
+    } else om.innerHTML = "";
+    $("#gate-sum").innerHTML = S.ideal ? `<p class="mapnote">Your gate: <span class="chosen">${esc(idealName())}</span>${S.label ? ` <span class="muted">(scored as ${vById(S.ideal).name})</span>` : ""}. The questions won't mention it. Answer the way you'd really act this month, not the way you'd like to.</p>` : "";
+    $("#gate-go").disabled = !S.ideal;
+    $("#gate-go").textContent = answeredCount() && S.ideal ? (walkDone() ? "See my trail" : "Keep walking") : "Start walking";
+  };
+  $("#deck").addEventListener("click", (e) => {
+    const b = e.target.closest("[data-ideal]"); if (!b) return;
+    if (S.example) { S = fresh(); }
+    S.ideal = b.dataset.ideal; S.label = ""; S.custom = ""; S.scoreAs = null; $("#own").value = ""; save(); sync(); renderStrip("gate");
+  });
+  $("#own").addEventListener("input", (e) => {
+    if (S.example) { S = fresh(); }
+    S.custom = e.target.value;
+    if (S.custom.trim()) { const g = guessValue(S.custom); S.ideal = g; S.label = g ? S.custom.trim() : ""; }
+    else { S.label = ""; S.ideal = null; }
+    S.scoreAs = null; save();
+    const pos = e.target.selectionStart; sync(); renderStrip("gate"); e.target.focus(); try { e.target.setSelectionRange(pos, pos); } catch (er) {}
+  });
+  $("#gate-go").addEventListener("click", () => go(walkDone() ? "trail" : "walk"));
+  $("#example").addEventListener("click", loadExample);
+  sync();
+}
+
+function viewWalk() {
+  if (!S.ideal) { go("gate"); return; }
+  const n = QS.length;
+  S.idx = Math.max(0, Math.min(n - 1, S.idx || 0));
+  const q = QS[S.idx], picked = S.answers[q.id];
+  const order = optOrder(q);
+  V.innerHTML = `${rail(0)}${exampleBanner()}
+    <div class="prose"><p class="kicker">Stop 2 of 4 · Walk · Choice ${S.idx + 1} of ${n}</p>
+      <h2 tabindex="-1" class="sr">Choice ${S.idx + 1} of ${n}</h2></div>
+    <div class="steps-row" aria-hidden="true">${QS.map((qq, i) => `<i class="${S.answers[qq.id] != null ? "on" : ""}${i === S.idx ? " now" : ""}" style="--r:${i % 2 ? 8 : -8}deg"></i>`).join("")}</div>
+    <div class="panel qcard">
+      <p class="qtext" id="qtext">${esc(q.text)}</p>
+      <div class="opts" role="group" aria-labelledby="qtext">${order.map((oi, k) => `<button class="opt" data-opt="${oi}" aria-pressed="${picked === oi}"><span class="k">${"ABCDE"[k]}</span><span>${esc(q.opts[oi].t)}</span></button>`).join("")}</div>
+      <p class="hint">Pick what you'd most likely do, not what you'd admire. None of these is the right answer.</p>
+      <div class="row between">
+        <button class="btn quiet" id="w-back"${S.idx === 0 ? " disabled" : ""}>Previous</button>
+        <button class="btn${walkDone() ? " primary" : " quiet"}" id="w-next"${picked == null ? " disabled" : ""}>${walkDone() ? "See where my feet went" : "Next"}</button>
+      </div>
+    </div>`;
+  let busy = false;
+  $(".opts").addEventListener("click", (e) => {
+    const b = e.target.closest("[data-opt]"); if (!b || busy) return;
+    S.answers[q.id] = +b.dataset.opt; save();
+    $$(".opt").forEach((o) => o.setAttribute("aria-pressed", String(o === b)));
+    renderStrip("walk");
+    busy = true;
+    setTimeout(() => {
+      if (walkDone() && S.idx === n - 1) { go("trail"); return; }
+      const nextOpen = QS.findIndex((qq, i) => i > S.idx && S.answers[qq.id] == null);
+      const firstOpen = QS.findIndex((qq) => S.answers[qq.id] == null);
+      if (walkDone()) { go("trail"); return; }
+      S.idx = nextOpen >= 0 ? nextOpen : firstOpen; save(); viewWalk(); focusTop();
+    }, reduceMotion() ? 60 : 320);
+  });
+  $("#w-back").addEventListener("click", () => { S.idx--; save(); viewWalk(); focusTop(); });
+  $("#w-next").addEventListener("click", () => { if (walkDone()) { go("trail"); return; } S.idx = Math.min(n - 1, S.idx + 1); save(); viewWalk(); focusTop(); });
+}
+
+/* ---------- the park plan ---------- */
+const W = 360, H = 540, START = [180, 506], GATE = [180, 74], RIVALPT = [64, 140];
+function trailPoints(steps) {
+  const D = Math.hypot(GATE[0] - START[0], GATE[1] - START[1]), L = D / Math.max(1, steps.length);
+  let p = START.slice(); const pts = [p.slice()];
+  steps.forEach((st) => {
+    const toG = [GATE[0] - p[0], GATE[1] - p[1]], dg = Math.hypot(...toG) || 1;
+    const toR = [RIVALPT[0] - p[0], RIVALPT[1] - p[1]], dr = Math.hypot(...toR) || 1;
+    let d = [st.s * toG[0] / dg + (1 - st.s) * toR[0] / dr, st.s * toG[1] / dg + (1 - st.s) * toR[1] / dr];
+    const m = Math.hypot(...d) || 1; d = [d[0] / m, d[1] / m];
+    let len = L;
+    if (st.s === 1) len = Math.min(L, dg); else if (st.s === 0) len = Math.min(L, dr);
+    p = [p[0] + d[0] * len, p[1] + d[1] * len];
+    pts.push(p.slice());
+  });
+  /* a small sideways wobble so the trail looks walked, not ruled */
+  return pts.map((pt, i) => {
+    if (i === 0) return pt;
+    const prev = pts[i - 1], dx = pt[0] - prev[0], dy = pt[1] - prev[1], m = Math.hypot(dx, dy) || 1;
+    const j = ((hash("w" + i + S.seed) % 100) / 100 - 0.5) * 9;
+    return [pt[0] - dy / m * j, pt[1] + dx / m * j];
+  });
+}
+function smooth(pts) {
+  if (pts.length < 2) return "";
+  let d = `M${pts[0][0].toFixed(1)} ${pts[0][1].toFixed(1)}`;
+  for (let i = 0; i < pts.length - 1; i++) {
+    const p0 = pts[i - 1] || pts[i], p1 = pts[i], p2 = pts[i + 1], p3 = pts[i + 2] || p2;
+    const c1 = [p1[0] + (p2[0] - p0[0]) / 6, p1[1] + (p2[1] - p0[1]) / 6], c2 = [p2[0] - (p3[0] - p1[0]) / 6, p2[1] - (p3[1] - p1[1]) / 6];
+    d += ` C${c1[0].toFixed(1)} ${c1[1].toFixed(1)}, ${c2[0].toFixed(1)} ${c2[1].toFixed(1)}, ${p2[0].toFixed(1)} ${p2[1].toFixed(1)}`;
+  }
+  return d;
+}
+const kind = (s) => (s === 1 ? "toward" : s === 0 ? "away" : "part");
+function drawPlan(res, animate) {
+  const pts = trailPoints(res.steps), d = smooth(pts), end = pts[pts.length - 1];
+  const gName = S.scoreAs ? vById(S.scoreAs).name : idealName();
+  const rName = res.rival ? vById(res.rival).name : null;
+  const short = (t) => (t.length > 22 ? t.slice(0, 21) + "…" : t);
+  let s = `<rect class="g-grass" x="0" y="0" width="${W}" height="${H}" rx="14"/>${marks(W, H, "plan" + S.seed, 150)}`;
+  s += `<path class="g-paved" d="M${START[0]} ${START[1]} L${GATE[0]} ${GATE[1] + 10}" stroke-width="18"/><path class="g-joint" d="M${START[0]} ${START[1]} L${GATE[0]} ${GATE[1] + 10}" stroke-width="18" stroke-dasharray="1.3 19"/>`;
+  s += `<text class="g-lbl" x="${START[0] + 16}" y="300" transform="rotate(-90 ${START[0] + 16} 300)" text-anchor="middle">THE PAVED PATH</text>`;
+  /* gate */
+  s += `<rect class="gatepost" x="${GATE[0] - 22}" y="${GATE[1] - 18}" width="6" height="30" rx="1"/><rect class="gatepost" x="${GATE[0] + 16}" y="${GATE[1] - 18}" width="6" height="30" rx="1"/><path class="arch" d="M${GATE[0] - 19} ${GATE[1] - 18} Q ${GATE[0]} ${GATE[1] - 36}, ${GATE[0] + 19} ${GATE[1] - 18}"/>`;
+  s += `<text class="g-lbl g g-big" x="${GATE[0]}" y="${GATE[1] - 44}" text-anchor="middle">${esc(short(gName))}</text>`;
+  /* rival */
+  if (rName) {
+    s += `<circle class="rival-mark" cx="${RIVALPT[0]}" cy="${RIVALPT[1]}" r="16"/><circle class="rival-mark" cx="${RIVALPT[0]}" cy="${RIVALPT[1]}" r="6"/>`;
+    s += `<text class="g-lbl t g-big" x="${RIVALPT[0]}" y="${RIVALPT[1] + 34}" text-anchor="middle">${esc(rName)}</text><text class="g-lbl t" x="${RIVALPT[0]}" y="${RIVALPT[1] + 47}" text-anchor="middle">QUIET RIVAL</text>`;
+  }
+  /* start */
+  s += `<rect class="start" x="${START[0] - 6}" y="${START[1] - 6}" width="12" height="12" rx="2"/><text class="g-lbl" x="${START[0] + 14}" y="${START[1] + 4}">YOU START HERE</text>`;
+  /* trail */
+  const len = 900;
+  s += `<g class="${animate && !reduceMotion() ? "draw" : ""}" id="trail-g">`;
+  s += `<path class="g-wear" d="${d}" stroke-width="13" style="--len:${len};stroke-dasharray:${len}"/><path class="g-trail" d="${d}" stroke-width="2.6" style="--len:${len};stroke-dasharray:${len}"/>`;
+  s += `<circle class="end" cx="${end[0].toFixed(1)}" cy="${end[1].toFixed(1)}" r="17"/>`;
+  res.steps.forEach((st, i) => {
+    const p = pts[i + 1];
+    s += `<g class="fp ${kind(st.s)}${SEL === i ? " sel" : ""}" data-fp="${i}" tabindex="0" role="button" style="--i:${i}" aria-label="Footprint ${i + 1}: ${kind(st.s) === "toward" ? "toward" : kind(st.s) === "away" ? "away from" : "partway toward"} ${esc(gName)}">
+      <circle cx="${p[0].toFixed(1)}" cy="${p[1].toFixed(1)}" r="15" fill="transparent"/><circle class="ring" cx="${p[0].toFixed(1)}" cy="${p[1].toFixed(1)}" r="12.5" fill="none"/><circle class="dot" cx="${p[0].toFixed(1)}" cy="${p[1].toFixed(1)}" r="8.5"/><text x="${p[0].toFixed(1)}" y="${p[1].toFixed(1)}">${i + 1}</text></g>`;
+  });
+  s += `</g>`;
+  return s;
+}
+let SEL = null;
+
+function detailHTML(res, i) {
+  const g = S.scoreAs ? vById(S.scoreAs).name : idealName();
+  if (i == null) return `<p class="tag">Footprint detail</p><p>Tap any numbered footprint on the plan to see the choice behind it.</p>`;
+  const st = res.steps[i], q = st.q, k = kind(st.s);
+  const head = k === "toward" ? `A step straight toward ${esc(g)}` : k === "away" ? `A step away from ${esc(g)}` : `A partway step toward ${esc(g)}`;
+  return `<p class="tag">Footprint ${i + 1} of ${res.steps.length} · ${head}</p>
+    <p class="q">${esc(q.text)}</p>
+    <p class="pick"><span class="tag">You chose</span><br>${esc(q.opts[st.c].t)}</p>
+    ${st.s < 1 ? `<p class="ideal-pick"><span class="tag">${esc(g)}'s strongest step here</span><br>${esc(q.opts[st.b].t)}</p>` : ""}
+    ${st.winner ? `<p>What you got instead: <b class="you" style="color:var(--trail)">${vById(st.winner).name}</b>.</p>` : ""}
+    <div class="row"><button class="btn quiet" data-fpstep="-1"${i === 0 ? " disabled" : ""}>Previous footprint</button><button class="btn quiet" data-fpstep="1"${i === res.steps.length - 1 ? " disabled" : ""}>Next footprint</button></div>`;
+}
+
+function viewTrail() {
+  if (!walkDone()) { needWalk(1); return; }
+  if (!S.seen.includes("trail")) { S.seen.push("trail"); save(); }
+  const id = scored(), res = scoreWalk(id, S.answers), g = S.scoreAs ? vById(S.scoreAs).name : idealName();
+  const tw = res.steps.filter((x) => x.s === 1).length, aw = res.steps.filter((x) => x.s === 0).length, pt = res.steps.length - tw - aw;
+  const p = pct(res.score);
+  const rv = res.rival ? vById(res.rival) : null, rt = res.rival ? res.tally[res.rival] : null;
+  const fell = res.steps.filter((x) => x.s < 1).length;
+  const moments = res.rival ? res.steps.filter((x) => x.winner === res.rival).sort((a, b) => a.s - b.s).slice(0, 3) : [];
+  const held = res.held.slice(0, 2);
+  const rev = revealed(S.answers).slice(0, 4);
+  const others = res.ranked.slice(1, 4);
+  const headline = p >= 80 ? "Your feet mostly found the paved path." : p >= 55 ? "Your trail bends, but it gets close." : p >= 35 ? "Your trail wanders off the paved path." : "Your feet wore a different trail.";
+  V.innerHTML = `${rail(1)}${exampleBanner()}
+    <div class="prose"><p class="kicker">Stop 3 of 4 · The trail</p>
+      <h2 tabindex="-1">You set out for ${esc(g)}. Your choices walked ${p}% of the way.</h2>
+      <p class="lede">${headline} The straight grey path is the route ${esc(g)} would have taken. The worn trail is the route your choices took.${S.label && !S.scoreAs ? ` Your words, "${esc(S.label)}," were scored as ${vById(S.ideal).name}.` : ""}</p></div>
+    <div class="trail-grid">
+      <div class="panel"><svg class="map" id="plan" viewBox="0 0 ${W} ${H}" role="img" aria-label="Park plan. A straight paved path runs from your start to the ${esc(g)} gate. Your worn trail, made of ${res.steps.length} footprints, ends ${p}% of the way there."></svg></div>
+      <div class="panel">
+        <dl class="keylist">
+          <div><dt><span class="sw paved"></span>The paved path</dt><dd>The straight route to ${esc(g)}. If every choice had been the option that served ${esc(g)} best, your trail would lie right on top of it.</dd></div>
+          <div><dt><span class="sw trail"></span>Your desire line</dt><dd>The trail your choices actually wore. Each step bends toward the gate or toward whatever you chose instead.</dd></div>
+          <div><dt><span class="sw dot t"></span>Footprint toward</dt><dd>You picked the option that served ${esc(g)} best.</dd></div>
+          <div><dt><span class="sw dot p"></span>Footprint partway</dt><dd>A middle option: some ${esc(g.toLowerCase())}, some something else.</dd></div>
+          <div><dt><span class="sw dot a"></span>Footprint away</dt><dd>You picked the option that served ${esc(g)} least.</dd></div>
+        </dl>
+        <p class="howto">Only choices where ${esc(g)} was really at stake leave a footprint. ${res.steps.length} of your 25 did. The others didn't touch it either way.</p>
+        <div class="detail" id="detail">${detailHTML(res, SEL)}</div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <p class="kicker">What the number means</p>
+      <div class="score"><span class="num">${p}%</span><span class="muted">of the way to ${esc(g)}</span></div>
+      <div class="tri"><div class="t"><b>${tw}</b><span>steps straight toward</span></div><div><b>${pt}</b><span>steps partway</span></div><div class="a"><b>${aw}</b><span>steps away</span></div></div>
+      <p class="howto">The score averages your footprints. A step straight toward ${esc(g)} counts as 1, a step away counts as 0, and a middle option counts somewhere between. It measures these 25 moments only, not you. Landing well short of 100 is normal, because real choices come with costs attached.</p>
+    </div>
+
+    <div class="panel">
+      <p class="kicker">The quiet rival</p>
+      ${rv ? `<p class="rival-name">${rv.name}</p>
+      <p>When your steps fell short of ${esc(g)}, <b>${rv.name}</b> was what you got instead in ${rt.n} of ${fell} moments. It's quiet because it rarely argues. It just offers ${GIVES[rv.id]}, while ${esc(g)} usually pays later.</p>
+      <ul class="moments">${moments.map((m) => `<li><span class="q">${esc(m.q.text)}</span><span class="you">You chose: ${esc(m.q.opts[m.c].t)}</span><span class="held">${esc(g)}'s step was: ${esc(m.q.opts[m.b].t)}</span></li>`).join("")}</ul>
+      ${others.length ? `<p class="small muted">Also pulling: ${others.map(([v, t]) => `${vById(v).name} (${t.n})`).join(", ")}.</p>` : ""}`
+      : `<p class="rival-name" style="color:var(--gate)">No rival this time</p><p>Every footprint went straight toward ${esc(g)}. Nothing steadily pulled you off. That's rare. Try scoring the same walk against another gate below to see where your other values stand.</p>`}
+    </div>
+
+    ${held.length ? `<div class="panel"><p class="kicker">Where you held the line</p>
+      <p>These choices served ${esc(g)} even though another option offered something you value too.</p>
+      <ul class="moments">${held.map((m) => `<li><span class="q">${esc(m.q.text)}</span><span class="held">You chose: ${esc(m.q.opts[m.c].t)}</span>${m.gaveUp ? `<span class="muted">You let go of some ${vById(m.gaveUp).name.toLowerCase()} to do it.</span>` : ""}</li>`).join("")}</ul></div>` : ""}
+
+    <div class="panel">
+      <p class="kicker">If your feet picked the gate</p>
+      <p>The same 25 choices can be scored against any ideal. These are the ones your choices served best. Economists call this your <b>revealed preference</b>: what your actions say you value.</p>
+      <div class="bars">${rev.map((r) => `<div class="bar${r.id === id ? " gate" : ""}"><span class="nm">${vById(r.id).name}</span><span class="track"><i style="width:${pct(r.score)}%"></i></span><output>${pct(r.score)}%</output></div>`).join("")}</div>
+      <div class="field"><label for="score-as">Score this same walk against another gate</label>
+        <select id="score-as">${VAL.filter((v) => v.offer).map((v) => `<option value="${v.id}"${v.id === id ? " selected" : ""}>${v.id === S.ideal ? `${esc(idealName())} (your gate)` : v.name}</option>`).join("")}</select></div>
+    </div>
+
+    <div class="row between"><button class="btn quiet" data-go="walk">Change an answer</button><button class="btn primary" data-go="why">Why the trail bends</button></div>`;
+  const svg = $("#plan");
+  const animate = !drawn[id]; drawn[id] = true;
+  svg.innerHTML = drawPlan(res, animate);
+  const pick = (i) => { SEL = i; $$(".fp", svg).forEach((el) => el.classList.toggle("sel", +el.dataset.fp === i)); $("#detail").innerHTML = detailHTML(res, i); };
+  svg.addEventListener("click", (e) => { const f = e.target.closest(".fp"); if (f) pick(+f.dataset.fp); });
+  svg.addEventListener("keydown", (e) => { const f = e.target.closest(".fp"); if (f && (e.key === "Enter" || e.key === " ")) { e.preventDefault(); pick(+f.dataset.fp); } });
+  $("#detail").addEventListener("click", (e) => { const b = e.target.closest("[data-fpstep]"); if (!b) return; const i = Math.max(0, Math.min(res.steps.length - 1, (SEL || 0) + +b.dataset.fpstep)); pick(i); });
+  $("#score-as").addEventListener("change", (e) => { S.scoreAs = e.target.value === S.ideal ? null : e.target.value; SEL = null; save(); viewTrail(); $("#score-as").focus(); });
+  renderStrip("trail");
+}
+const drawn = {};
+
+function needWalk(stage) {
+  V.innerHTML = `${rail(stage)}<div class="prose"><h2 tabindex="-1">Your trail appears after the walk</h2><p class="lede">You've made ${answeredCount()} of ${QS.length} choices. Finish the walk to see your trail.</p></div>
+    <div class="row"><button class="btn primary" data-go="${S.ideal ? "walk" : "gate"}">${S.ideal ? "Keep walking" : "Plant my gate"}</button><button class="btn quiet" id="example">See an example walk</button></div>`;
+  $("#example").addEventListener("click", loadExample);
+}
+
+function viewWhy() {
+  if (!walkDone()) { needWalk(2); return; }
+  if (!S.seen.includes("why")) { S.seen.push("why"); save(); }
+  const id = scored(), res = scoreWalk(id, S.answers), g = S.scoreAs ? vById(S.scoreAs).name : idealName();
+  const rv = res.rival ? vById(res.rival) : null, p = pct(res.score);
+  const worst = res.steps.filter((x) => x.s < 1).sort((a, b) => a.s - b.s)[0];
+  const held = res.held[0];
+  const FENCE = {
+    fence: ["Fence the grass", "Keep the ideal and change one habit, so the paved path gets used.", `Pick one recurring moment where ${rv ? rv.name : "something else"} usually wins, and decide ahead of time what ${g} would do there. Small and specific beats big and vague. One moment, practiced, starts to wear a new trail.`],
+    pave: ["Pave the desire line", "Admit your feet know something, and revise the ideal.", `Some planners pave the trail people already walk, because the trail was right. Maybe the truer sentence is "${g}, as long as I still get ${rv ? GIVES[rv.id] : "what I need"}." An honest ideal you can live by beats a grand one you can't.`],
+    sign: ["Put up a sign", "Decide the grass doesn't really matter.", "This is the move dissonance theory warns about: explaining the gap away so it stops itching. Sometimes it's true that the gap doesn't matter. Just notice whether you're deciding, or excusing."]
+  };
+  const f = S.fence;
+  const sentence = `I say I value <span class="vi">${esc(g)}</span>. When ${S.pat.when ? `<span>${esc(S.pat.when)}</span>` : `<span class="blank">this kind of moment comes up</span>`}, ${rv ? `<span class="vr">${rv.name}</span> tends to win` : "I mostly hold to it"}. One small step toward ${esc(g)} this week: ${S.pat.step ? `<span>${esc(S.pat.step)}</span>` : `<span class="blank">your step here</span>`}.`;
+  V.innerHTML = `${rail(2)}${exampleBanner()}
+    <div class="prose"><p class="kicker">Stop 4 of 4 · Why the trail bends</p><h2 tabindex="-1">The gap between a gate and a trail</h2></div>
+
+    <div class="prose">
+      <div class="step-label"><span class="letter">R</span><span class="name">Reasoning</span></div>
+      <p>You chose ${esc(g)} in the abstract, all at once, with nothing on the line. Your 25 choices were made one at a time, each with a price tag: an awkward conversation, a lost Saturday, a smaller bank balance, a tired body.${rv ? ` In those moments ${rv.name} had an advantage. It pays in the present, with ${GIVES[rv.id]}. ${esc(g)} often pays later, or quietly.` : ""}</p>
+      <p>That's also why the questions never named your gate. If they had, you'd have been answering as the person you want to be. Hidden, the questions caught the person who actually decides on a Tuesday. Researchers Chris Argyris and Donald Schön called these two your <b>espoused theory</b> and your <b>theory-in-use</b>. Almost everyone has a gap between them.</p>
+      <p>A ${p}% walk doesn't mean you don't care about ${esc(g)}. It means ${esc(g)} competes with other things you also care about, and you now know which one competes hardest.</p>
+    </div>
+
+    <div class="step-label"><span class="letter">T</span><span class="name">Terms</span></div>
+    <div class="terms">
+      <div class="term"><h3>Desire line</h3><p>The path people actually walk, worn into the grass beside the path that was built for them.</p><p class="src">Landscape architecture and urban planning</p><p class="you"><b>On your plan:</b> the worn orange trail.</p></div>
+      <div class="term"><h3>Revealed preference</h3><p>What people value, read from the choices they make rather than from what they say.</p><p class="src">Paul Samuelson, 1938</p><p class="you"><b>On your plan:</b> the "If your feet picked the gate" bars${rev1()}.</p></div>
+      <div class="term"><h3>Value-action gap</h3><p>The distance between the values people hold and the actions they take. First studied in why people who care about the environment don't always act on it.</p><p class="src">James Blake, 1999</p><p class="you"><b>On your plan:</b> the space between the end of your trail and the gate.</p></div>
+      <div class="term"><h3>Cognitive dissonance</h3><p>The discomfort of holding a belief and an action that don't fit. People ease it in three ways: change the action, change the belief, or explain the gap away.</p><p class="src">Leon Festinger, 1957</p><p class="you"><b>On your plan:</b> the little sting when the trail bends.</p></div>
+    </div>
+
+    <div class="panel">
+      <p class="kicker">A planner's choice</p>
+      <p>When a desire line appears, a park planner has three options. They match Festinger's three ways out of dissonance. Which feels right for your trail?</p>
+      <div class="fence" id="fence">${Object.entries(FENCE).map(([k, [t, s]]) => `<button data-fence="${k}" aria-pressed="${f === k}"><b>${t}</b><span>${s}</span></button>`).join("")}</div>
+      <p class="reply" id="fence-reply" aria-live="polite"${f ? "" : " hidden"}>${f ? FENCE[f][2] : ""}</p>
+    </div>
+
+    <div class="step-label"><span class="letter">S</span><span class="name">Syntax</span></div>
+    <div class="prose"><p>Here's a sentence pattern you can reuse any time a value and a choice don't line up. Fill in the blanks for your own trail.</p></div>
+    <div class="statement">
+      <p class="say" id="say">${sentence}</p>
+      <div class="field"><label for="pat-when">When does this kind of moment come up for you?</label><input id="pat-when" maxlength="90" placeholder="For example: a friend needs help and I'm tired" value="${esc(S.pat.when)}"></div>
+      <div class="field"><label for="pat-step">One small step you could take this week</label><input id="pat-step" maxlength="90" placeholder="For example: say yes to one ask, for one hour" value="${esc(S.pat.step)}"></div>
+    </div>
+
+    <div class="panel">
+      <p class="kicker">Questions to sit with</p>
+      <ol class="asks">
+        ${worst ? `<li>You chose "${esc(worst.q.opts[worst.c].t)}" when "${esc(worst.q.opts[worst.b].t)}" was on offer. What were you protecting in that moment?</li>` : ""}
+        ${rv ? `<li>${rv.name} won ${res.tally[rv.id].n} times. What does it give you that you'd genuinely miss if it lost every time?</li>` : `<li>Nothing pulled you off ${esc(g)}. Is that because it truly leads, or because these 25 moments were easy ones for you?</li>`}
+        ${held ? `<li>You held the line on "${esc(held.q.text.replace(/\.$/, ""))}." What made that one possible, and could it help in the others?</li>` : ""}
+        <li>If a planner watched your footprints for a month, would they fence the grass or pave your desire line?</li>
+      </ol>
+    </div>
+    <div class="row between"><button class="btn quiet" data-go="trail">Back to my trail</button><button class="btn" data-restart>Walk again with a new gate</button></div>`;
+  $("#fence").addEventListener("click", (e) => { const b = e.target.closest("[data-fence]"); if (!b) return; S.fence = b.dataset.fence; save(); $$("#fence [data-fence]").forEach((x) => x.setAttribute("aria-pressed", String(x === b))); const r = $("#fence-reply"); r.hidden = false; r.textContent = FENCE[S.fence][2]; });
+  const upd = () => { S.pat.when = $("#pat-when").value; S.pat.step = $("#pat-step").value; save(); viewWhySentence(g, rv); };
+  $("#pat-when").addEventListener("input", upd); $("#pat-step").addEventListener("input", upd);
+  renderStrip("why");
+}
+function rev1() { const r = revealed(S.answers)[0]; return r ? `, where ${vById(r.id).name} came out on top` : ""; }
+function viewWhySentence(g, rv) {
+  $("#say").innerHTML = `I say I value <span class="vi">${esc(g)}</span>. When ${S.pat.when ? `<span>${esc(S.pat.when)}</span>` : `<span class="blank">this kind of moment comes up</span>`}, ${rv ? `<span class="vr">${rv.name}</span> tends to win` : "I mostly hold to it"}. One small step toward ${esc(g)} this week: ${S.pat.step ? `<span>${esc(S.pat.step)}</span>` : `<span class="blank">your step here</span>`}.`;
+}
+
+/* ---------- example walk ---------- */
+function loadExample() {
+  S = fresh(); S.example = true; S.ideal = "generosity";
+  const pick = { sat: 0, credit: 1, windfall: 2, bizidea: 3, evening: 1, promo: 3, cashier: 2, neighbor: 2, trip: 1, closet: 0, chat: 1, talk: 2, phone: 0, doctor: 1, city: 3, ontrack: 1, cancel: 1, skill: 1, online: 1, rent: 0, slipping: 3, upgrade: 3, climb: 1, sunny: 3, hour: 2 };
+  QS.forEach((q) => { S.answers[q.id] = pick[q.id] != null ? pick[q.id] : 0; });
+  S.idx = QS.length - 1; S.pat = { when: "someone asks for help on a day I'm worn out", step: "" };
+  save(); go("trail");
+}
+
+/* ---------- router ---------- */
+function focusTop() { const h = $("#view h2"); if (h) h.focus({ preventScroll: true }); window.scrollTo({ top: 0, behavior: "auto" }); }
+function route() {
+  const id = location.hash.slice(1);
+  if (id !== "trail") SEL = null;
+  if (id === "walk") viewWalk();
+  else if (id === "trail") viewTrail();
+  else if (id === "why") viewWhy();
+  else viewGate();
+  renderStrip(["walk", "trail", "why"].includes(id) ? id : "gate");
+}
+window.addEventListener("hashchange", () => { route(); focusTop(); });
+route();
+</script>
+
+</body></html>
