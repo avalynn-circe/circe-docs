@@ -6,7 +6,8 @@
 #   kb     Knowledge base audit. Front matter schema errors, an unverified
 #          AI draft, or a leftover TODO(verify) marker fail it.
 #   build  Docusaurus build. Broken internal links and anchors fail it.
-#   links  lychee checks every outbound link in docs/ and the README.
+#   links  lychee checks every link in docs/ and the README, after the
+#          generated Doc health page is written so its link resolves.
 
 name: Quality checks
 
@@ -87,6 +88,16 @@ jobs:
     steps:
       - name: Check out the repository
         uses: actions/checkout@v7
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: 22
+
+      # docs/quillon/doc-health.md is generated and not in Git. Without this
+      # step lychee reports the link to it as a missing file.
+      - name: Generate the Doc health page
+        run: node scripts/kb/audit.mjs --report
 
       - name: Check links
         uses: lycheeverse/lychee-action@v2
