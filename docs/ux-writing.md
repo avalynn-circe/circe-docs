@@ -7,7 +7,11 @@ description: Six screens for Ovenbird, a fictional asset manager, rewritten for 
 
 Six screens for Ovenbird, a fictional asset manager, rewritten for three audiences: individual investors, financial advisors, and institutional clients. The sample is a single HTML page with no server code.
 
+<div class="cta-group">
+
 [Open the UX writing sample](pathname:///ux-writing-sample/index.html)
+
+</div>
 
 ## What's in it
 

@@ -9,10 +9,30 @@ A short owner's manual written in DITA 1.3 XML for a fictional product line, the
 
 ## The built manuals
 
-| Model | Web (HTML5) | PDF |
-|---|---|---|
-| PW-1900E electric | [Electric manual, web](pathname:///dita/pressure-washer/electric/html5/index.html) | [Electric manual, PDF](pathname:///dita/pressure-washer/electric/pdf/pressure-washer.pdf) |
-| PW-3400G gas | [Gas manual, web](pathname:///dita/pressure-washer/gas/html5/index.html) | [Gas manual, PDF](pathname:///dita/pressure-washer/gas/pdf/pressure-washer.pdf) |
+<div class="sample-cards">
+<div class="sample-card">
+
+**PW-1900E electric**
+
+<div class="cta-group">
+
+[Electric manual, web](pathname:///dita/pressure-washer/electric/html5/index.html)
+[Electric manual, PDF](pathname:///dita/pressure-washer/electric/pdf/pressure-washer.pdf)
+
+</div>
+</div>
+<div class="sample-card">
+
+**PW-3400G gas**
+
+<div class="cta-group">
+
+[Gas manual, web](pathname:///dita/pressure-washer/gas/html5/index.html)
+[Gas manual, PDF](pathname:///dita/pressure-washer/gas/pdf/pressure-washer.pdf)
+
+</div>
+</div>
+</div>
 
 The source is in the [dita-pressure-washer folder](https://github.com/avalynn-circe/circe-docs/tree/main/dita-pressure-washer) of this site's repository. `build.sh` builds all four outputs.
 

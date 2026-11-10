@@ -7,9 +7,47 @@ description: Four self-contained interactive lessons on Elinor Ostrom's work on 
 
 Four interactive lessons on Elinor Ostrom's work on governing shared resources. Each lesson is a single HTML page with no server code. It saves your progress in your own browser.
 
-- [Saving Lake Wren](pathname:///lessons/lake-wren.html). Five households share one lake. Discover the eight design principles of commons that last.
-- [Larkspur in Layers](pathname:///lessons/larkspur-in-layers.html). Redraw police, lab, and flood districts to see why polycentric governance works.
-- [The Kettle Street Fund](pathname:///lessons/kettle-street-fund.html). Twelve houses, one shared fund. How trust, reputation, and norms shape cooperation.
-- [The Juniper Falls Charter](pathname:///lessons/juniper-falls-charter.html). Match each resource to the right way of governing it: market, club, state, community, or layered.
+<div class="sample-cards">
+<div class="sample-card">
+<div class="cta-group">
+
+[Saving Lake Wren](pathname:///lessons/lake-wren.html)
+
+</div>
+
+Five households share one lake. Discover the eight design principles of commons that last.
+
+</div>
+<div class="sample-card">
+<div class="cta-group">
+
+[Larkspur in Layers](pathname:///lessons/larkspur-in-layers.html)
+
+</div>
+
+Redraw police, lab, and flood districts to see why polycentric governance works.
+
+</div>
+<div class="sample-card">
+<div class="cta-group">
+
+[The Kettle Street Fund](pathname:///lessons/kettle-street-fund.html)
+
+</div>
+
+Twelve houses, one shared fund. How trust, reputation, and norms shape cooperation.
+
+</div>
+<div class="sample-card">
+<div class="cta-group">
+
+[The Juniper Falls Charter](pathname:///lessons/juniper-falls-charter.html)
+
+</div>
+
+Match each resource to the right way of governing it: market, club, state, community, or layered.
+
+</div>
+</div>
 
 The [lessons landing page](pathname:///lessons/index.html) links all four in one place.
