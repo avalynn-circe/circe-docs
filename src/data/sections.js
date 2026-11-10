@@ -76,8 +76,7 @@ const sections = [
     items: [
       {title: 'DITA sample: pressure washer manual', to: '/dita-pressure-washer', how: 'Browse', min: 4,
         blurb: "One DITA 1.3 source builds two owner's manuals, with shared safety warnings stored once."},
-      // No docs/ux-writing page exists in this repo yet. Planned keeps onBrokenLinks happy.
-      {title: 'UX writing sample', planned: true, how: 'Compare', min: 4,
+      {title: 'UX writing sample', to: '/ux-writing', how: 'Compare', min: 4,
         blurb: 'Ovenbird app copy across six screens, each with a redline against the original and notes.'},
       // Trailing slash: every page under /quillon/ counts as this item.
       {title: 'Self-auditing knowledge base', to: '/quillon/', how: 'Browse', min: 6,
