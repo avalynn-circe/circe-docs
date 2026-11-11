@@ -1,0 +1,141 @@
+/* Home page strip for recruiters. Colors come from Infima, so dark mode follows. */
+
+.strip {
+  display: grid;
+  grid-template-columns: minmax(0, 5fr) minmax(0, 6fr);
+  gap: 24px;
+  margin: 1.5rem 0 2rem;
+  padding: 20px 22px;
+  border: 1px solid var(--ifm-color-emphasis-300);
+  border-left: 5px solid var(--ifm-color-primary);
+  border-radius: 18px;
+  background: var(--ifm-background-surface-color);
+}
+
+@media (max-width: 996px) {
+  .strip {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 18px;
+    padding: 18px 16px;
+  }
+}
+
+.eyebrow {
+  margin: 0 0 4px;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--ifm-color-primary);
+}
+
+.name {
+  margin: 0 0 8px;
+  font-size: 1.6rem;
+  line-height: 1.15;
+}
+
+.roles {
+  margin: 0 0 10px;
+  font-size: 0.98rem;
+}
+
+.creds {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 0 0 14px;
+  font-size: 0.85rem;
+}
+
+.creds span {
+  padding: 2px 10px;
+  border-radius: 999px;
+  background: var(--ifm-color-emphasis-100);
+  color: var(--ifm-color-emphasis-800);
+}
+
+.contacts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0;
+}
+
+.contact,
+.contact:visited {
+  padding: 6px 14px;
+  border-radius: 8px;
+  background: var(--ifm-color-primary);
+  color: var(--ifm-background-color);
+  font-weight: 600;
+  font-size: 0.92rem;
+  text-decoration: none;
+}
+
+.contact:hover {
+  background: var(--ifm-color-primary-darkest);
+  color: var(--ifm-background-color);
+  text-decoration: none;
+}
+
+[data-theme='dark'] .contact:hover {
+  background: var(--ifm-color-primary-lightest);
+}
+
+.contact:focus-visible,
+.start:focus-visible {
+  outline: 3px solid var(--ifm-color-primary-darkest);
+  outline-offset: 2px;
+}
+
+.startsTitle {
+  margin: 0 0 10px;
+  font-weight: 700;
+}
+
+.startList {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+@media (max-width: 480px) {
+  .startList {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.startList li {
+  margin: 0;
+}
+
+.start,
+.start:visited {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 9px 12px;
+  border: 1px solid var(--ifm-color-emphasis-200);
+  border-radius: 10px;
+  color: var(--ifm-font-color-base);
+  text-decoration: none;
+}
+
+.start:hover {
+  border-color: var(--ifm-color-primary);
+  text-decoration: none;
+}
+
+.role {
+  font-size: 0.78rem;
+  color: var(--ifm-color-emphasis-700);
+}
+
+.sample {
+  font-weight: 600;
+  color: var(--ifm-color-primary);
+}

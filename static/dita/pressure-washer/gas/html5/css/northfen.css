@@ -1,0 +1,202 @@
+/* Northfen web manual style. Loads after the DITA-OT default stylesheet. */
+
+:root {
+  --nf-ink: #1d232a;
+  --nf-muted: #56606b;
+  --nf-rule: #d9dee3;
+  --nf-surface: #f6f7f9;
+  --nf-accent: #0b5c8f;
+  --nf-danger: #c8102e;
+  --nf-warning: #ff7900;
+  --nf-caution: #ffd100;
+  --nf-notice: #0072ce;
+}
+
+* { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  margin: 0;
+  color: var(--nf-ink);
+  background: #fff;
+  font: 16px/1.6 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  display: grid;
+  grid-template-columns: 17rem minmax(0, 1fr);
+  grid-template-areas: "head head" "toc main";
+  min-height: 100vh;
+}
+
+/* ---------- header bar ---------- */
+body > header { grid-area: head; }
+.nf-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 18px;
+  padding: 12px 24px;
+  background: #13212e;
+  color: #fff;
+  font-size: 14px;
+}
+.nf-bar a { color: #fff; text-decoration: none; }
+.nf-bar a:hover, .nf-bar a:focus-visible { text-decoration: underline; }
+.nf-brand { font-weight: 700; }
+.nf-model { color: #b9c6d3; }
+.nf-links { display: flex; flex-wrap: wrap; gap: 14px; margin-left: auto; }
+
+/* ---------- table of contents ---------- */
+nav.toc {
+  grid-area: toc;
+  padding: 24px 16px 24px 24px;
+  border-right: 1px solid var(--nf-rule);
+  background: var(--nf-surface);
+  font-size: 14px;
+}
+nav.toc ul { list-style: none; margin: 0; padding: 0; }
+nav.toc li { margin: 0 0 4px; }
+nav.toc a {
+  display: block;
+  padding: 6px 10px;
+  border-radius: 6px;
+  color: var(--nf-ink);
+  text-decoration: none;
+}
+nav.toc a:hover { background: #e8ecf0; }
+nav.toc .active > a,
+nav.toc a[aria-current="page"] {
+  background: #dce8f2;
+  color: var(--nf-accent);
+  font-weight: 600;
+}
+
+/* ---------- content ---------- */
+main {
+  grid-area: main;
+  max-width: 50rem;
+  padding: 28px 32px 64px;
+}
+/* The contents page (index.html) has no TOC sidebar or main element. */
+body:not(:has(> main)) { display: block; }
+body:not(:has(> main)) > h1,
+body:not(:has(> main)) > nav {
+  max-width: 50rem;
+  margin: 0 auto;
+  padding: 28px 32px 0;
+}
+body:not(:has(> main)) > nav { padding-bottom: 64px; }
+ul.map { list-style: none; margin: 8px 0 0; padding: 0; counter-reset: nf; }
+ul.map > li { margin: 0 0 10px; counter-increment: nf; }
+ul.map > li > a {
+  display: flex;
+  gap: 14px;
+  align-items: baseline;
+  padding: 14px 16px;
+  border: 1px solid var(--nf-rule);
+  border-radius: 10px;
+  color: var(--nf-ink);
+  font-weight: 600;
+  text-decoration: none;
+}
+ul.map > li > a::before {
+  content: counter(nf);
+  min-width: 1.6rem;
+  color: var(--nf-accent);
+  font-variant-numeric: tabular-nums;
+}
+ul.map > li > a:hover { border-color: var(--nf-accent); background: var(--nf-surface); }
+
+h1, .topictitle1 { font-size: 2rem; line-height: 1.2; margin: 0 0 12px; letter-spacing: -0.01em; }
+h2, .sectiontitle { font-size: 1.25rem; margin: 28px 0 8px; }
+.shortdesc { font-size: 1.1rem; color: var(--nf-muted); margin-top: 0; }
+a { color: var(--nf-accent); }
+a:focus-visible { outline: 3px solid var(--nf-accent); outline-offset: 2px; }
+
+/* steps */
+ol.steps { padding-left: 1.6rem; }
+ol.steps > li.step { margin-bottom: 14px; padding-left: 4px; }
+.ph.cmd { font-weight: 600; }
+.itemgroup.info, .itemgroup.stepresult { margin-top: 4px; color: var(--nf-ink); }
+.itemgroup.stepresult { color: var(--nf-muted); }
+.uicontrol { font-weight: 700; }
+
+/* tables */
+table.table, table.simpletable {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 16px 0;
+  font-size: 15px;
+}
+table.table th, table.table td,
+table.simpletable th, table.simpletable td {
+  border: 1px solid var(--nf-rule);
+  padding: 8px 10px;
+  text-align: left;
+  vertical-align: top;
+}
+table.table thead th, table.simpletable .sthead th, .sthead .stentry { background: var(--nf-surface); font-weight: 700; }
+.table--title-label, caption { font-weight: 700; text-align: left; padding-bottom: 6px; }
+
+/* ---------- ANSI Z535-style hazard panels ---------- */
+table.hazardstatement {
+  width: 100%;
+  margin: 18px 0;
+  border-collapse: collapse;
+  border: 2px solid var(--nf-ink);
+}
+table.hazardstatement th {
+  padding: 6px 12px;
+  font-size: 1.05rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  text-align: left;
+}
+table.hazardstatement th .hazardsymbol { vertical-align: -0.12em; margin-right: 4px; }
+table.hazardstatement td {
+  padding: 10px 12px;
+  border-top: 2px solid var(--nf-ink);
+  vertical-align: top;
+}
+table.hazardstatement td:first-child:not(:last-child) {
+  width: 4.5rem;
+  text-align: center;
+  border-right: 1px solid var(--nf-rule);
+}
+table.hazardstatement td .hazardsymbol { width: 2.8rem; height: auto; }
+.hazardstatement--danger { background: var(--nf-danger); color: #fff; }
+.hazardstatement--warning { background: var(--nf-warning); color: #000; }
+.hazardstatement--caution { background: var(--nf-caution); color: #000; }
+.hazardstatement--notice { background: var(--nf-notice); color: #fff; font-style: italic; }
+.messagepanel .typeofhazard { font-weight: 700; }
+.messagepanel .consequence { margin: 2px 0 6px; }
+.messagepanel .howtoavoid { padding-left: 1.1rem; position: relative; }
+.messagepanel .howtoavoid::before { content: "\2022"; position: absolute; left: 0.25rem; }
+
+/* notes */
+.note:not(.hazardstatement) {
+  margin: 16px 0;
+  padding: 10px 14px;
+  border-left: 4px solid var(--nf-accent);
+  background: var(--nf-surface);
+}
+.note__title { font-weight: 700; }
+
+/* ---------- small screens ---------- */
+@media (max-width: 860px) {
+  body {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas: "head" "toc" "main";
+  }
+  nav.toc { border-right: 0; border-bottom: 1px solid var(--nf-rule); padding: 12px 16px; }
+  main { padding: 20px 16px 48px; }
+  body:not(:has(> main)) > h1,
+  body:not(:has(> main)) > nav { padding: 20px 16px 0; }
+  .nf-bar { padding: 10px 16px; }
+  .nf-links { margin-left: 0; }
+  h1, .topictitle1 { font-size: 1.6rem; }
+}
+
+@media print {
+  body { display: block; }
+  body > header, nav.toc { display: none; }
+}

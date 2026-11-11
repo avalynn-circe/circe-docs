@@ -24,3 +24,6 @@ yarn-error.log*
 
 # DITA-OT build output. Published copies live under static/dita/.
 /dita-pressure-washer/out
+
+# DITA-OT build output; build.sh writes here, then copy to static/dita/
+dita-pressure-washer/out/

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Northfen house style for DITA-OT 4.x.
+     Install once with: dita install plugins/com.circe.northfen
+     build.sh installs it for you if it is missing. -->
+<plugin id="com.circe.northfen" version="1.0.0">
+  <require plugin="org.dita.html5"/>
+  <require plugin="org.dita.pdf2"/>
+  <!-- NOTICE messages leave out the safety alert symbol, in HTML5 and in PDF. -->
+  <feature extension="dita.xsl.html5" file="xsl/html5-hazard.xsl"/>
+  <feature extension="dita.xsl.xslfo" file="xsl/fo-hazard.xsl"/>
+  <!-- The contents page gets the header bar and viewport tag as well. -->
+  <feature extension="dita.conductor.html5.toc.param" file="toc-params.xml"/>
+</plugin>
