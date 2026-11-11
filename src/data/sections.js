@@ -66,6 +66,10 @@ const sections = [
     items: [
       {title: 'MCP tutorial review', to: '/mcp-tutorial-review', how: 'Read', min: 6,
         blurb: 'Ten findings on the official MCP server quickstart, a rewritten Python section and a test results table.'},
+      {title: 'Sentence-Level Rules for AI-Ready Documentation', href: '/papers/sentence_level_rules_article.pdf', how: 'Read', min: 9,
+        blurb: 'Which sentence patterns fail when an AI reads a page in fragments, and how to rewrite them.'},
+      {title: 'Why Before How', href: '/papers/PARTS_pedagogy.pdf', how: 'Read', min: 11,
+        blurb: 'The PARTS method for teaching programming: problem, answer, reasoning, terms, then syntax.'},
       {title: 'A human gate for AI-drafted docs', planned: true, how: 'Read', min: 8,
         blurb: 'Why AI-drafted pages should wait for a person to verify them, and how a build can enforce it.'},
     ],
