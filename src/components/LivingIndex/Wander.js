@@ -7,7 +7,8 @@ import ItemLink, {itemMeta} from './ItemLink';
 // End of a doc page: more from the same section in no order, plus the other sections.
 export default function Wander() {
   const match = usePageItem();
-  if (!match) return null;
+  // An item with wander: false opts its page out, for pages that already list their section.
+  if (!match || match.item.wander === false) return null;
   const {section, item} = match;
   // Items that share a group (the blog posts) show only their own group here.
   const siblings = section.items.filter((x) => x !== item && (!item.group || x.group === item.group));

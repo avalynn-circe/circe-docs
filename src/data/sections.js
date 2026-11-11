@@ -27,8 +27,9 @@ const sections = [
         blurb: 'Twelve houses share one fund. Watch trust, reputation and norms shape who cooperates.'},
       {title: 'The Juniper Falls Charter', href: '/lessons/juniper-falls-charter.html', how: 'Play', min: 5,
         blurb: 'Match each resource to market, club, state, community or layered governance.'},
-      {title: 'All four lessons, explained', to: '/interactive-lessons', how: 'Read', min: 2,
-        blurb: 'What the Ostrom lessons teach and how they were built.'},
+      // wander: false hides the "More interactives" block on this page; its card grid already lists every lesson.
+      {title: 'All six lessons, explained', to: '/interactive-lessons', how: 'Read', min: 2, wander: false,
+        blurb: 'What each lesson teaches and what you do in it.'},
     ],
   },
   {
