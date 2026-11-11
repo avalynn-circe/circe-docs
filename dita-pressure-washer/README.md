@@ -22,6 +22,8 @@ Author: Avalynn Circe
 | Conditional content for two products from one source | `@product` attributes and `ditaval/` |
 | Controlled vocabulary for profiling values | `subject-scheme.ditamap` |
 | Minimalist, task-oriented procedures | `topics/t_set_up_and_start.dita` |
+| A DITA-OT plugin that customizes HTML5 and PDF output | `plugins/com.circe.northfen/` |
+| A branded web stylesheet with ANSI Z535 panel colors | `web/northfen.css` |
 
 ## File structure
 
@@ -41,7 +43,14 @@ dita-pressure-washer/
 │   ├── t_shut_down_and_store.dita Task: stop, relieve pressure, drain, store
 │   ├── r_specifications.dita      Reference: specifications table
 │   └── r_troubleshooting.dita     Reference: problem, cause, solution table
-├── build.sh                       Builds all four outputs
+├── plugins/
+│   └── com.circe.northfen/        DITA-OT plugin: NOTICE panels and contents-page header
+├── web/
+│   ├── northfen.css               Stylesheet for the web manuals
+│   ├── header-electric.xml        Top bar for the PW-1900E web manual
+│   ├── header-gas.xml             Top bar for the PW-3400G web manual
+│   └── head.xml                   Viewport tag for phones
+├── build.sh                       Installs the plugin and builds all four outputs
 └── README.md
 ```
 
@@ -99,7 +108,16 @@ manual:
 <shortdesc>Technical data for the <keyword keyref="product-name"/>.</shortdesc>
 ```
 
-### 4. Controlled values
+### 4. Safety panels that follow ANSI Z535
+
+DANGER, WARNING and CAUTION panels carry the safety alert symbol. NOTICE is
+for property damage only, so under ANSI Z535.6 it carries no symbol. The
+toolkit's default puts the triangle on every panel. The
+`com.circe.northfen` plugin overrides the HTML5 and PDF templates so a
+NOTICE renders as a blue panel with the signal word and no symbol. The
+plugin also lets long lines in PDF safety panels wrap inside the panel.
+
+### 5. Controlled values
 
 `subject-scheme.ditamap` limits `@product` to `electric` and `gas`. If a
 writer types `product="eletric"`, the toolkit reports it at build time
@@ -117,43 +135,39 @@ These steps use the free [DITA Open Toolkit](https://www.dita-ot.org/)
    ```
    dita --version
    ```
-4. From this folder, build the manual you need:
-
-   Electric model, web output:
-   ```
-   dita --input=pressure-washer.ditamap --format=html5 --filter=ditaval/electric.ditaval --output=out/electric/html5
-   ```
-
-   Electric model, PDF:
-   ```
-   dita --input=pressure-washer.ditamap --format=pdf --filter=ditaval/electric.ditaval --output=out/electric/pdf
-   ```
-
-   Gas model, web output:
-   ```
-   dita --input=pressure-washer.ditamap --format=html5 --filter=ditaval/gas.ditaval --output=out/gas/html5
-   ```
-
-   Gas model, PDF:
-   ```
-   dita --input=pressure-washer.ditamap --format=pdf --filter=ditaval/gas.ditaval --output=out/gas/pdf
-   ```
-
-   Or build all four at once:
+4. From this folder, build all four manuals:
    ```
    ./build.sh
+   ```
+   The script installs the `com.circe.northfen` plugin into your toolkit,
+   then builds web and PDF output for each model. The web builds pass the
+   stylesheet and header files from `web/` with absolute paths, because
+   DITA-OT resolves those arguments from its own folder:
+   ```
+   dita --input=pressure-washer.ditamap --format=html5 \
+        --filter=ditaval/electric.ditaval --output=out/electric/html5 \
+        --nav-toc=full \
+        --args.css="$PWD/web/northfen.css" --args.copycss=yes --args.csspath=css \
+        --args.hdr="$PWD/web/header-electric.xml" --args.hdf="$PWD/web/head.xml"
    ```
 
 5. Open `out/electric/html5/index.html` in a browser, or the PDF in
    `out/electric/pdf/`.
 
-### Publishing on GitHub Pages
+### Publishing on Circe Docs
 
-Build the HTML5 output, then copy each `out/<model>/html5/` folder into
-the folder your GitHub Pages site serves, for example
-`docs/samples/pressure-washer/electric/`. To rebuild automatically on
-every push, a GitHub Actions workflow can install DITA-OT and run
-`build.sh`.
+The `out/` folder is not committed. After a build, copy each model's
+output into the site's static folder, replacing what is there:
+
+```
+for model in electric gas; do
+  rm -rf ../static/dita/pressure-washer/$model/html5 ../static/dita/pressure-washer/$model/pdf
+  cp -r out/$model/html5 out/$model/pdf ../static/dita/pressure-washer/$model/
+done
+```
+
+The links in `web/header-*.xml` assume the site serves these files at
+`/circe-docs/dita/pressure-washer/`.
 
 ## Validation
 

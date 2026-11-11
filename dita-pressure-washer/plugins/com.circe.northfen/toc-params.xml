@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Passes the running header and head content to the HTML5 contents page too,
+     so index.html gets the same header bar and viewport as every topic. -->
+<dummy xmlns:if="ant:if">
+  <param name="HDR" expression="${args.hdr.url}" if:set="args.hdr.url"/>
+  <param name="HDF" expression="${args.hdf.url}" if:set="args.hdf.url"/>
+</dummy>
