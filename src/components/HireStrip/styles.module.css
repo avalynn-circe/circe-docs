@@ -67,7 +67,7 @@
   padding: 6px 14px;
   border-radius: 8px;
   background: var(--ifm-color-primary);
-  color: var(--ifm-background-color);
+  color: #fff;
   font-weight: 600;
   font-size: 0.92rem;
   text-decoration: none;
@@ -75,8 +75,15 @@
 
 .contact:hover {
   background: var(--ifm-color-primary-darkest);
-  color: var(--ifm-background-color);
+  color: #fff;
   text-decoration: none;
+}
+
+/* The dark theme's primary is a light violet, so its buttons take dark text. */
+[data-theme='dark'] .contact,
+[data-theme='dark'] .contact:visited,
+[data-theme='dark'] .contact:hover {
+  color: #1b1b1d;
 }
 
 [data-theme='dark'] .contact:hover {
