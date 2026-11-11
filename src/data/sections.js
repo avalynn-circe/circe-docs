@@ -143,6 +143,6 @@ const sections = [
 ];
 
 // The one quiet hint on the home page. Set to null to hide it.
-export const startHint = {text: 'Short on time?', title: 'Saving Lake Wren', href: '/lessons/lake-wren.html', tail: 'takes five minutes.'};
+export const startHint = {text: '', title: 'Saving Lake Wren', href: '/lessons/lake-wren.html', tail: 'is the shortest, at five minutes.'};
 
 export default sections;
