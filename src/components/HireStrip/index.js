@@ -28,6 +28,7 @@ export default function HireStrip() {
       <div className={styles.about}>
         <p className={styles.eyebrow}>Open to remote contract and part-time work</p>
         <h2 id="hire-strip-title" className={styles.name}>Avalynn Circe</h2>
+        <p className={styles.title}>Developer, Analyst, Writer</p>
         <p className={styles.roles}>
           Technical writing, instructional design, UX writing, conversational AI,
           business analysis and front-end development. Based in St. Paul, Minnesota.

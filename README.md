@@ -1,6 +1,6 @@
 # Circe Docs
 
-A docs-as-code site: Markdown in Git, built and checked by GitHub Actions, deployed to GitHub Pages. The site publishes technical writing by Avalynn Circe, developer and documentation engineer, and enforces the Circe Editorial Standard on every push with a custom Vale style.
+A docs-as-code site: Markdown in Git, built and checked by GitHub Actions, deployed to GitHub Pages. The site publishes technical writing by Avalynn Circe, developer, analyst and writer, and enforces the Circe Editorial Standard on every push with a custom Vale style.
 
 Live site: https://avalynn-circe.github.io/circe-docs/
 
