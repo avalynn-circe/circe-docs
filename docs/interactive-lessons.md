@@ -1,11 +1,11 @@
 ---
 title: Interactive lessons
-description: Six self-contained interactive lessons. Four on Elinor Ostrom's work on governing shared resources, and two on your own values. Built on the PARTS Method.
+description: Seven self-contained interactive lessons. Four on Elinor Ostrom's work on governing shared resources, two on your own values, and one on the scale of a billion and a trillion. Built on the PARTS Method.
 ---
 
 # Interactive lessons
 
-Six interactive lessons. The first four are about Elinor Ostrom's work on governing shared resources. The last two are about your own values. Each lesson is a single HTML page with no server code. It saves your progress in your own browser.
+Seven interactive lessons. The first four are about Elinor Ostrom's work on governing shared resources. The next two are about your own values. The last one is about the scale of a billion and a trillion. Each lesson is a single HTML page with no server code. It saves your progress in your own browser.
 
 <div class="sample-cards">
 <div class="sample-card">
@@ -78,6 +78,18 @@ Map your own values and find the pairs that pull against each other.
 Name your ideal, make a run of choices, and see how close you got.
 
 **Teaches:** the gap between the values you state and the choices you make. **You:** name an ideal, make 25 ordinary choices, and compare the path you named with the trail you wore.
+
+</div>
+<div class="sample-card">
+<div class="cta-group">
+
+[The Distance to a Billion](pathname:///lessons/distance-to-a-billion.html)
+
+</div>
+
+Guess first, then measure how far a billion and a trillion sit from a million.
+
+**Teaches:** the scale of a million, a billion, and a trillion, first as pure numbers and then as wealth. **You:** walk a money ruler, place a billion on a line to a trillion, and lock in guesses before each answer appears.
 
 </div>
 </div>

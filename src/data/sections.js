@@ -21,6 +21,8 @@ const sections = [
         blurb: 'Map your own values and find the pairs that pull against each other.'},
       {title: 'Desire Lines', href: '/lessons/desire-lines.html', how: 'Play', min: 8,
         blurb: 'Name your ideal, make a run of choices, and see how close you got.'},
+      {title: 'The Distance to a Billion', href: '/lessons/distance-to-a-billion.html', how: 'Play', min: 15,
+        blurb: 'Guess first, then measure: how far a billion and a trillion sit from a million, in numbers and in wealth.'},
       {title: 'Larkspur in Layers', href: '/lessons/larkspur-in-layers.html', how: 'Play', min: 6,
         blurb: 'Redraw police, lab and flood districts to see why polycentric governance works.'},
       {title: 'The Kettle Street Fund', href: '/lessons/kettle-street-fund.html', how: 'Play', min: 6,
@@ -28,7 +30,7 @@ const sections = [
       {title: 'The Juniper Falls Charter', href: '/lessons/juniper-falls-charter.html', how: 'Play', min: 5,
         blurb: 'Match each resource to market, club, state, community or layered governance.'},
       // wander: false hides the "More interactives" block on this page; its card grid already lists every lesson.
-      {title: 'All six lessons, explained', to: '/interactive-lessons', how: 'Read', min: 2, wander: false,
+      {title: 'All seven lessons, explained', to: '/interactive-lessons', how: 'Read', min: 2, wander: false,
         blurb: 'What each lesson teaches and what you do in it.'},
     ],
   },

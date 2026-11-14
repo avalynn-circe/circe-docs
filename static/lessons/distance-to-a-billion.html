@@ -1,0 +1,798 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><title>The Distance to a Billion</title><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;800&family=Atkinson+Hyperlegible:wght@400;700&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: a tape-measure ruler across the top, then two open fields of question cards, no set order. */
+:root{
+  --bg:#EEF0EC; --surface:#FAFBF8; --ink:#16191C; --muted:#5A626B; --line:#C9CFCA;
+  --tape:#F1BE2A; --tape-ink:#1A1A12; --truth:#2350C8; --guess:#C2410C; --good:#2F7A3E;
+  --display:"Big Shoulders Display","Arial Narrow",Impact,sans-serif;
+  --body:"Atkinson Hyperlegible",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#111315; --surface:#1A1D20; --ink:#ECEDE8; --muted:#9AA2A9; --line:#33393E;
+  --tape:#F4C842; --tape-ink:#1A1A12; --truth:#86A6FF; --guess:#FF8F5E; --good:#6BC47D; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#111315; --surface:#1A1D20; --ink:#ECEDE8; --muted:#9AA2A9; --line:#33393E;
+  --tape:#F4C842; --tape-ink:#1A1A12; --truth:#86A6FF; --guess:#FF8F5E; --good:#6BC47D; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:17px;line-height:1.55;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0 64px}
+.wrap{max-width:1120px;margin:0 auto}
+h1,h2,h3{font-family:var(--display);text-wrap:balance;line-height:1.05;margin:0}
+h1{font-size:clamp(44px,8vw,84px);font-weight:800;letter-spacing:.01em;text-transform:uppercase}
+h2{font-size:clamp(28px,4vw,40px);font-weight:800;text-transform:uppercase;letter-spacing:.02em}
+h3{font-size:24px;font-weight:600;letter-spacing:.01em}
+.tapeband{height:18px;margin:0 calc(-1 * max(16px,env(safe-area-inset-left,0px)));background:
+  repeating-linear-gradient(90deg,var(--tape-ink) 0 1px,transparent 1px 10px) 0 0/100% 7px no-repeat,
+  repeating-linear-gradient(90deg,var(--tape-ink) 0 2px,transparent 2px 50px) 0 0/100% 12px no-repeat,var(--tape)}
+header{padding-block:36px 8px;display:grid;gap:12px}
+.lede{max-width:62ch;color:var(--muted);margin:0;font-size:18px}
+.eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+
+/* Ruler */
+.ruler{margin-top:28px;background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:18px 0 14px;display:grid;gap:12px}
+.ruler-head{padding-inline:18px;display:flex;flex-wrap:wrap;gap:8px 20px;align-items:baseline;justify-content:space-between}
+.readout{font-family:var(--mono);font-size:14px;color:var(--muted);font-variant-numeric:tabular-nums}
+.readout b{color:var(--ink);font-weight:500}
+canvas#tape{display:block;width:100%;height:150px;touch-action:pan-y;cursor:grab;outline:none}
+canvas#tape:active{cursor:grabbing}
+canvas#tape:focus-visible{box-shadow:inset 0 0 0 3px var(--truth)}
+.controls{padding-inline:18px;display:flex;flex-wrap:wrap;gap:8px}
+.msg{padding-inline:18px;margin:0;min-height:1.55em;max-width:70ch}
+button{font:inherit;font-size:15px;border:1px solid var(--line);background:var(--bg);color:var(--ink);padding:8px 14px;border-radius:4px;cursor:pointer}
+button:hover{border-color:var(--ink)}
+button:focus-visible,input:focus-visible{outline:3px solid var(--truth);outline-offset:2px}
+button.primary{background:var(--tape);color:var(--tape-ink);border-color:var(--tape);font-weight:700}
+button[disabled]{opacity:.45;cursor:default}
+
+/* Four stops */
+.four{margin-top:28px;background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:20px;display:grid;gap:14px}
+.ftrack{position:relative;height:96px;margin:8px 0 4px;touch-action:none}
+.ftrack::before{content:"";position:absolute;left:0;right:0;top:56px;height:6px;background:var(--tape);border-radius:3px}
+.fend{position:absolute;top:44px;width:3px;height:30px;background:var(--ink)}
+.fend-l{left:0}.fend-r{right:0}
+.fend span{position:absolute;top:34px;font-family:var(--mono);font-size:12px;white-space:nowrap;color:var(--muted)}
+.fend-l span{left:0}.fend-r span{right:0}
+.fstop{position:absolute;top:0;transform:translateX(-50%);padding:4px 10px;border-radius:4px;background:var(--guess);color:#fff;border:none;font-family:var(--mono);font-size:13px;cursor:grab;touch-action:none}
+.ftrack{cursor:pointer}.fstop.locked{cursor:default}
+.fstop.dragging{transition:none;cursor:grabbing}
+.fstop::after{content:"";position:absolute;left:50%;top:100%;width:2px;height:30px;margin-left:-1px;background:var(--guess)}
+.fstop.home{background:var(--truth)}.fstop.home::after{background:var(--truth)}
+.fghost{position:absolute;top:44px;width:2px;height:30px;background:var(--guess);opacity:.45;transform:translateX(-1px)}
+.fghost.truth{background:var(--truth);opacity:1;width:3px}
+canvas#fzoom{display:block;width:100%;height:120px;background:var(--bg);border-radius:4px}
+.zoomrow input{flex:1;min-width:160px;accent-color:var(--truth)}
+
+/* Score strip */
+.score{margin-top:36px;display:grid;gap:8px}
+.score svg{width:100%;height:auto;display:block}
+.score text{font-family:var(--mono);font-size:11px;fill:var(--muted)}
+.scoreline{font-family:var(--mono);font-size:14px;color:var(--muted)}
+
+/* Questions */
+section.field{margin-top:44px;display:grid;gap:16px}
+.field-head{display:grid;gap:4px}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,460px),1fr));gap:16px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:20px;display:grid;gap:14px;align-content:start;min-width:0}
+.card.done{border-color:var(--ink)}
+.prompt{margin:0}
+.ctrl{display:grid;gap:8px}
+.guessval{font-family:var(--display);font-size:30px;font-weight:600;color:var(--guess);font-variant-numeric:tabular-nums;line-height:1}
+.track{position:relative;padding-top:30px}
+.track input[type=range]{width:100%;margin:0;accent-color:var(--guess);height:28px}
+.lm{position:absolute;top:0;transform:translateX(-50%);font-family:var(--mono);font-size:10.5px;color:var(--muted);white-space:nowrap;text-align:center;pointer-events:none}
+.lm::after{content:"";display:block;width:1px;height:12px;background:var(--muted);margin:2px auto 0}
+.lm.edge-l{transform:none}.lm.edge-l::after{margin-left:0}
+.lm.edge-r{transform:translateX(-100%)}.lm.edge-r::after{margin-right:0}
+.truthpin{position:absolute;bottom:-4px;transform:translateX(-50%);width:3px;height:40px;background:var(--truth);border-radius:2px}
+.truthpin span{position:absolute;top:44px;left:50%;transform:translateX(-50%);font-family:var(--mono);font-size:11px;color:var(--truth);white-space:nowrap;font-weight:500}
+.track.static{padding-bottom:26px}
+.staticline{height:6px;background:var(--tape);border-radius:3px;margin-top:2px}
+.spin{position:absolute;top:28px;width:3px;height:14px;transform:translateX(-50%);border-radius:2px}
+.spin span{position:absolute;top:15px;left:50%;transform:translateX(-50%);font-family:var(--mono);font-size:11px;white-space:nowrap;font-weight:500}
+.spin.truth{background:var(--truth)}.spin.truth span{color:var(--truth)}
+.spin.guess{background:var(--guess);top:22px;height:20px}.spin.guess span{display:none}
+.inparts{display:grid;gap:12px}
+.inpart{display:grid;gap:4px}
+.inpart label{font-weight:700;font-size:15px}
+.inrow{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.inrow input,.inrow select{font:inherit;font-size:16px;padding:7px 10px;border:1px solid var(--line);border-radius:4px;background:var(--bg);color:var(--ink)}
+.inrow input{width:9em;font-variant-numeric:tabular-nums}
+.ans{display:flex;gap:8px;align-items:baseline;flex-wrap:wrap}
+.ans b{font-family:var(--display);font-size:24px;color:var(--truth);font-weight:800}
+.inerr{color:var(--guess);font-size:14px}
+.units{display:inline-flex;flex-wrap:wrap;gap:6px}
+.units label{display:inline-flex;gap:5px;align-items:center;font-size:15px;font-weight:400;border:1px solid var(--line);border-radius:4px;padding:6px 10px;cursor:pointer}
+.units label:has(input:checked){border-color:var(--guess);color:var(--guess)}
+.units input{accent-color:var(--guess);margin:0}
+.unit1{font-size:15px}
+.track.icons{padding-top:50px}
+.lm svg{display:block;width:14px;height:14px;margin:0 auto 2px;fill:currentColor}
+.lm.edge-l svg{margin-left:0}.lm.edge-r svg{margin-right:0}
+.track.icons .lm{line-height:1.25}
+.track.below{margin-bottom:54px}
+.lm.below{top:auto;bottom:-54px}
+.lm.below::after{display:none}
+.lm.below::before{content:"";display:block;width:1px;height:8px;background:var(--muted);margin:0 auto 2px}
+.lm.below.edge-r::before{margin-right:0}
+.track.icons .spin{top:48px}.track.icons .spin.guess{top:42px}
+.track.static.below{margin-bottom:16px}
+.track.static .lm.below{bottom:-14px}
+.truthpin.off span{left:auto;right:0;transform:none}
+.track.revealed{margin-bottom:20px}
+.truthpin.edge-l span{left:0;transform:none}.truthpin.edge-r span{left:auto;right:0;transform:none}
+.wagerow input{width:6em}
+.hint{font-size:13.5px;color:var(--muted)}
+.race{display:grid;gap:12px}
+.clock{font-family:var(--display);font-size:30px;font-weight:600;font-variant-numeric:tabular-nums;line-height:1}
+.lane{display:grid;grid-template-columns:minmax(6.5em,auto) 1fr;gap:4px 10px;align-items:center}
+.lname{font-weight:700;font-size:14px}
+.lbar{position:relative;height:18px;background:var(--bg);border:1px solid var(--line);border-radius:3px;overflow:hidden}
+.lbar i{position:absolute;left:0;top:0;bottom:0;width:0;background:var(--guess)}
+.lane.you .lbar i{background:var(--truth)}
+.lnum{grid-column:2;font-family:var(--mono);font-size:12.5px;color:var(--muted)}
+.lnum b{color:var(--ink);font-weight:500}
+.picks{display:grid;gap:6px}
+.picks label{display:flex;gap:10px;align-items:center;border:1px solid var(--line);border-radius:4px;padding:8px 12px;cursor:pointer}
+.picks label:has(input:checked){border-color:var(--guess);color:var(--guess)}
+.picks label.right{border-color:var(--truth);color:var(--truth);font-weight:700}
+.picks input{accent-color:var(--guess)}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.linky{background:none;border:none;padding:0;color:var(--muted);text-decoration:underline;font-size:14px}
+.reveal{border-top:1px dashed var(--line);padding-top:14px;display:grid;gap:10px}
+.answer{font-family:var(--display);font-size:34px;font-weight:800;color:var(--truth);line-height:1}
+.gap{font-family:var(--mono);font-size:13px;color:var(--guess)}
+.gap.close{color:var(--good)}
+.math{font-family:var(--mono);font-size:13.5px;background:var(--bg);border-radius:4px;padding:10px 12px;overflow-x:auto;white-space:pre;line-height:1.6}
+.take{margin:0;font-weight:700}
+.more{margin:0;color:var(--muted)}
+.src{font-size:13px;color:var(--muted);margin:0}
+a{color:var(--truth)}
+footer{margin-top:56px;border-top:1px solid var(--line);padding-top:20px;display:grid;gap:10px;font-size:14px;color:var(--muted)}
+footer ul{margin:0;padding-left:18px;display:grid;gap:4px}
+@media (prefers-reduced-motion: reduce){*{scroll-behavior:auto!important}}
+</style>
+
+<div class="wrap">
+  <div class="tapeband" aria-hidden="true"></div>
+  <header>
+    <span class="eyebrow">Scale lessons · thousand, million, billion, trillion</span>
+    <h1>The Distance to a Billion</h1>
+    <p class="lede">Guess first. Each answer locks before the math appears, and the gap between your guess and the truth stays on the scoreboard below.</p>
+  </header>
+
+  <section class="ruler" aria-labelledby="ruler-h">
+    <div class="ruler-head">
+      <h3 id="ruler-h">The long ruler</h3>
+      <div class="readout" id="readout" aria-live="polite"></div>
+    </div>
+    <canvas id="tape" tabindex="0" aria-label="A money ruler. Drag sideways or use the arrow keys to move along it."></canvas>
+    <div class="controls">
+      <button class="primary" id="walk">Hold to walk right</button>
+      <button id="toB">Go to $1 billion</button>
+      <button id="toT">Go to $1 trillion</button>
+      <button id="home">Back to $0 to $1 million</button>
+    </div>
+    <p class="msg" id="rmsg">Zero to one million dollars fits across your screen. Drag the ruler, or hold Walk, and head for a billion.</p>
+  </section>
+
+  <section class="four" aria-labelledby="four-h">
+    <div class="field-head"><span class="eyebrow">Place the marker</span><h2 id="four-h">Where's a billion?</h2></div>
+    <p class="prompt">This line runs from $0 to $1 trillion, evenly spaced. Drag 1 bil to where it belongs, or tap the line.</p>
+    <div class="ftrack" id="ftrack">
+      <div class="fend fend-l"><span>$0</span></div>
+      <div class="fend fend-r"><span>$1 trillion</span></div>
+      <button class="fstop" id="fs-b" style="left:50%" aria-label="1 billion marker. Arrow keys move it. Press Enter to lock it in."><span>1 bil</span></button>
+    </div>
+    <div class="readout" id="fread"></div>
+    <div class="reveal" id="freveal" hidden>
+      <div class="answer">A billion sits 0.1% of the way along</div>
+      <div class="gap" id="fgap"></div>
+      <p class="more" id="fpunch"></p>
+      <div class="math" id="fmath"></div>
+      <canvas id="fzoom" aria-label="A magnified view of the left end of the line"></canvas>
+      <div class="row zoomrow"><label for="fz" class="readout">Magnify</label><input type="range" id="fz" min="0" max="600" value="0"><span class="readout" id="fzr">×1</span></div>
+      <p class="take">On a line from $0 to $1 trillion, a billion lands in the first pixel, and a million is a thousandth of that pixel.</p>
+      <div class="row"><button class="linky" id="fagain">Try again</button></div>
+    </div>
+  </section>
+  <section class="score" aria-labelledby="score-h">
+    <h3 id="score-h">Your gaps</h3>
+    <div class="scoreline" id="scoreline"></div>
+    <svg id="scoresvg" viewBox="0 0 1000 120" role="img" aria-label="How far each locked guess landed from the answer, on a scale from 1,000 times too low to 1,000 times too high"></svg>
+  </section>
+
+  <section class="field" aria-labelledby="f1">
+    <div class="field-head"><span class="eyebrow">Pure number</span><h2 id="f1">Counting</h2></div>
+    <div class="cards" id="cards-count"></div>
+  </section>
+
+  <section class="field" aria-labelledby="f2">
+    <div class="field-head"><span class="eyebrow">Wealth</span><h2 id="f2">Money</h2></div>
+    <div class="cards" id="cards-money"></div>
+  </section>
+
+  <footer>
+    <strong>Sources</strong>
+    <ul>
+      <li>Elon Musk, $887.2 billion: <a href="https://www.forbes.com/real-time-billionaires/">Forbes Real-Time Billionaires</a>, read Nov 13, 2026, 4:25 PM EST. Fortunes move daily.</li>
+      <li>3,428 billionaires, $20.1 trillion combined: Forbes 2026 World's Billionaires list, as reported by <a href="https://www.spokesman.com/stories/2026/mar/10/forbes-reveals-worlds-richest-people-of-2026-see-w">The Spokesman-Review</a>, Mar 10, 2026.</li>
+      <li>US median household income in 2025, $87,460: <a href="https://www.census.gov/library/stories/2026/09/median-household-income.html">US Census Bureau</a>, Sept 2026.</li>
+      <li>World population, 8.2 billion in July 2026: <a href="https://cdn.www.census.gov/newsroom/stories/world-population-day.html">US Census Bureau</a>.</li>
+      <li>Earth to Moon, 384,400 km average: <a href="https://spaceplace.nasa.gov/s/moon-distance">NASA Space Place</a>.</li>
+      <li>Burj Khalifa, 828 m (2,717 ft): <a href="https://www.skyscrapercenter.com/building/burj-khalifa/3">CTBUH Skyscraper Center</a>.</li>
+      <li>Earth's equatorial diameter, 12,756 km (twice the 6,378.137 km radius): <a href="https://nssdc.gsfc.nasa.gov/planetary/factsheet/earthfact.html?level=1">NASA Earth Fact Sheet</a>.</li>
+      <li>Edge of space, 80 to 100 km: <a href="https://www.britannica.com/science/Karman-line">Britannica, Kármán line</a>.</li>
+      <li>Roman Empire established 27 BCE: <a href="https://www.britannica.com/topic/Roman-Empire">Britannica</a>.</li>
+      <li>Farming began about 12,000 years ago: <a href="https://education.nationalgeographic.org/resource/development-agriculture/">National Geographic Education</a>.</li>
+      <li>Non-bird dinosaurs died out 66 million years ago: <a href="https://www.nhm.ac.uk/discover/how-an-asteroid-caused-extinction-of-dinosaurs.html">Natural History Museum, London</a>.</li>
+      <li>American football field, 100 yards between goal lines (91.44 m); marathon, 42.195 km.</li>
+      <li>Homo sapiens, about 300,000 years: <a href="https://www.smithsonianmag.com/science-nature/humans-evolved-100000-years-earlier-we-thought-180963619/">Smithsonian Magazine</a>.</li>
+      <li>Great Pyramid of Giza, begun around 2560 BCE: <a href="https://egyptianmuseum.org/explore/old-kingdom-monuments-pyramids-of-giza">Rosicrucian Egyptian Museum</a>.</li>
+      <li>Average S&amp;P 500 CEO pay, $22.8 million in 2025, excluding Elon Musk's Tesla package ($340.1 million with it): <a href="https://aflcio.org/node/10787">AFL-CIO Executive Paywatch</a>, Aug 2026.</li>
+      <li>Tim Cook, fiscal 2025 total pay $74,294,811, of which $57,535,293 in stock awards: Apple proxy filing, as reported by <a href="https://9to5mac.com/2026/01/08/heres-how-much-tim-cook-and-other-apple-execs-made-last-year/">9to5Mac</a>, Jan 8, 2026.</li>
+      <li>US median hourly wage, $24.51, all occupations, May 2025: <a href="https://www.bls.gov/news.release/ocwage.t01.htm">Bureau of Labor Statistics</a>.</li>
+      <li>Paper: a 500-sheet ream is about 2 inches tall. Measure one to check.</li>
+    </ul>
+    <span>Years use 365.25 days, or 31,557,600 seconds.</span>
+  </footer>
+</div>
+
+<script id="data">
+const K = {
+  YEAR_S: 31557600, MED: 87460, MUSK: 887.2e9, BILL_TOTAL: 20.1e12, N_BILL: 3428,
+  POP: 8.2e9, MOON_KM: 384400, SHEET_IN: 2/500, BPM: 70, LIFE: 80, RATE: 0.04,
+  CEO_AVG: 22.8e6, COOK: 74294811, COOK_STOCK: 57535293, WAGE: 24.51, HRS: 2080
+};
+const T = {
+  q1: (1e9-1e6)/1e6,
+  q1t: (1e12-1e6)/1e6,
+  q2: 1e9,
+  q3: 1e9/K.YEAR_S,
+  q4: 1e12/K.YEAR_S,
+  q5: 1e9*K.SHEET_IN*0.0254/1000,
+  q5m: 1e6*K.SHEET_IN*0.0254/1000,
+  q8: 1e9/K.MED,
+  q9: K.MUSK/1e6,
+  q10: K.MUSK/K.MED,
+  q11: K.MUSK/1e6/365.25,
+  q12: K.MED/(K.MUSK*K.RATE/K.YEAR_S),
+  q13: K.BILL_TOTAL/K.POP,
+  qwA: K.CEO_AVG/K.HRS,
+  qwB: K.COOK/K.HRS
+};
+if (typeof module !== "undefined") module.exports = {K, T};
+</script>
+
+<script>
+(function(){
+const $ = (s, el=document) => el.querySelector(s);
+const nf = (v, d=0) => v.toLocaleString("en-US",{maximumFractionDigits:d, minimumFractionDigits:0});
+const sig = (v, s=3) => { if (v===0) return "0"; const d = Math.max(0, s-1-Math.floor(Math.log10(Math.abs(v)))); return nf(v, Math.min(d,4)); };
+const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+const css = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+
+/* Formatters */
+const fmtMoney = (v, s=3) => {
+  const a = Math.abs(v), sg = v<0?"−":"";
+  if (a>=1e12) return sg+"$"+sig(a/1e12,s)+" trillion";
+  if (a>=1e9) return sg+"$"+sig(a/1e9,s)+" billion";
+  if (a>=1e6) return sg+"$"+sig(a/1e6,s)+" million";
+  if (a>=1) return sg+"$"+nf(a, a<100?2:0);
+  return sg+sig(a*100,2)+"¢";
+};
+const fmtInches = v => v<12 ? sig(v)+" in" : v<63360 ? sig(v/12)+" ft" : sig(v/63360)+" mi";
+const fmtYears = v => v<1 ? sig(v*12,2)+" months" : v>=1e6 ? sig(v/1e6)+" million years" : sig(v)+" years";
+const fmtSecs = v => v<60 ? sig(v)+" seconds" : v<3600 ? sig(v/60)+" minutes" : v<86400 ? sig(v/3600)+" hours" : v<K.YEAR_S ? sig(v/86400)+" days" : sig(v/K.YEAR_S)+" years";
+const fmtKm = v => v<0.001 ? sig(v*1e5)+" cm" : v<1 ? sig(v*1000)+" m" : sig(v)+" km";
+const fmtCents = v => v>=100 ? "$"+sig(v/100) : v>=1 ? sig(v)+" cents" : sig(v)+" of a cent";
+
+const ICON = {
+  ream:'<svg viewBox="0 0 16 16" aria-hidden="true"><rect x="2" y="9" width="12" height="2"/><rect x="2" y="12" width="12" height="2"/><rect x="2" y="6" width="12" height="2"/></svg>',
+  tower:'<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M7.4 0h1.2v3H9.6v3h1v4h1V16H4.4V10h1V6h1V3h1z"/></svg>',
+  earth:'<svg viewBox="0 0 16 16" aria-hidden="true"><path fill-rule="evenodd" d="M8 1a7 7 0 1 0 0 14A7 7 0 0 0 8 1zm0 1.4a5.6 5.6 0 0 0-1.6 11V12l1-1.5-1.5-1L4 10 2.6 8.8A5.6 5.6 0 0 1 4 4.4l1.6.8L7 4l-.4-1.4A5.6 5.6 0 0 1 8 2.4zm2 .4a5.6 5.6 0 0 1 3.5 6.6L12 9l-1.5 1.5.5 2-1.4 1.1A5.6 5.6 0 0 1 8 13.6V12l2-2-1-2 1.5-1.5L10 5z"/></svg>',
+  moon:'<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M10.5 1.5a6.5 6.5 0 1 0 4 11.6A7 7 0 0 1 10.5 1.5z"/></svg>'
+};
+/* Questions */
+const Q = [
+ {id:"q1", field:"count", title:"The inch",
+  prompt:"On a line where $0 to $1 million is one inch, how far is $1 million from $1 billion? How far is $1 million from $1 trillion?",
+  ctrl:{type:"inputs", log:true, min:1, max:63360*100, units:[["ft",12,"feet"],["mi",63360,"miles"]],
+    lms:[[1,"1 in"],[12,"1 ft"],[5280*12,"1 mi"],[63360*100,"100 mi"]],
+    parts:[{id:"a", label:"$1 million to $1 billion", truth:T.q1, ans:"83.25 feet", short:"billion"},
+           {id:"b", label:"$1 million to $1 trillion", truth:T.q1t, ans:"15.8 miles", short:"trillion"}]},
+  truth:T.q1, answer:"83.25 feet and 15.8 miles",
+  math:"Billion: (1,000,000,000 − 1,000,000) ÷ 1,000,000\n= 999 inches = 83.25 feet\nTrillion: (1,000,000,000,000 − 1,000,000) ÷ 1,000,000\n= 999,999 inches = 15.8 miles",
+  more:"One inch holds everything from $0 to $1 million. A billion sits 1,000 inches from $0, and a trillion sits 1,000,000 inches, so the million-sized first inch barely changes either answer.",
+  take:"Each step up the ladder multiplies the distance by a thousand."},
+ {id:"q4s", field:"count", title:"Seconds old",
+  prompt:"If you live to celebrate a billion seconds, how old are you? How old are you at a trillion seconds?",
+  ctrl:{type:"inputs", log:true, min:1, max:1e5, units:[["yr",1,"years"]],
+    lms:[[1,"1 yr"],[80,"lifetime"],[4586,"pyramids"],[1e5,"100k yrs"]],
+    parts:[{id:"a", label:"A billion seconds old", truth:T.q3, ans:"31.7 years", short:"billion"},
+           {id:"b", label:"A trillion seconds old", truth:T.q4, ans:"31,688 years", short:"trillion"}]},
+  truth:T.q3, answer:"31.7 years and 31,688 years",
+  math:"Billion: 1,000,000,000 ÷ 31,557,600 seconds per year = 31.69 years\nTrillion: 1,000,000,000,000 ÷ 31,557,600 = 31,688 years\nA trillion is 1,000 billions, so the age is 1,000 times larger",
+  more:"Counting back a trillion seconds from today lands about 31,700 years ago. The Great Pyramid of Giza was begun around 2560 BCE, about 4,586 years ago, so the count reaches about 27,000 years further back than the pyramid.",
+  take:"A billion seconds fits inside one life. A trillion seconds is older than every pyramid.",
+  src:["Rosicrucian Egyptian Museum","https://egyptianmuseum.org/explore/old-kingdom-monuments-pyramids-of-giza"]},
+ {id:"q5", field:"count", title:"The paper tower",
+  prompt:"A 500-sheet ream of copy paper is about 2 inches tall. How high is a stack of one million sheets? How high is one billion?",
+  ctrl:{type:"inputs", log:true, min:0.01, max:1e7, trackClass:"icons below",
+    units:[["ft",0.0003048,"feet"],["mi",1.609344,"miles"],["km",1,"km"]],
+    lms:[[0.828,ICON.tower+"Burj Khalifa"],[12756,ICON.earth+"across Earth"],[384400,ICON.moon+"Moon","below"],[1e7,"beyond →"]],
+    parts:[{id:"a", label:"One million sheets", truth:T.q5m, ans:"333 feet (101.6 m)", short:"million"},
+           {id:"b", label:"One billion sheets", truth:T.q5, ans:"101.6 km (63.1 miles)", short:"billion"}]},
+  truth:T.q5, answer:"333 feet and 101.6 km",
+  math:"2 in ÷ 500 = 0.004 in per sheet\nMillion: 0.004 × 1,000,000 = 4,000 in\n= 333.3 feet = 101.6 m\nBillion: 0.004 × 1,000,000,000 = 4,000,000 in\n= 63.1 miles = 101.6 km",
+  more:"The million stack stands about an eighth as tall as the Burj Khalifa, 2,717 feet. The billion stack reaches the 100 km line often used as the edge of space. A trillion sheets would climb 63,131 miles, about a quarter of the way to the Moon.",
+  take:"A million sheets makes a tall building. A billion leaves the atmosphere.",
+  src:["Britannica, Kármán line","https://www.britannica.com/science/Karman-line"]},
+ {id:"q8", field:"money", title:"Earning a billion",
+  prompt:"A household earns the 2025 US median income, $87,460 a year, and saves every dollar. How many years until it holds $1 billion?",
+  ctrl:{type:"log", min:1, max:1e4, start:100, fmt:fmtYears,
+    lms:[[80,"lifetime"],[4586,"pyramids"]]},
+  truth:T.q8, answer:"11,434 years",
+  math:"$1,000,000,000 ÷ $87,460 per year\n= 11,434 years",
+  more:"The ruler stops at 10,000 years, 1,434 years short of the answer. To finish in 2026, that household would have started around 9400 BCE, about 6,800 years before work began on the Great Pyramid.",
+  take:"Wages and fortunes are measured on different rulers.",
+  src:["US Census Bureau","https://www.census.gov/library/stories/2026/09/median-household-income.html"]},
+ {id:"qw", field:"money", title:"Your hourly rate, theirs",
+  prompt:"Type your hourly pay. Then guess what each CEO below is paid per hour, counting 2,080 work hours a year.",
+  ctrl:{type:"wage", hours:K.HRS, wage0:K.WAGE,
+    parts:[{id:"a", label:"The average S&P 500 CEO", pay:K.CEO_AVG, short:"average CEO", tag:"2025 pay, $22.8 million"},
+           {id:"b", label:"Tim Cook, Apple", pay:K.COOK, short:"Tim Cook", tag:"fiscal 2025 pay, $74.3 million"}]},
+  srcs:[["AFL-CIO Executive Paywatch 2026","https://aflcio.org/node/10787"],["Apple proxy figures via 9to5Mac","https://9to5mac.com/2026/01/08/heres-how-much-tim-cook-and-other-apple-execs-made-last-year/"],["BLS, May 2025","https://www.bls.gov/news.release/ocwage.t01.htm"]]},
+ {id:"q9", field:"money", title:"Dollars as millimeters",
+  prompt:"Lay money out as distance, one millimeter per dollar. The richest person, Elon Musk, has a reported $887.2 billion. How far does his line run?",
+  ctrl:{type:"log", min:0.001, max:1e7, start:10, fmt:fmtKm, trackClass:"icons",
+    lms:[[0.09144,"football field"],[42.195,"marathon"],[12756,ICON.earth+"Earth"],[384400,ICON.moon+"Moon"]]},
+  truth:T.q9, answer:"887,200 km",
+  math:"887,200,000,000 mm\n= 887,200 km\n887,200 ÷ 384,400 = 2.31 times the distance to the Moon\nThere and back: 2 × 384,400 = 768,800 km, leaving 118,400 km",
+  more:"The median household income runs 87.5 meters, a little shorter than the 100 yards of an American football field. One billion dollars runs 1,000 km.",
+  take:"The median income fits on a football field. The top fortune runs to the Moon and back, with 118,400 km to spare.",
+  src:["Forbes Real-Time Billionaires, Nov 13, 2026","https://www.forbes.com/real-time-billionaires/"]},
+ {id:"q10", field:"money", title:"Earning the top fortune",
+  prompt:"A household earns the 2025 US median income, $87,460 a year, and saves all of it. To hold Musk's $887.2 billion today, how many years ago would it have had to start?",
+  ctrl:{type:"log", min:100, max:1e9, start:10000, fmt:v=>fmtYears(v)+" ago", trackClass:"below",
+    lms:[[2052,"Rome"],[12000,"first farms","below"],[300000,"our species"],[66e6,"dinosaurs"]]},
+  truth:T.q10, answer:"10.1 million years ago",
+  math:"$887,200,000,000 ÷ $87,460 per year\n= 10,144,066 years",
+  more:"The Roman Empire began about 2,050 years ago, farming about 12,000, and Homo sapiens about 300,000. This household would have started 34 times further back than the first Homo sapiens, but long after the dinosaurs died out 66 million years ago.",
+  take:"No working life, or string of working lives, reaches this number.",
+  srcs:[["Smithsonian Magazine","https://www.smithsonianmag.com/science-nature/humans-evolved-100000-years-earlier-we-thought-180963619/"],["Britannica, Roman Empire","https://www.britannica.com/topic/Roman-Empire"],["National Geographic, agriculture","https://education.nationalgeographic.org/resource/development-agriculture/"],["Natural History Museum, London","https://www.nhm.ac.uk/discover/how-an-asteroid-caused-extinction-of-dinosaurs.html"]]},
+ {id:"q11", field:"money", title:"A million a day",
+  prompt:"Spend $1 million every day, starting today. How long until $887.2 billion runs out?",
+  ctrl:{type:"log", min:1, max:1e5, start:10, fmt:fmtYears,
+    lms:[[80,"one lifetime"],[2026,"since year 1"]]},
+  truth:T.q11, answer:"2,429 years",
+  math:"$887,200,000,000 ÷ $1,000,000 per day\n= 887,200 days\n÷ 365.25 = 2,429 years",
+  more:"Started in 2026, the spending would last until the year 4455.",
+  take:"A million dollars a day takes 24 centuries to spend this fortune."},
+ {id:"q12", field:"money", title:"Interest by the second",
+  prompt:"Suppose Musk's $887.2 billion earned a modest 4% a year. How long would it take to earn one median household's yearly income?",
+  ctrl:{type:"log", min:1, max:K.YEAR_S, start:86400, fmt:fmtSecs,
+    lms:[[60,"1 min"],[3600,"1 hour"],[86400,"1 day"],[2629800,"1 month"]]},
+  truth:T.q12, answer:"78 seconds",
+  math:"$887.2 billion × 4% = $35.49 billion a year\n÷ 31,557,600 seconds = $1,124.55 per second\n$87,460 ÷ $1,124.55 = 77.8 seconds",
+  more:"The 4% rate is an assumption for this question. Real returns on a fortune this size swing by billions in a day.",
+  take:"At a modest return, the fortune earns a household's year in under a minute and a half."},
+ {id:"q13", field:"money", title:"Spread it out",
+  prompt:"Forbes counted 3,428 billionaires in 2026 holding $20.1 trillion combined. Split that evenly across all 8.2 billion people on Earth. How much does each person get?",
+  ctrl:{type:"log", min:1, max:1e7, start:1e5, fmt:v=>fmtMoney(v),
+    lms:[[87460,"median income"]]},
+  truth:T.q13, answer:"$2,451 each",
+  math:"$20,100,000,000,000 ÷ 8,200,000,000 people\n= $2,451 per person",
+  more:"Split among the 3,428 billionaires instead, the same total averages $"+sig(K.BILL_TOTAL/K.N_BILL/1e9)+" billion each.",
+  take:"Spread across humanity, the combined fortunes of 3,428 people come to $2,451 a head.",
+  src:["Forbes 2026 list via The Spokesman-Review","https://www.spokesman.com/stories/2026/mar/10/forbes-reveals-worlds-richest-people-of-2026-see-w"]}
+];
+
+/* Storage, per viewer */
+const KEY = "distance-to-a-billion-v1";
+let saved = {};
+try { saved = JSON.parse(localStorage.getItem(KEY) || "{}") || {}; } catch(e) { saved = {}; }
+const persist = () => { try { localStorage.setItem(KEY, JSON.stringify(saved)); } catch(e){} };
+
+/* Slider mapping */
+const STEPS = 1000;
+const isLog = c => c.type==="log" || c.log;
+const toVal = (c, p) => isLog(c) ? Math.pow(10, Math.log10(c.min) + (Math.log10(c.max)-Math.log10(c.min))*p/STEPS) : c.min + (c.max-c.min)*p/STEPS;
+const toPos = (c, v) => isLog(c) ? (Math.log10(v)-Math.log10(c.min))/(Math.log10(c.max)-Math.log10(c.min))*STEPS : (v-c.min)/(c.max-c.min)*STEPS;
+const pct = (c, v) => Math.max(0, Math.min(100, toPos(c, v)/STEPS*100));
+
+function ratioOf(q, g){ return q.ctrl.type==="pick" ? Math.pow(10, g - q.truthIdx) : g / q.truth; }
+function gapText(r){
+  if (r>=0.9 && r<=1.1) return ["Within 10% of the answer.", true];
+  if (r>1) return ["Your guess was "+sig(r,2)+"× too high.", false];
+  return ["Your guess was "+sig(1/r,2)+"× too low.", false];
+}
+
+/* Text-input cards: a display-only range, typed answers, one check button */
+const UNITS = [["in",1,"inches"],["ft",12,"feet"],["mi",63360,"miles"]];
+const parseNum = s => { const n = parseFloat(String(s).replace(/,/g,"").trim()); return isFinite(n) && n>0 ? n : null; };
+function buildInputs(q){
+  const c = q.ctrl, U = c.units || UNITS, card = document.createElement("article");
+  card.className = "card"; card.id = q.id;
+  const lms = c.lms.map(([v,l,pos])=>{ const p = pct(c,v); const cls = (p<6?" edge-l":p>94?" edge-r":"")+(pos?" "+pos:""); return '<span class="lm'+cls+'" style="left:'+p+'%">'+l+'</span>'; }).join("");
+  const radios = pt => U.length===1 ? '<span class="unit1">'+U[0][2]+'</span>' : '<span class="units" role="radiogroup" aria-label="Unit for '+pt.label+'">'+U.map(([u,,name],i)=>'<label><input type="radio" name="'+q.id+'-'+pt.id+'u" value="'+u+'"'+(i===0?' checked':'')+'> '+name+'</label>').join("")+'</span>';
+  const rows = c.parts.map(pt=>'<div class="inpart"><label for="'+q.id+'-'+pt.id+'">'+pt.label+'</label><div class="inrow">'+
+    '<input type="text" inputmode="decimal" autocomplete="off" id="'+q.id+'-'+pt.id+'" placeholder="number">'+radios(pt)+
+    '<span class="ans" id="'+q.id+'-'+pt.id+'a" aria-live="polite"></span></div></div>').join("");
+  card.innerHTML = '<h3>'+q.title+'</h3><p class="prompt">'+q.prompt+'</p><div class="track static '+(c.trackClass||"")+'" aria-hidden="true">'+lms+'<div class="staticline"></div></div>'+
+    '<div class="inparts">'+rows+'</div><div class="row"><button class="primary" id="'+q.id+'-lock">Check my answer</button><span class="inerr" id="'+q.id+'-err"></span></div>'+
+    '<div class="reveal" id="'+q.id+'-rv" hidden></div>';
+  const lock = $("#"+q.id+"-lock", card), rv = $("#"+q.id+"-rv", card), track = $(".track", card);
+  function pin(v, label, cls){ const d = document.createElement("div"); d.className = "spin "+cls; d.style.left = pct(c, Math.max(c.min, Math.min(c.max, v)))+"%"; d.innerHTML = "<span>"+label+"</span>"; track.appendChild(d); }
+  function show(g){
+    card.classList.add("done"); lock.hidden = true; $("#"+q.id+"-err", card).textContent = "";
+    c.parts.forEach(pt=>{
+      const inp = $("#"+q.id+"-"+pt.id, card);
+      const best = U.find(([u])=>u===g[pt.id+"u"]) || U.slice().reverse().find(([,f])=>g[pt.id]/f>=1) || U[0];
+      inp.value = sig(g[pt.id]/best[1]); inp.disabled = true;
+      card.querySelectorAll('input[name="'+q.id+'-'+pt.id+'u"]').forEach(r=>{ r.checked = r.value===best[0]; r.disabled = true; });
+      const [gt, close] = gapText(g[pt.id]/pt.truth);
+      const a = $("#"+q.id+"-"+pt.id+"a", card); a.innerHTML = '<b>'+pt.ans+'</b> <span class="gap'+(close?" close":"")+'">'+gt.replace("Your guess was ","")+'</span>';
+      pin(g[pt.id], "you", "guess"); pin(pt.truth, pt.short, "truth");
+    });
+    rv.innerHTML = '<div class="answer">'+q.answer+'</div><div class="math">'+q.math+'</div><p class="more">'+q.more+'</p><p class="take">'+q.take+'</p>'+
+      (q.src?'<p class="src">Source: <a href="'+q.src[1]+'">'+q.src[0]+'</a></p>':'')+
+      '<div class="row"><button class="linky" id="'+q.id+'-redo">Clear my answers</button></div>';
+    rv.hidden = false;
+    $("#"+q.id+"-redo", card).addEventListener("click", ()=>{ delete saved[q.id]; persist(); card.replaceWith(buildInputs(q)); score(); });
+  }
+  lock.addEventListener("click", ()=>{
+    const g = {}; let ok = true;
+    c.parts.forEach(pt=>{ const n = parseNum($("#"+q.id+"-"+pt.id, card).value); const ck = card.querySelector('input[name="'+q.id+'-'+pt.id+'u"]:checked'), u = ck ? ck.value : U[0][0]; const f = U.find(([x])=>x===u)[1]; if (n===null) ok=false; else { g[pt.id] = n*f; g[pt.id+"u"] = u; } });
+    if (!ok){ $("#"+q.id+"-err", card).textContent = "Type a number in each box."; return; }
+    saved[q.id] = g; persist(); show(g); score();
+  });
+  if (saved[q.id] && typeof saved[q.id]==="object") show(saved[q.id]);
+  else if (saved[q.id]!==undefined){ delete saved[q.id]; persist(); }
+  return card;
+}
+
+/* Wage card: your hourly pay against CEO hourly pay, guess in dollars per hour, then side-by-side bars */
+const wageRate = (c, pt) => pt.pay / c.hours;
+const money2 = v => "$" + v.toLocaleString("en-US",{minimumFractionDigits:2, maximumFractionDigits:2});
+function buildWage(q){
+  const c = q.ctrl, card = document.createElement("article");
+  card.className = "card"; card.id = q.id;
+  const rows = c.parts.map(pt=>'<div class="inpart"><label for="'+q.id+'-'+pt.id+'">'+pt.label+'</label><span class="hint">'+pt.tag+'</span><div class="inrow wagerow"><span>$</span>'+
+    '<input type="text" inputmode="decimal" autocomplete="off" id="'+q.id+'-'+pt.id+'" placeholder="per hour"><span class="unit1">an hour</span>'+
+    '<span class="ans" id="'+q.id+'-'+pt.id+'a" aria-live="polite"></span></div></div>').join("");
+  card.innerHTML = '<h3>'+q.title+'</h3><p class="prompt">'+q.prompt+'</p>'+
+    '<div class="inpart"><label for="'+q.id+'-w">Your hourly pay</label><div class="inrow wagerow"><span>$</span>'+
+    '<input type="text" inputmode="decimal" autocomplete="off" id="'+q.id+'-w" value="'+c.wage0+'"><span class="unit1">an hour</span></div>'+
+    '<span class="hint">Filled in with the US median hourly wage, $24.51. Type yours to replace it.</span></div>'+
+    '<div class="inparts">'+rows+'</div><div class="row"><button class="primary" id="'+q.id+'-lock">Check my answer</button><span class="inerr" id="'+q.id+'-err"></span></div>'+
+    '<div class="reveal" id="'+q.id+'-rv" hidden></div>';
+  const lock = $("#"+q.id+"-lock", card), rv = $("#"+q.id+"-rv", card);
+  function show(g){
+    card.classList.add("done"); lock.hidden = true; $("#"+q.id+"-err", card).textContent = "";
+    const w = g.w, wi = $("#"+q.id+"-w", card); wi.value = w; wi.disabled = true;
+    const rate = {}, x = {};
+    c.parts.forEach(pt=>{
+      const inp = $("#"+q.id+"-"+pt.id, card); inp.value = nf(g[pt.id], 2); inp.disabled = true;
+      rate[pt.id] = wageRate(c, pt); x[pt.id] = rate[pt.id]/w;
+      const [gt, close] = gapText(g[pt.id]/rate[pt.id]);
+      $("#"+q.id+"-"+pt.id+"a", card).innerHTML = '<b>'+money2(rate[pt.id])+'</b> <span class="gap'+(close?" close":"")+'">'+gt.replace("Your guess was ","")+'</span>';
+    });
+    const top = Math.max(w, ...c.parts.map(pt=>rate[pt.id]));
+    const times = v => v<10 ? sig(v,2) : nf(v,0);
+    const bar = (name, v, note, you) => '<div class="lane'+(you?" you":"")+'"><div class="lname">'+name+'</div><div class="lbar"><i style="width:max(1px,'+(v/top*100)+'%)"></i></div><div class="lnum"><b>'+money2(v)+' an hour</b>'+note+'</div></div>';
+    const bars = '<div class="race">'+bar("You", w, "", true)+c.parts.map(pt=>bar(pt.short.charAt(0).toUpperCase()+pt.short.slice(1), rate[pt.id], ' · '+times(x[pt.id])+'× your rate', false)).join("")+
+      '<span class="hint">Your bar is '+sig(w/top*100,2)+'% as wide as the longest one. Below 1% it shrinks to a single pixel or less.</span></div>';
+    const math = c.parts.map(pt=>pt.label+": $"+nf(pt.pay)+" ÷ "+nf(c.hours)+" hours\n= "+money2(rate[pt.id])+" an hour\n"+money2(rate[pt.id])+" ÷ "+money2(w)+" = "+times(x[pt.id])+"× your rate").join("\n\n");
+    const muskRate = 340.1e6/c.hours;
+    rv.innerHTML = '<div class="answer">'+money2(rate.a)+' and '+money2(rate.b)+' an hour</div>'+bars+'<div class="math">'+math+'</div>'+
+      '<p class="more">With 2,080 work hours a year on both sides, one year of the average CEO’s pay equals '+times(x.a)+' of your working years, and one year of Cook’s equals '+times(x.b)+'.</p>'+
+      '<p class="more">The 2,080 hours (40 a week, 52 weeks) is an assumption. CEO totals include stock awards valued when granted: $57.5 million of Cook’s $74.3 million, 77%, was stock. The $22.8 million average leaves out Elon Musk’s 2025 Tesla package. Counting it, the AFL-CIO average reaches $340.1 million, or '+money2(muskRate)+' an hour, '+times(muskRate/w)+'× your rate.</p>'+
+      '<p class="take">The average S&amp;P 500 CEO is paid '+times(x.a)+' times your hourly rate.</p>'+
+      '<p class="src">Sources: '+q.srcs.map(([n,u])=>'<a href="'+u+'">'+n+'</a>').join(", ")+'</p>'+
+      '<div class="row"><button class="linky" id="'+q.id+'-redo">Clear my answers</button></div>';
+    rv.hidden = false;
+    $("#"+q.id+"-redo", card).addEventListener("click", ()=>{ delete saved[q.id]; persist(); card.replaceWith(buildWage(q)); score(); });
+  }
+  lock.addEventListener("click", ()=>{
+    const w = parseNum($("#"+q.id+"-w", card).value);
+    const g = {v:2, w}; let ok = w!==null;
+    c.parts.forEach(pt=>{ const n = parseNum($("#"+q.id+"-"+pt.id, card).value); if (n===null) ok=false; else g[pt.id] = n; });
+    if (!ok){ $("#"+q.id+"-err", card).textContent = "Type a number in each box."; return; }
+    saved[q.id] = g; persist(); show(g); score();
+  });
+  if (saved[q.id] && typeof saved[q.id]==="object" && saved[q.id].v===2) show(saved[q.id]);
+  else if (saved[q.id]!==undefined){ delete saved[q.id]; persist(); }
+  return card;
+}
+
+function build(q){
+  if (q.ctrl.type==="inputs") return buildInputs(q);
+  if (q.ctrl.type==="wage") return buildWage(q);
+  const card = document.createElement("article");
+  card.className = "card"; card.id = q.id;
+  const c = q.ctrl;
+  let ctrlHTML = "";
+  if (c.type==="pick"){
+    ctrlHTML = '<div class="picks" role="radiogroup" aria-label="Your guess">' + c.opts.map((o,i)=>
+      '<label><input type="radio" name="'+q.id+'-r" value="'+i+'" id="'+q.id+'-o'+i+'"> '+o+'</label>').join("") + "</div>";
+  } else {
+    const lms = (c.lms||[]).map(([v,l,pos])=>{ const p = pct(c,v); const cls = (p<6?" edge-l":p>94?" edge-r":"")+(pos?" "+pos:""); return '<span class="lm'+cls+'" style="left:'+p+'%">'+l+'</span>'; }).join("");
+    ctrlHTML = '<div class="guessval" id="'+q.id+'-gv"></div><div class="track '+(c.trackClass||"")+'">'+lms+
+      '<input type="range" id="'+q.id+'-in" min="0" max="'+STEPS+'" step="1" aria-label="Your guess"></div>';
+  }
+  card.innerHTML = '<h3>'+q.title+'</h3><p class="prompt">'+q.prompt+'</p><div class="ctrl">'+ctrlHTML+'</div>'+
+    '<div class="row"><button class="primary" id="'+q.id+'-lock">Lock in my guess</button></div><div class="reveal" id="'+q.id+'-rv" hidden></div>';
+  const lock = $("#"+q.id+"-lock", card);
+  const rv = $("#"+q.id+"-rv", card);
+  let cur = null;
+  if (c.type==="pick"){
+    lock.disabled = true;
+    card.querySelectorAll("input[type=radio]").forEach(r=>r.addEventListener("change",()=>{cur=+r.value; lock.disabled=false;}));
+  } else {
+    const inp = $("#"+q.id+"-in", card), gv = $("#"+q.id+"-gv", card);
+    const upd = () => { cur = toVal(c, +inp.value); gv.textContent = c.fmt(cur); };
+    inp.value = Math.round(toPos(c, c.start)); upd();
+    inp.addEventListener("input", upd);
+  }
+  function showReveal(g){
+    const r = ratioOf(q, g); const [gt, close] = gapText(r);
+    card.classList.add("done");
+    card.querySelectorAll("input").forEach(i=>i.disabled=true);
+    lock.hidden = true;
+    if (c.type==="pick"){
+      const rad = $("#"+q.id+"-o"+g, card); if (rad) rad.checked = true;
+      $("#"+q.id+"-o"+q.truthIdx, card).parentElement.classList.add("right");
+    } else {
+      const inp = $("#"+q.id+"-in", card); inp.value = Math.round(toPos(c, g));
+      $("#"+q.id+"-gv", card).textContent = "You guessed " + c.fmt(g);
+      const off = q.truth > c.max, pin = document.createElement("div"); pin.className="truthpin"+(off?" off":""); pin.style.left = pct(c, q.truth)+"%";
+      pin.innerHTML = off ? "<span>answer is past the end →</span>" : "<span>answer</span>"; $(".track", card).appendChild(pin);
+      const pp = pct(c, q.truth); if (!off && pp<8) pin.classList.add("edge-l"); else if (!off && pp>92) pin.classList.add("edge-r");
+      $(".track", card).classList.add("revealed");
+    }
+    rv.innerHTML = '<div class="answer">'+q.answer+'</div><div class="gap'+(close?" close":"")+'">'+gt+'</div>'+
+      '<div class="math">'+q.math+'</div><p class="more">'+q.more+'</p><p class="take">'+q.take+'</p>'+
+      (q.src?'<p class="src">Source: <a href="'+q.src[1]+'">'+q.src[0]+'</a></p>':'')+
+      (q.srcs?'<p class="src">Sources: '+q.srcs.map(([n,u])=>'<a href="'+u+'">'+n+'</a>').join(", ")+'</p>':'')+
+      '<div class="row"><button class="linky" id="'+q.id+'-redo">Clear my guess</button></div>';
+    rv.hidden = false;
+    $("#"+q.id+"-redo", card).addEventListener("click", ()=>{ delete saved[q.id]; persist(); const n = build(q); card.replaceWith(n); score(); });
+  }
+  lock.addEventListener("click", ()=>{ if (cur===null) return; saved[q.id]=cur; persist(); showReveal(cur); score(); });
+  if (saved[q.id] !== undefined) showReveal(saved[q.id]);
+  return card;
+}
+Q.forEach(q => $("#cards-"+q.field).appendChild(build(q)));
+
+/* Scoreboard */
+function score(){
+  const svg = $("#scoresvg"); const W=1000, x0=40, x1=960, y=62;
+  const X = lr => x0 + (Math.max(-3, Math.min(3, lr)) + 3)/6*(x1-x0);
+  let s = '<line x1="'+x0+'" y1="'+y+'" x2="'+x1+'" y2="'+y+'" stroke="'+css("--line")+'" stroke-width="2"/>';
+  [[-3,"1,000× too low"],[-2,"100×"],[-1,"10×"],[0,"right on"],[1,"10×"],[2,"100×"],[3,"1,000× too high"]].forEach(([v,l])=>{
+    const x=X(v); const anchor = v===-3?"start":v===3?"end":"middle";
+    s += '<line x1="'+x+'" y1="'+(y-8)+'" x2="'+x+'" y2="'+(y+8)+'" stroke="'+css("--muted")+'" stroke-width="'+(v===0?2:1)+'"/>';
+    s += '<text x="'+x+'" y="'+(y+28)+'" text-anchor="'+anchor+'">'+l+'</text>';
+  });
+  const done = [];
+  Q.forEach(q=>{ const g = saved[q.id]; if (g===undefined) return;
+    if (q.ctrl.type==="inputs"){ if (typeof g==="object") q.ctrl.parts.forEach(pt=>{ if (g[pt.id]) done.push([q.title+": "+pt.short, g[pt.id]/pt.truth]); }); }
+    else if (q.ctrl.type==="wage"){ if (typeof g==="object" && g.v===2) q.ctrl.parts.forEach(pt=>{ if (g[pt.id]) done.push([q.title+": "+pt.short, g[pt.id]/wageRate(q.ctrl, pt)]); }); }
+    else done.push([q.title, ratioOf(q, g)]); });
+  const total = Q.reduce((n,q)=>n+(q.ctrl.parts?q.ctrl.parts.length:1),0);
+  const lrs = [];
+  done.forEach(([title, r],i)=>{
+    const lr = Math.log10(r); lrs.push(Math.abs(lr));
+    const x = X(lr), yy = y - 14 - (i%3)*12;
+    s += '<circle cx="'+x+'" cy="'+yy+'" r="6" fill="'+(Math.abs(lr)<0.0414?css("--good"):css("--guess"))+'"><title>'+title+'</title></circle>';
+  });
+  svg.innerHTML = s;
+  const line = $("#scoreline");
+  if (!done.length){ line.textContent = "Locked guesses land here, placed by how far off they were."; return; }
+  lrs.sort((a,b)=>a-b); const med = lrs[Math.floor((lrs.length-1)/2)];
+  line.textContent = done.length+" of "+total+" locked. Your typical miss: "+(med<0.0414?"within 10%":sig(Math.pow(10,med),2)+"×")+".";
+}
+score();
+
+/* Where's a billion: free marker on an even $0 to $1 trillion line. No readout while placing; the reveal opens on release. */
+const FHI = 1e12, FZMAX = 1e6, FZANIM = 1000, ftruth = 1e9/FHI;
+["fs","ts","fk","fp"].forEach(k=>{ if (saved[k]!==undefined){ delete saved[k]; persist(); } });
+const ftrack = $("#ftrack"), fb = $("#fs-b");
+let fp = 0.5, fopen = false, fdragId = null, fzAnim = null, fz = 1;
+const fval = p => p*FHI;
+function fpaint(){
+  fb.style.left = (fp*100)+"%";
+  $("#fread").textContent = fopen ? "" : "Let go where you think it belongs. With the keyboard, use the arrow keys, then press Enter.";
+}
+function fexplain(){
+  if (!fopen) return;
+  const W = ftrack.clientWidth; if (!W) return;
+  const perPx = FHI/W, gotPx = fp*W, truePx = ftruth*W, dpx = Math.abs(gotPx-truePx);
+  $("#fgap").textContent = dpx < 1.5
+    ? "You landed within a pixel of it, as close as a pointer can get."
+    : "Your marker landed at "+fmtMoney(fval(fp))+", "+nf(Math.round(dpx))+" px to the "+(gotPx>truePx?"right":"left")+" of the true spot.";
+  $("#fpunch").textContent = "A pointer can't land between pixels. On your "+nf(W)+"-pixel line, each pixel is worth about "+fmtMoney(perPx,2)+", so a billion takes up about "+sig(truePx,2)+" px, and a million is "+sig(W/1e6,2)+" of a pixel.";
+  $("#fmath").textContent = "1,000,000,000 ÷ 1,000,000,000,000 = 0.001 = 0.1% of the line\n"+nf(W)+" px × 0.001 = "+sig(truePx,2)+" px from $0\n$1 trillion ÷ "+nf(W)+" px = "+fmtMoney(perPx,3)+" per pixel";
+  fdraw();
+}
+function fopenReveal(){
+  if (fopen) return; fopen = true;
+  fb.classList.add("locked"); fb.setAttribute("aria-disabled","true");
+  const d = document.createElement("div"); d.className="fghost truth"; d.id="fghost"; d.style.left = (ftruth*100)+"%"; ftrack.appendChild(d);
+  $("#freveal").hidden = false;
+  fpaint(); fexplain();
+  if (reduce){ fsetZoom(FZANIM); return; }
+  fsetZoom(1); const t0 = performance.now() + 800, ms = 5000;
+  const tick = now => { const t = Math.max(0, Math.min(1, (now-t0)/ms)); fsetZoom(Math.pow(FZANIM, t<.5?2*t*t:1-Math.pow(-2*t+2,2)/2)); fzAnim = t<1 ? requestAnimationFrame(tick) : null; };
+  fzAnim = requestAnimationFrame(tick);
+}
+function freset(){
+  if (fzAnim){ cancelAnimationFrame(fzAnim); fzAnim = null; }
+  fopen = false; fp = 0.5; fdragId = null;
+  fb.classList.remove("locked"); fb.removeAttribute("aria-disabled");
+  const g = $("#fghost"); if (g) g.remove();
+  $("#freveal").hidden = true; fsetZoom(1); fpaint(); fb.focus();
+}
+const fat = ev => { const r = ftrack.getBoundingClientRect(); return Math.max(0, Math.min(1, (ev.clientX-r.left)/r.width)); };
+ftrack.addEventListener("pointerdown", e=>{
+  if (fopen || fdragId!==null || (e.pointerType==="mouse" && e.button!==0)) return;
+  e.preventDefault(); fdragId = e.pointerId; ftrack.setPointerCapture(e.pointerId); fb.classList.add("dragging");
+  fp = fat(e); fpaint();
+});
+ftrack.addEventListener("pointermove", e=>{ if (e.pointerId!==fdragId) return; fp = fat(e); fpaint(); });
+function fend(e){ if (e.pointerId!==fdragId) return; fdragId = null; fb.classList.remove("dragging"); if (e.type==="pointerup") fopenReveal(); }
+ftrack.addEventListener("pointerup", fend);
+ftrack.addEventListener("pointercancel", fend);
+fb.addEventListener("keydown", e=>{
+  if (fopen) return;
+  if (e.key==="Enter" || e.key===" "){ e.preventDefault(); fopenReveal(); return; }
+  const d = e.shiftKey?0.1:0.01;
+  if (e.key==="ArrowRight") fp=Math.min(1,fp+d); else if (e.key==="ArrowLeft") fp=Math.max(0,fp-d); else if (e.key==="Home") fp=0; else if (e.key==="End") fp=1; else return;
+  e.preventDefault(); fpaint();
+});
+fb.addEventListener("click", e=>e.preventDefault());
+$("#fagain").addEventListener("click", freset);
+const fcv = $("#fzoom"), fctx = fcv.getContext("2d");
+function fdraw(){
+  const w = fcv.clientWidth, h = fcv.clientHeight, dp = window.devicePixelRatio||1;
+  if (!w || !fopen) return;
+  if (fcv.width !== Math.round(w*dp) || fcv.height !== Math.round(h*dp)) { fcv.width = Math.round(w*dp); fcv.height = Math.round(h*dp); }
+  fctx.setTransform(dp,0,0,dp,0,0); fctx.clearRect(0,0,w,h);
+  const pad = 14, tw = w - pad*2, hi = FHI/fz, per = hi/tw;
+  const X = v => pad + v/per;
+  fctx.fillStyle = css("--tape"); fctx.fillRect(pad, 54, tw, 6);
+  fctx.font = '500 11px "JetBrains Mono", monospace'; fctx.textBaseline = "top";
+  const step = niceStep(per*120);
+  for (let v = step; v <= hi; v += step){ const x = X(v); fctx.fillStyle = css("--muted"); fctx.fillRect(Math.round(x), 62, 1, 8); fctx.fillText(tickLabel(v, step), Math.round(x)+3, 74); }
+  fctx.fillStyle = css("--ink"); fctx.fillRect(pad-1, 42, 3, 30); fctx.fillText("$0", pad, 96);
+  const marks = [[1e9,"1 bil",css("--truth"),0],[fval(fp),"your marker",css("--guess"),1],[1e6,"1 mil",css("--ink"),2]];
+  fctx.font = '700 12px "Atkinson Hyperlegible", sans-serif'; fctx.textBaseline = "alphabetic";
+  const off = [];
+  marks.forEach(([v,l,c,row])=>{
+    const x = X(v);
+    if (x <= w - pad + 1){ fctx.fillStyle = c; fctx.fillRect(Math.round(x)-1, 18+row*13, 2, 60-(18+row*13)); const t = fctx.measureText(l).width; fctx.fillText(l, Math.min(Math.max(pad+4, x+4), w-pad-t), 16+row*13); }
+    else if (row<2){ const n = Math.round(v/hi); off.push(l+" is "+nf(n)+" view-width"+(n===1?"":"s")+" to the right"); }
+  });
+  if (off.length){ fctx.font = '500 11px "JetBrains Mono", monospace'; fctx.fillStyle = css("--muted"); const t = "→ "+off[0]; fctx.fillText(t, w-pad-fctx.measureText(t).width, h-8); }
+  $("#fzr").textContent = "×"+nf(fz);
+}
+function fsetZoom(z){ fz = Math.max(1, Math.min(FZMAX, z)); $("#fz").value = Math.round(Math.log10(fz)*100); $("#fzr").textContent = "×"+nf(fz); fdraw(); }
+$("#fz").addEventListener("input", e=>{ if (fzAnim){ cancelAnimationFrame(fzAnim); fzAnim=null; } fsetZoom(Math.pow(10, e.target.value/100)); });
+fpaint();
+new ResizeObserver(fdraw).observe(fcv);
+new ResizeObserver(fexplain).observe(ftrack);
+
+/* The long ruler */
+const cv = $("#tape"), ctx = cv.getContext("2d");
+let W=0, H=150, dpr=1, left=0, dpp=1, anim=null, farthest=0;
+const MARKS = [[K.MED,"median income"],[1e6,"$1 million"],[1e9,"$1 billion"],[K.MUSK,"richest person"],[1e12,"$1 trillion"]];
+function setScale(){
+  const span = 1.12e6;
+  dpp = span / W; left = -span*0.04;
+}
+function resize(){
+  dpr = window.devicePixelRatio||1; W = cv.clientWidth; H = cv.clientHeight;
+  cv.width = Math.round(W*dpr); cv.height = Math.round(H*dpr); ctx.setTransform(dpr,0,0,dpr,0,0);
+  const keep = left; setScale(); if (keep) left = keep; draw();
+}
+function niceStep(raw){ const p = Math.pow(10, Math.floor(Math.log10(raw))); const m = raw/p; return (m<1.5?1:m<3.5?2:m<7.5?5:10)*p; }
+function tickLabel(v, step){
+  if (v===0) return "$0";
+  const u = v>=1e12?[1e12,"T"]:v>=1e9?[1e9,"B"]:v>=1e6?[1e6,"M"]:v>=1e3?[1e3,"K"]:[1,""];
+  const dec = Math.max(0, Math.min(6, Math.ceil(-Math.log10(step/u[0])-1e-9)));
+  return "$"+(v/u[0]).toFixed(dec).replace(/\.0+$/,"")+u[1];
+}
+function draw(){
+  if (!W) return;
+  const ink=css("--tape-ink"), tape=css("--tape"), truth=css("--truth"), muted=css("--muted"), surf=css("--surface");
+  ctx.clearRect(0,0,W,H);
+  const ty=58, th=46;
+  ctx.fillStyle = tape; ctx.fillRect(0,ty,W,th);
+  const step = niceStep(dpp*110), minor = step/10;
+  const v0 = left, v1 = left + dpp*W;
+  ctx.fillStyle = ink; ctx.font = '500 11px "JetBrains Mono", monospace'; ctx.textBaseline="top";
+  if (minor/dpp >= 6){
+    for (let v=Math.ceil(v0/minor)*minor; v<=v1; v+=minor){ const x=(v-left)/dpp; ctx.fillRect(Math.round(x),ty,1,8); }
+  }
+  for (let v=Math.ceil(v0/step)*step; v<=v1; v+=step){
+    if (v<0) continue;
+    const x=(v-left)/dpp; ctx.fillRect(Math.round(x),ty,1.5,20);
+    ctx.fillText(tickLabel(v,step), Math.round(x)+3, ty+24);
+  }
+  ctx.fillStyle = surf; ctx.fillRect(0,ty,Math.max(0,(0-left)/dpp),th);
+  /* landmarks */
+  ctx.textBaseline="alphabetic"; ctx.font='700 12px "Atkinson Hyperlegible", sans-serif';
+  const screenD = dpp*W; const right=[]; const rows=[[],[],[]];
+  MARKS.forEach(([v,l],i)=>{
+    const x=(v-left)/dpp;
+    if (x>=-1 && x<=W+1){
+      const label = l; const tw = ctx.measureText(label).width;
+      const want = i<1 ? Math.round(x)-1 : x-tw/2;
+      let lx = Math.min(Math.max(want, i<1?0:4), W-tw-4); let row=0;
+      while (row<2 && rows[row].some(([a,b])=>lx<b+8 && lx+tw>a-8)) row++;
+      rows[row].push([lx,lx+tw]);
+      const ly = 16 + row*15;
+      ctx.fillStyle=truth; ctx.fillRect(Math.round(x)-1, ly+4, 2, ty+th-(ly+4));
+      ctx.fillText(label, lx, ly);
+    } else if (x>W) right.push([v,l]);
+  });
+  /* off-screen readout: hidden until the walker has passed 3 screens; then the next marks to the right, skipping the richest-person marker */
+  farthest = Math.max(farthest, left/screenD);
+  const ahead = farthest>=3 ? right.filter(([v])=>v!==K.MUSK).slice(0,2) : [];
+  ctx.font='500 12px "JetBrains Mono", monospace'; ctx.fillStyle=muted;
+  ahead.forEach(([v,l],i)=>{
+    const n = Math.ceil((v-(left+screenD))/screenD);
+    const t = l+" → "+nf(n)+" more screen"+(n===1?"":"s");
+    const tw=ctx.measureText(t).width;
+    ctx.fillText(t, W-tw-10, H-30+i*18+(ahead.length===1?18:0));
+  });
+  const atScreen = Math.max(0, left/screenD);
+  $("#readout").innerHTML = "Left edge <b>"+(left<0?"$0":fmtMoney(left,4))+"</b> · screens from $0 <b>"+nf(atScreen, atScreen<10?1:0)+"</b>";
+}
+function stop(){ if (anim){ cancelAnimationFrame(anim); anim=null; } }
+function goTo(target, ms, done){
+  stop(); const start = left, t0 = performance.now();
+  if (reduce || ms===0){ left = target; draw(); done&&done(); return; }
+  const ease = t => t<.5 ? 4*t*t*t : 1-Math.pow(-2*t+2,3)/2;
+  const tick = now => { const t = Math.min(1,(now-t0)/ms); left = start + (target-start)*ease(t); draw(); if (t<1) anim=requestAnimationFrame(tick); else { anim=null; done&&done(); } };
+  anim = requestAnimationFrame(tick);
+}
+const msg = t => $("#rmsg").textContent = t;
+$("#toB").addEventListener("click", ()=>{
+  const sd = dpp*W; goTo(1e9 - sd*0.5, 4200, ()=>msg("You traveled about "+nf(Math.round(left/sd))+" screens to reach a billion. Your first screen held a whole million. A trillion sits about 1,000,000 screens out."));
+  msg("Walking to a billion…");
+});
+$("#toT").addEventListener("click", ()=>{
+  const sd = dpp*W; goTo(1e12 - sd*0.5, 6500, ()=>msg("About "+nf(Math.round(left/sd))+" screens. If each screen took one second to pass, the trip would take "+sig(left/sd/86400,2)+" days nonstop."));
+  msg("Walking to a trillion…");
+});
+$("#home").addEventListener("click", ()=>{ stop(); setScale(); draw(); msg("Zero to one million dollars fits across your screen. Drag the ruler, or hold Walk, and head for a billion."); });
+/* walk: hold to accelerate */
+let walking=null;
+function startWalk(e){ if (e) e.preventDefault(); stop(); let speed=0.5, last=performance.now();
+  const step = now => { const dt=(now-last)/1000; last=now; speed*=Math.pow(2.2,dt); left += speed*dpp*W*dt; if (left<-dpp*W*0.04) left=-dpp*W*0.04; draw(); walking=requestAnimationFrame(step); };
+  walking=requestAnimationFrame(step); }
+function endWalk(){ if (walking){ cancelAnimationFrame(walking); walking=null; const sd=dpp*W; msg("You walked "+nf(left/sd,1)+" screens and reached "+fmtMoney(Math.max(0,left),3)+". A billion sits at screen 1,000."); } }
+const wb = $("#walk");
+wb.addEventListener("pointerdown", startWalk); ["pointerup","pointerleave","pointercancel"].forEach(ev=>wb.addEventListener(ev,endWalk));
+wb.addEventListener("keydown", e=>{ if ((e.key===" "||e.key==="Enter") && !walking && !e.repeat) startWalk(e); });
+wb.addEventListener("keyup", e=>{ if (e.key===" "||e.key==="Enter") endWalk(); });
+/* drag */
+let drag=null;
+cv.addEventListener("pointerdown", e=>{ stop(); drag={x:e.clientX, l:left}; cv.setPointerCapture(e.pointerId); });
+cv.addEventListener("pointermove", e=>{ if (!drag) return; left = Math.max(-dpp*W*0.04, drag.l - (e.clientX-drag.x)*dpp); draw(); });
+cv.addEventListener("pointerup", ()=>drag=null); cv.addEventListener("pointercancel", ()=>drag=null);
+cv.addEventListener("wheel", e=>{ const d = e.deltaX || (e.shiftKey?e.deltaY:0); if (!d) return; e.preventDefault(); stop(); left=Math.max(-dpp*W*0.04, left+d*dpp); draw(); }, {passive:false});
+cv.addEventListener("keydown", e=>{ const sd=dpp*W; if (e.key==="ArrowRight"){ left+=sd*(e.shiftKey?10:0.25); } else if (e.key==="ArrowLeft"){ left=Math.max(-sd*0.04,left-sd*(e.shiftKey?10:0.25)); } else return; e.preventDefault(); stop(); draw(); });
+new ResizeObserver(resize).observe(cv);
+matchMedia("(prefers-color-scheme: dark)").addEventListener("change", ()=>{ draw(); score(); });
+new MutationObserver(()=>{ draw(); score(); }).observe(document.documentElement,{attributes:true,attributeFilter:["data-theme"]});
+document.fonts && document.fonts.ready.then(draw);
+})();
+</script>
+
+</body></html>
