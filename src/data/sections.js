@@ -94,6 +94,29 @@ const sections = [
     ],
   },
   {
+    id: 'a',
+    name: 'Business analysis',
+    verb: 'Trace',
+    promise: 'Requirements for one chatbot project, each line traced to the goal it serves.',
+    // The card's glimpse: one business requirement and the functional requirements that carry it out.
+    glimpse: {
+      br: {id: 'BR-09', text: 'Only adults (18+) may submit an inquiry.'},
+      frs: [
+        {id: 'FR-3.2', text: 'Age is a yes or no check, not a date of birth.'},
+        {id: 'FR-4.11', text: 'Age Verification is set to True in Salesforce.'},
+      ],
+    },
+    items: [
+      {title: 'Business requirements document', href: '/business-analysis/Patient-Facing-Chatbot-BRD-Anonymized-Sample.pdf', how: 'Read', min: 8,
+        blurb: 'The business case for a bilingual patient-facing chatbot: objectives, stakeholders, scope and 20 prioritized requirements.'},
+      {title: 'Functional requirements document', href: '/business-analysis/Patient-Facing-Chatbot-FRD-Anonymized-Sample.pdf', how: 'Read', min: 12,
+        blurb: 'How the chatbot behaves, from greetings to Salesforce leads, with every requirement traced to the BRD.'},
+      // wander: false hides the "More in this section" block on this page; its cards already list both documents.
+      {title: 'Both documents, explained', to: '/business-analysis', how: 'Read', min: 2, wander: false,
+        blurb: 'What each document covers and what it shows.'},
+    ],
+  },
+  {
     id: 'b',
     name: 'Blog posts',
     verb: 'Read',

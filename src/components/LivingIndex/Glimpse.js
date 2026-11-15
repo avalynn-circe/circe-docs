@@ -79,12 +79,24 @@ function BlogGlimpse({g}) {
   );
 }
 
+function TraceGlimpse({g}) {
+  return (
+    <>
+      <div className="li-trace-br"><span className="li-trace-id">{g.br.id}</span>{g.br.text}</div>
+      {g.frs.map((fr) => (
+        <div className="li-trace-fr" key={fr.id}><span className="li-trace-id">{fr.id}</span>{fr.text}</div>
+      ))}
+    </>
+  );
+}
+
 export default function Glimpse({section}) {
   switch (section.id) {
     case 'i': return <LakeGlimpse />;
     case 'c': return <ChatGlimpse g={section.glimpse} />;
     case 'w': return <QuoteGlimpse g={section.glimpse} />;
     case 'b': return <BlogGlimpse g={section.glimpse} />;
+    case 'a': return <TraceGlimpse g={section.glimpse} />;
     default: return <HazardGlimpse />;
   }
 }

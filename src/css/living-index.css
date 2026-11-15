@@ -2,7 +2,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500&family=Newsreader:ital,opsz,wght@1,6..72,500&family=JetBrains+Mono:wght@500&display=swap');
 
 :root {
-  --li-i: #D9531A; --li-c: #1E6BD0; --li-w: #8A3A8E; --li-s: #22805A; --li-b: #9A6A00;
+  --li-i: #D9531A; --li-c: #1E6BD0; --li-w: #8A3A8E; --li-s: #22805A; --li-b: #9A6A00; --li-a: #B8325A;
   --li-surface: var(--ifm-background-surface-color, #fff);
   --li-ink: var(--ifm-font-color-base);
   --li-muted: var(--ifm-color-emphasis-700);
@@ -12,11 +12,11 @@
   --li-code: 'JetBrains Mono', ui-monospace, Menlo, Consolas, monospace;
 }
 [data-theme='dark'] {
-  --li-i: #FF7E45; --li-c: #5AA6F5; --li-w: #D07BD4; --li-s: #4FC48E; --li-b: #E8B23A;
+  --li-i: #FF7E45; --li-c: #5AA6F5; --li-w: #D07BD4; --li-s: #4FC48E; --li-b: #E8B23A; --li-a: #F27FA0;
 }
 .li-c-i { --c: var(--li-i); } .li-c-c { --c: var(--li-c); }
 .li-c-w { --c: var(--li-w); } .li-c-s { --c: var(--li-s); }
-.li-c-b { --c: var(--li-b); }
+.li-c-b { --c: var(--li-b); } .li-c-a { --c: var(--li-a); }
 
 /* ---------- sidebar: stock menu, colored through category classNames ---------- */
 /* Docusaurus draws the caret in the link's ::after and rotates it, so the caret is left alone.
@@ -37,6 +37,7 @@
 .li-cat.li-c-w > .menu__list-item-collapsible > .menu__link::before { content: 'Argue'; }
 .li-cat.li-c-s > .menu__list-item-collapsible > .menu__link::before { content: 'Inspect'; }
 .li-cat.li-c-b > .menu__list-item-collapsible > .menu__link::before { content: 'Read'; }
+.li-cat.li-c-a > .menu__list-item-collapsible > .menu__link::before { content: 'Trace'; }
 /* a category rendered without the collapsible wrapper keeps the square on the link */
 .li-cat > .menu__link { display: flex; align-items: center; gap: 9px; font-weight: 700; }
 .li-cat > .menu__link::before { content: ''; width: 12px; height: 12px; border-radius: 3px; background: var(--c); flex: none; }
@@ -119,3 +120,9 @@ a.li-sib:hover { border-color: var(--c); text-decoration: none; color: var(--li-
 .li-other:hover { border-color: var(--c); text-decoration: none; color: var(--li-ink); }
 .li-ov { font-family: var(--li-code); font-size: 10.5px; text-transform: uppercase; letter-spacing: .1em; color: var(--c); }
 @media (prefers-reduced-motion: reduce) { .li-lake i { transition: none; } }
+
+/* ---------- Business analysis glimpse: one BR and the FRs that carry it out ---------- */
+.li-trace-br { border-left: 3px solid var(--c); padding: 6px 10px; background: color-mix(in srgb, var(--c) 10%, transparent); border-radius: 0 6px 6px 0; }
+.li-trace-id { font-family: var(--li-code); font-size: 11px; letter-spacing: .06em; color: var(--c); display: block; }
+.li-trace-fr { margin: 6px 0 0 18px; padding: 4px 10px; border-left: 1px dashed var(--li-rule); }
+.li-trace-fr .li-trace-id { color: var(--li-muted); }
