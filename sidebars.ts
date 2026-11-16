@@ -55,7 +55,7 @@ const sidebars: SidebarsConfig = {
       label: 'Business analysis',
       className: 'li-cat li-c-a',
       collapsed: true,
-      items: ['business-analysis'],
+      items: ['business-analysis', 'business-analysis-user-stories'],
     },
     {
       type: 'category',

@@ -111,8 +111,10 @@ const sections = [
         blurb: 'The business case for a bilingual patient-facing chatbot: objectives, stakeholders, scope and 20 prioritized requirements.'},
       {title: 'Functional requirements document', href: '/business-analysis/Patient-Facing-Chatbot-FRD-Anonymized-Sample.pdf', how: 'Read', min: 12,
         blurb: 'How the chatbot behaves, from greetings to Salesforce leads, with every requirement traced to the BRD.'},
-      // wander: false hides the "More in this section" block on this page; its cards already list both documents.
-      {title: 'Both documents, explained', to: '/business-analysis', how: 'Read', min: 2, wander: false,
+      {title: 'User stories', to: '/business-analysis/user-stories', how: 'Read', min: 9,
+        blurb: 'Twelve stories with Given, When, Then acceptance criteria, each traced to the BRD and FRD.'},
+      // wander: false hides the "More in this section" block on this page; its cards already list all three documents.
+      {title: 'All three documents, explained', to: '/business-analysis', how: 'Read', min: 2, wander: false,
         blurb: 'What each document covers and what it shows.'},
     ],
   },
