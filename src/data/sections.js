@@ -21,6 +21,8 @@ const sections = [
         blurb: 'Map your own values and find the pairs that pull against each other.'},
       {title: 'Desire Lines', href: '/lessons/desire-lines.html', how: 'Play', min: 8,
         blurb: 'Name your ideal, make a run of choices, and see how close you got.'},
+      {title: 'Who Holds the Pen', href: '/lessons/who-holds-the-pen.html', how: 'Play', min: 12,
+        blurb: 'Sit in eight chairs of a community clearinghouse and see where your choices pull apart.'},
       {title: 'The Distance to a Billion', href: '/lessons/distance-to-a-billion.html', how: 'Play', min: 15,
         blurb: 'Guess first, then measure: how far a billion and a trillion sit from a million, in numbers and in wealth.'},
       {title: 'Larkspur in Layers', href: '/lessons/larkspur-in-layers.html', how: 'Play', min: 6,

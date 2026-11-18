@@ -1,0 +1,844 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}</style>
+<title>Who Holds the Pen</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400..800;1,9..144,400..600&family=Public+Sans:ital,wght@0,400;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@500&display=swap">
+<style>
+/* Layout: a circle of chairs (circle practice) is the hub; each chair opens one hands-on station; the centerpiece gathers the learner's choices into a reflection. */
+:root {
+  --bg: #EDF0F0; --surface: #FBFCFB; --ink: #172030; --muted: #566072; --line: #CDD3D6;
+  --marker: #2347C5; --marker-soft: #DFE6FA; --on-marker: #FFFFFF;
+  --amber: #A65F00; --amber-soft: #F6E5CB;
+  --sage: #2F6E52; --sage-soft: #DAEAE1;
+  --font-display: "Fraunces", "Iowan Old Style", Georgia, serif;
+  --font-body: "Public Sans", "Segoe UI", system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #10141B; --surface: #181E28; --ink: #E3E7EE; --muted: #9AA4B5; --line: #2B3342;
+    --marker: #8EA8FF; --marker-soft: #1F2A4C; --on-marker: #10141B;
+    --amber: #F1B65C; --amber-soft: #3A2B15;
+    --sage: #7DCAA3; --sage-soft: #18332A;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #10141B; --surface: #181E28; --ink: #E3E7EE; --muted: #9AA4B5; --line: #2B3342;
+  --marker: #8EA8FF; --marker-soft: #1F2A4C; --on-marker: #10141B;
+  --amber: #F1B65C; --amber-soft: #3A2B15;
+  --sage: #7DCAA3; --sage-soft: #18332A;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--ink); font-family: var(--font-body); font-size: 17px; line-height: 1.6; -webkit-text-size-adjust: 100%; }
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--bg); }
+.gutter { max-width: 880px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+h1, h2, h3 { font-family: var(--font-display); text-wrap: balance; margin: 0; font-weight: 600; }
+p { margin: 0; }
+button, input, textarea { font: inherit; color: inherit; }
+button { cursor: pointer; }
+:focus-visible { outline: 3px solid var(--marker); outline-offset: 2px; border-radius: 8px; }
+.kicker { font-family: var(--font-mono); font-size: 0.72rem; letter-spacing: 0.09em; text-transform: uppercase; color: var(--muted); }
+.muted { color: var(--muted); }
+.stack { display: flex; flex-direction: column; gap: 1rem; }
+
+/* top bar */
+.bar { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: var(--bg); border-bottom: 1px solid var(--line); }
+.bar .gutter { display: flex; align-items: center; gap: 0.75rem; padding-block: 0.55rem; }
+.bar-home { background: none; border: 0; padding: 0.2rem 0; font-family: var(--font-display); font-weight: 600; font-size: 1.05rem; white-space: nowrap; }
+.bar-chairs { display: flex; gap: 0.35rem; overflow-x: auto; flex: 1; min-width: 0; scrollbar-width: none; padding: 2px; }
+.bar-chairs::-webkit-scrollbar { display: none; }
+.pill { flex: none; border: 1px solid var(--line); background: var(--surface); border-radius: 999px; padding: 0.15rem 0.7rem; font-size: 0.82rem; white-space: nowrap; }
+.pill[aria-current="page"] { background: var(--marker); color: var(--on-marker); border-color: var(--marker); }
+.pill.seen:not([aria-current="page"]) { border-color: var(--marker); }
+.bar-terms { flex: none; border: 1px solid var(--ink); background: none; border-radius: 999px; padding: 0.15rem 0.75rem; font-size: 0.82rem; }
+
+/* hub */
+.hub { padding-block: 2rem 3rem; display: flex; flex-direction: column; gap: 1.75rem; }
+.hub h1 { font-size: clamp(2.4rem, 7vw, 4rem); line-height: 1.02; letter-spacing: -0.015em; font-weight: 700; font-variation-settings: "opsz" 144; }
+.hub h1 em { font-style: italic; font-weight: 500; color: var(--marker); }
+.hub .dek { max-width: 60ch; font-size: 1.08rem; }
+.circle { position: relative; width: min(100%, 580px); aspect-ratio: 1; margin: 0 auto; max-width: 100%; }
+.circle svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+.ring { fill: none; stroke: var(--line); stroke-width: 1.5; stroke-dasharray: 3 6; }
+.spoke { stroke: var(--marker); stroke-width: 1.5; opacity: 0.55; }
+.chair { position: absolute; transform: translate(-50%, -50%); width: 25%; min-height: 19%; border: 1.5px solid var(--line); background: var(--surface); border-radius: 18px; padding: 0.4rem 0.35rem; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.15rem; text-align: center; transition: transform 160ms ease, border-color 160ms ease; }
+.chair:hover { transform: translate(-50%, -50%) scale(1.04); border-color: var(--marker); }
+.chair .kicker { font-size: 0.62rem; }
+.chair .nm { font-family: var(--font-display); font-weight: 600; font-size: clamp(0.82rem, 2.6vw, 1.05rem); line-height: 1.15; }
+.chair.seen { background: var(--marker-soft); border-color: var(--marker); }
+.center { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); width: 36%; aspect-ratio: 1; border-radius: 50%; border: 2px solid var(--ink); background: var(--surface); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.2rem; text-align: center; padding: 0.5rem; }
+.center .nm { font-family: var(--font-display); font-weight: 600; font-size: clamp(0.95rem, 3vw, 1.3rem); line-height: 1.1; }
+.center .ct { font-family: var(--font-mono); font-size: 0.7rem; color: var(--amber); letter-spacing: 0.06em; text-transform: uppercase; }
+.dot-mark { fill: var(--amber); }
+.hub-foot { max-width: 62ch; font-size: 0.9rem; color: var(--muted); }
+
+/* station */
+.station { padding-block: 2rem 4rem; display: flex; flex-direction: column; gap: 1.75rem; }
+.station > header { display: flex; flex-direction: column; gap: 0.5rem; max-width: 64ch; }
+.station h2 { font-size: clamp(1.9rem, 5vw, 2.7rem); line-height: 1.08; font-variation-settings: "opsz" 120; }
+.lede { font-size: 1.06rem; }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 1.15rem; display: flex; flex-direction: column; gap: 0.9rem; min-width: 0; }
+.card h3 { font-size: 1.25rem; }
+.q { font-family: var(--font-display); font-size: 1.15rem; font-weight: 500; line-height: 1.35; }
+.opts { display: flex; flex-direction: column; gap: 0.5rem; }
+.opt { text-align: left; border: 1.5px solid var(--line); background: var(--bg); border-radius: 12px; padding: 0.6rem 0.8rem; line-height: 1.4; }
+.opt:hover { border-color: var(--marker); }
+.opt[aria-pressed="true"] { border-color: var(--marker); background: var(--marker-soft); }
+.note { border-left: 3px solid var(--sage); background: var(--sage-soft); padding: 0.65rem 0.85rem; border-radius: 0 10px 10px 0; font-size: 0.95rem; }
+.note.you { border-left-color: var(--amber); background: var(--amber-soft); }
+.note b { font-weight: 700; }
+.btn { border: 1.5px solid var(--marker); background: var(--marker); color: var(--on-marker); border-radius: 999px; padding: 0.4rem 1rem; font-weight: 600; font-size: 0.92rem; }
+.btn.ghost { background: none; color: var(--marker); }
+.row { display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center; }
+
+/* sorting cards */
+.sort-list { display: grid; gap: 0.6rem; }
+.sitem { border: 1px solid var(--line); border-radius: 12px; padding: 0.7rem 0.8rem; display: flex; flex-direction: column; gap: 0.55rem; background: var(--bg); }
+.sitem .txt { font-weight: 600; line-height: 1.35; }
+.bins { display: flex; flex-wrap: wrap; gap: 0.35rem; }
+.bin { border: 1.5px solid var(--line); background: var(--surface); border-radius: 999px; padding: 0.15rem 0.7rem; font-size: 0.84rem; }
+.bin[aria-pressed="true"] { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+.verdict { font-size: 0.92rem; color: var(--muted); }
+.verdict b { color: var(--ink); }
+.tally { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 0.6rem; }
+.tally div { border: 1px dashed var(--line); border-radius: 12px; padding: 0.6rem; font-size: 0.88rem; min-width: 0; }
+.tally strong { display: block; font-family: var(--font-mono); font-size: 0.7rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); margin-bottom: 0.2rem; }
+
+/* phases */
+.slots { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 0.6rem; }
+.slot { border: 1.5px dashed var(--line); border-radius: 14px; min-height: 4.2rem; padding: 0.6rem 0.75rem; display: flex; flex-direction: column; gap: 0.3rem; }
+.slot .n { font-family: var(--font-mono); font-size: 0.72rem; color: var(--muted); }
+.slot.filled { border-style: solid; background: var(--bg); }
+.slot.right { border-color: var(--sage); }
+.slot.wrong { border-color: var(--amber); }
+.slot .t { font-family: var(--font-display); font-weight: 600; line-height: 1.2; }
+.pool { display: flex; flex-wrap: wrap; gap: 0.45rem; }
+.chip { border: 1.5px solid var(--ink); background: var(--surface); border-radius: 999px; padding: 0.25rem 0.85rem; font-size: 0.9rem; }
+.dd { font-size: 0.9rem; display: grid; gap: 0.3rem; }
+.dd span { font-family: var(--font-mono); font-size: 0.66rem; letter-spacing: 0.08em; text-transform: uppercase; }
+.dd .does span { color: var(--sage); }
+.dd .doesnt span { color: var(--amber); }
+
+/* network */
+.net-wrap { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); gap: 1rem; align-items: start; }
+@media (max-width: 720px) { .net-wrap { grid-template-columns: minmax(0, 1fr); } }
+.net svg { width: 100%; height: auto; display: block; }
+.n-line { stroke: var(--line); stroke-width: 1.5; }
+.n-hub { fill: var(--amber-soft); stroke: var(--amber); stroke-width: 2; }
+.n-node { fill: var(--marker-soft); stroke: var(--marker); stroke-width: 1.5; }
+.n-ghost { fill: none; stroke: var(--line); stroke-width: 1.5; stroke-dasharray: 3 4; }
+.n-lbl { fill: var(--ink); font-family: var(--font-body); font-size: 12px; font-weight: 600; }
+.n-lbl.dim { fill: var(--muted); font-weight: 400; }
+.facts { display: flex; flex-direction: column; gap: 0.55rem; font-size: 0.93rem; }
+.facts li { list-style: none; border-left: 2px solid var(--marker); padding-left: 0.7rem; }
+.facts ul { margin: 0; padding: 0; display: flex; flex-direction: column; gap: 0.55rem; }
+.src { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+.src button[disabled] { opacity: 0.45; cursor: default; }
+
+/* openers */
+.seat-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 0.6rem; }
+.seat { text-align: left; border: 1.5px solid var(--line); background: var(--bg); border-radius: 14px; padding: 0.7rem 0.8rem; display: flex; flex-direction: column; gap: 0.35rem; min-width: 0; }
+.seat[aria-pressed="true"] { border-color: var(--marker); background: var(--marker-soft); }
+.seat .t { font-weight: 700; line-height: 1.3; }
+.seat .d { font-size: 0.86rem; color: var(--muted); }
+.tags { display: flex; flex-wrap: wrap; gap: 0.25rem; }
+.tag { font-family: var(--font-mono); font-size: 0.62rem; letter-spacing: 0.05em; text-transform: uppercase; border: 1px solid var(--line); border-radius: 6px; padding: 0 0.35rem; }
+.cover { display: grid; gap: 0.35rem; }
+.cov { display: grid; grid-template-columns: minmax(0, 11rem) minmax(0, 1fr) 2rem; gap: 0.6rem; align-items: center; font-size: 0.88rem; }
+.track { height: 8px; background: var(--bg); border-radius: 99px; overflow: hidden; border: 1px solid var(--line); }
+.track i { display: block; height: 100%; background: var(--marker); border-radius: 99px; }
+.cov .num { font-family: var(--font-mono); font-size: 0.78rem; text-align: right; font-variant-numeric: tabular-nums; }
+.votes { display: grid; gap: 0.4rem; }
+.vote { display: flex; justify-content: space-between; align-items: center; gap: 0.75rem; border-bottom: 1px solid var(--line); padding-bottom: 0.4rem; }
+.toggle { border: 1.5px solid var(--line); background: var(--surface); border-radius: 999px; padding: 0.1rem 0.75rem; font-size: 0.84rem; min-width: 6.5rem; }
+.toggle[aria-pressed="true"] { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+
+/* framing */
+textarea, input[type="text"] { width: 100%; border: 1.5px solid var(--line); background: var(--bg); border-radius: 12px; padding: 0.6rem 0.75rem; line-height: 1.45; }
+textarea:focus, input[type="text"]:focus { border-color: var(--marker); outline: none; }
+.readback { font-family: var(--font-display); font-size: 1.15rem; line-height: 1.45; }
+.readback mark { background: var(--amber-soft); color: var(--ink); border-bottom: 2px solid var(--amber); padding: 0 0.1em; }
+.who { display: grid; gap: 0.6rem; }
+.who label { font-size: 0.92rem; font-weight: 600; display: flex; flex-direction: column; gap: 0.25rem; }
+.ladder { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 0.5rem; }
+.rung { text-align: left; border: 1.5px solid var(--line); background: var(--bg); border-radius: 12px; padding: 0.55rem 0.7rem; display: flex; flex-direction: column; gap: 0.15rem; }
+.rung b { font-family: var(--font-display); font-weight: 600; }
+.rung small { color: var(--muted); font-size: 0.82rem; line-height: 1.35; }
+.rung[aria-pressed="true"] { border-color: var(--marker); background: var(--marker-soft); }
+
+/* square timeline */
+.timeline { display: flex; flex-direction: column; gap: 0; border-left: 2px solid var(--line); margin-left: 0.4rem; }
+.tl { position: relative; padding: 0 0 1.2rem 1.2rem; display: flex; flex-direction: column; gap: 0.2rem; max-width: 64ch; }
+.tl::before { content: ""; position: absolute; left: -7px; top: 0.45rem; width: 12px; height: 12px; border-radius: 50%; background: var(--surface); border: 2px solid var(--ink); }
+.tl .when { font-family: var(--font-mono); font-size: 0.76rem; letter-spacing: 0.04em; color: var(--muted); }
+
+/* mirror */
+.axes { display: flex; flex-direction: column; gap: 1.2rem; }
+.axis { display: grid; gap: 0.35rem; }
+.axis .poles { display: flex; justify-content: space-between; gap: 1rem; font-size: 0.86rem; }
+.axis .poles span:last-child { text-align: right; }
+.axis .rail { position: relative; height: 22px; }
+.axis .rail::before { content: ""; position: absolute; left: 0; right: 0; top: 10px; height: 2px; background: var(--line); }
+.mk { position: absolute; top: 3px; width: 16px; height: 16px; border-radius: 50%; transform: translateX(-50%); }
+.mk.you { background: var(--amber); }
+.mk.model { border: 2.5px solid var(--sage); background: var(--surface); }
+.axis .src-l { font-size: 0.78rem; color: var(--muted); }
+.axis.empty { opacity: 0.45; }
+.legend { display: flex; gap: 1.2rem; flex-wrap: wrap; font-size: 0.85rem; }
+.legend span { display: inline-flex; align-items: center; gap: 0.4rem; }
+.legend i { width: 12px; height: 12px; border-radius: 50%; display: inline-block; }
+.pulls { display: flex; flex-direction: column; gap: 0.7rem; }
+.pull { font-family: var(--font-display); font-size: 1.12rem; line-height: 1.45; border-left: 3px solid var(--amber); padding-left: 0.85rem; }
+pre.summary { white-space: pre-wrap; font-family: var(--font-mono); font-size: 0.8rem; line-height: 1.55; background: var(--bg); border: 1px solid var(--line); border-radius: 12px; padding: 0.8rem; margin: 0; max-height: 22rem; overflow: auto; }
+
+/* terms dialog */
+dialog { border: 1px solid var(--line); border-radius: 18px; background: var(--surface); color: var(--ink); max-width: min(560px, calc(100vw - 32px)); padding: 0; }
+dialog::backdrop { background: rgb(10 14 20 / 0.45); }
+.terms { padding: 1.2rem; display: flex; flex-direction: column; gap: 0.9rem; max-height: 80vh; overflow: auto; }
+.terms dl { margin: 0; display: flex; flex-direction: column; gap: 0.75rem; }
+.terms dt { font-family: var(--font-display); font-weight: 600; font-size: 1.05rem; }
+.terms dd { margin: 0.1rem 0 0; font-size: 0.93rem; }
+
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+</style>
+</head><body>
+
+<div class="bar" id="bar" hidden>
+  <div class="gutter">
+    <button class="bar-home" id="home" type="button">Who Holds the Pen</button>
+    <nav class="bar-chairs" id="pills" aria-label="Chairs"></nav>
+    <button class="bar-terms" id="termsBtn" type="button">Terms</button>
+  </div>
+</div>
+<main id="app"></main>
+
+<dialog id="terms">
+  <div class="terms">
+    <div class="row" style="justify-content:space-between"><h3>Terms</h3><button class="btn ghost" type="button" id="termsClose">Close</button></div>
+    <dl id="termsList"></dl>
+  </div>
+</dialog>
+
+<script>
+(function () {
+"use strict";
+
+/* ---------- content ---------- */
+var CHAIRS = [
+  { id: "pen", kick: "sort", name: "The pen" },
+  { id: "phases", kick: "order", name: "Six phases" },
+  { id: "firstname", kick: "explore", name: "The first name" },
+  { id: "openers", kick: "seat", name: "The Openers" },
+  { id: "framing", kick: "write", name: "Name it first" },
+  { id: "frames", kick: "flag", name: "Two frames" },
+  { id: "gifts", kick: "map", name: "Map of gifts" },
+  { id: "square", kick: "read", name: "The Square" }
+];
+
+var TERMS = [
+  ["Clearinghouse", "The role Peaceable's co-founders have discussed for Peaceable: connecting people with standing to a facilitated process, then staying with the work."],
+  ["Clear the path", "Louise Wolfgramm's phrase from Amicus. Peaceable clears the way for people with real standing to find their own route. It does not build the route or pick where it ends."],
+  ["The Openers", "A small group of civic leaders who decide whether a proposed pilot holds up. They can say no. The pilot team supports them and does not vote."],
+  ["Issue leader", "The person or group the community already looks to on an issue. Found through homework, then approached with an offer of facilitation."],
+  ["Engaged neutral", "Stiv Twigg's term for Peaceable's stance: invested in the process and present throughout, with no stake in which outcome wins."],
+  ["Dot-connector", "Also Stiv Twigg's term: Peaceable links people and resources that would not otherwise meet."],
+  ["Bespoke, scalable, fractal", "How the packet describes the process: shaped to each issue, able to grow, and built from the same pattern at every scale."],
+  ["Framing", "Naming an issue in language every party recognizes as accurate, with its causes and consequences, before anyone proposes a solution."],
+  ["Blandin process", "A facilitation method from the Blandin Community Leadership Program for a group to define a local problem together, in one session."],
+  ["Strategic Frame Analysis", "The FrameWorks Institute's research method for testing how to talk about an issue so it lands with the wider public."],
+  ["ABCD", "Asset-Based Community Development (Kretzmann and McKnight). It maps a community's assets in three layers: individual gifts, associations, institutions."],
+  ["Planning grant", "Early money for consultant and facilitator costs through Phases 3 to 5. The packet names McKnight or the Minneapolis Foundation as plausible sources, matched by Peaceable."],
+  ["Implementation grant", "Later money that carries a shared direction into action. Peaceable helps find it."]
+];
+
+var PEN_ITEMS = [
+  { id: "p1", t: "Draft a layout for the intersection", m: "build", why: "Building the path. The City Council approved a design in December 2025, and Peaceable brings no plan of its own." },
+  { id: "p2", t: "Decide whether the memorial space stays closed to cars", m: "choose", why: "Choosing the destination. The solution belongs to the stakeholders." },
+  { id: "p3", t: "Learn who the community already looks to before approaching anyone", m: "clear", why: "Clearing the path. Phase 3 starts with homework so the first name heard is not taken as the only one." },
+  { id: "p4", t: "Write the list of who sits at the table", m: "build", why: "The issue leader shapes this with Peaceable. Peaceable does not draw up the stakeholder list on its own." },
+  { id: "p5", t: "Hold the process so the group can focus on the conversation", m: "clear", why: "Clearing the path. That is the facilitator's job, and the facilitator does not deliberate." },
+  { id: "p6", t: "Cover the facilitator's costs with a planning grant", m: "clear", why: "Clearing the path. Phase 6 funds the process, with Peaceable matching a foundation grant." },
+  { id: "p7", t: "Propose a compromise when the group stalls", m: "choose", why: "Choosing the destination. Peaceable guides; it does not sit at the table as a party proposing the answer." },
+  { id: "p8", t: "Help the group plan how to explain its direction to press and funders", m: "clear", why: "Clearing the path. Step 9 turns to outward communication once the group has its own direction." },
+  { id: "p9", t: "Pick the pilot issue for the community", m: "choose", why: "Peaceable proposes George Floyd Square to The Openers. The Openers decide whether it holds up, and they can say no." }
+];
+var PEN_BINS = [["build", "Build the path"], ["choose", "Choose the destination"], ["clear", "Clear the path"]];
+var PEN_MOVE = {
+  q: "A framing session stalls over the Peoples' Way parcel. You can see a compromise that might work. What do you do?",
+  opts: [
+    { v: 0, t: "Put it on the table. People can take it or leave it.", r: "You offered your answer. In this model, the facilitator who does that becomes one more party with a position." },
+    { v: 0.4, t: "Ask a question that points the group toward it.", r: "A question with the answer folded inside it still carries your answer. The group may follow it because you asked." },
+    { v: 1, t: "Name the stall out loud and ask the group what it needs.", r: "You kept the pen down and gave the stall back to the people who own it." }
+  ],
+  model: "Step 8: Peaceable guides the group toward a solution the stakeholders author. It does not sit at the table proposing what the answer should be."
+};
+
+var PHASES = [
+  { n: 1, t: "Build the team", does: "Gathers a small group of civic leaders, The Openers, kept small enough for an in-depth conversation, with a facilitator holding the process.", dont: "Vote. The pilot lead, co-founder, facilitator and UK director lead and support; the decisions belong to The Openers." },
+  { n: 2, t: "Identify the issue", does: "Brings George Floyd Square to The Openers as a proposed pilot. They surface other issues from their own networks.", dont: "Impose the pilot. The Openers can say no and choose another issue." },
+  { n: 3, t: "Homework, then approach the leader", does: "Learns who all the leaders and stakeholders are, finds a credible introduction, and offers facilitation capacity.", dont: "Assume the first name it hears is the right one, or arrive with a plan or a position." },
+  { n: 4, t: "Add stakeholders", does: "Builds the fuller table with the issue leader: community side, city side, and possible process resources.", dont: "Draw up the list alone, or approach the city before the leader helps shape who belongs in the room." },
+  { n: 5, t: "Frame and solve", does: "Convenes a facilitated framing session, guides the group toward a solution it authors, then helps plan how to explain it outward.", dont: "Propose the answer." },
+  { n: 6, t: "Fund the work", does: "Seeks a planning grant, matched by Peaceable, for consultant and facilitator costs through Phases 3 to 5, then helps pursue an implementation grant.", dont: "Leave. Peaceable stays engaged through implementation support." }
+];
+var HANDOFF = {
+  q: "The group has a shared direction and an issue leader everyone trusts. What does Peaceable do now?",
+  opts: [
+    { v: 0, t: "Hand the work to the issue leader and step away.", r: "You stepped back to honor their ownership." },
+    { v: 0.5, t: "Check in now and then, and let them call if they need help.", r: "You loosened the tie while keeping a thread." },
+    { v: 1, t: "Stay as facilitator and help find implementation money.", r: "You stayed, which is what the model asks." }
+  ],
+  model: "Peaceable's role is continuous, from team-building through implementation support. It never hands the work off midstream."
+};
+
+var HUB_NODE = { lbl: "Rise & Remember director", full: "The name you hear first: the executive director of Rise & Remember, the nonprofit most often identified with preserving the Square." };
+var SOURCES = [
+  { id: "s1", btn: "A journalist who covers the Square", lbl: "Visioning Council", fact: "Community Visioning Council: a resident and business-owner group formed after the city's appointed Co-Creation Team dissolved. It drew its own “people's streets” layout. It is a separate body from Rise & Remember, so each needs its own outreach." },
+  { id: "s2", btn: "City policy and research staff", lbl: "Public Works team", fact: "Public Works, 38th & Chicago Re-envisioned: runs the 2026 to 2027 construction and engagement. Any process has to work alongside its schedule." },
+  { id: "s3", btn: "Rise & Remember's board", lbl: "Family member", fact: "A member of George Floyd's family sits on the board. Family standing carries a moral authority distinct from organizational leadership." },
+  { id: "s4", btn: "Faith networks", lbl: "Community pastor", fact: "A community pastor was a public voice in the 2025 push for a council override of the mayor's veto on community-led planning." },
+  { id: "s5", btn: "People who ran earlier visioning", lbl: "Cultural Wellness Ctr", fact: "Cultural Wellness Center: facilitated the city's community visioning workshops and is trusted by both sides as a process facilitator. Peaceable should understand that role before offering its own." },
+  { id: "s6", btn: "Owners on the four corners", lbl: "Corner businesses", fact: "Several small, community-rooted businesses struggled badly with reduced traffic while the intersection was closed to cars." },
+  { id: "s7", btn: "Community safety groups", lbl: "Agape Movement", fact: "Agape Movement: Black men from South Minneapolis, including former gang members, who held community security at the Square and have had public friction with the city over that role." }
+];
+var OFFER = {
+  q: "You have a credible introduction. What does Peaceable offer?",
+  opts: [
+    { ok: false, t: "A design for the Peoples' Way parcel", r: "That is a plan. Peaceable brings none." },
+    { ok: false, t: "Funding, on condition of a seat at the table", r: "That makes Peaceable a party. The facilitator does not deliberate." },
+    { ok: true, t: "Facilitation capacity to help the community and the city find their own way through", r: "That is the offer the packet describes, narrow and specific." },
+    { ok: false, t: "A public statement supporting the memorial", r: "That is a position on the outcome. Peaceable takes none." }
+  ]
+};
+var NO = {
+  q: "The leader hears you out and says no.",
+  opts: [
+    { v: 0, t: "Make a stronger case and ask again.", r: "You pressed on. Persistence moves a lot of civic work, and here it overrides a no." },
+    { v: 0.5, t: "Ask what would have to change for a yes.", r: "That keeps the door open, and it also keeps pressure on a no." },
+    { v: 1, t: "Thank them and look for another pilot.", r: "You took the no as an answer." }
+  ],
+  model: "Step 6: the leader and the stakeholders can say no. The team goes back to the drawing board and looks for another project."
+};
+
+var AREAS = [["funding", "Funding access"], ["legal", "Legal and institutional standing"], ["activism", "Community activism"], ["civic", "Faith and civic leadership"], ["rj", "Restorative-justice practice"]];
+var SEATS = [
+  { id: "o1", t: "Retired state supreme court justice", d: "Respected statewide. A grounding, dispassionate presence.", tags: ["legal"], s: 0 },
+  { id: "o2", t: "Former federal prosecutor, now a professional mediator", d: "Has led police-misconduct investigations; mediates for a living.", tags: ["legal"], s: 0 },
+  { id: "o3", t: "Pastor who co-chaired a city community-safety work group", d: "Knows the administration and its critics.", tags: ["civic"], s: 0.25 },
+  { id: "o4", t: "Minister, former attorney, circle-keeping trainer", d: "Brings practice-level skill to the framing conversation itself.", tags: ["civic", "rj"], s: 0.6 },
+  { id: "o5", t: "Formerly incarcerated justice educator", d: "Past president of a civil-rights chapter; joins justice work and the arts.", tags: ["activism", "rj"], s: 1 },
+  { id: "o6", t: "Grassroots neighborhood organizer", d: "Down to earth, with a record of successful organizing.", tags: ["activism"], s: 1 },
+  { id: "o7", t: "Arts educator and longtime theater company member", d: "Widely loved in the community; a natural ambassador.", tags: ["civic"], s: 0.8 },
+  { id: "o8", t: "Arts founder with deep foundation relationships", d: "Opens doors to planning-grant conversations.", tags: ["funding"], s: 0.2 },
+  { id: "o9", t: "City policy advisor with a UN development background", d: "Knows city process from inside; helps vet names.", tags: ["legal"], s: 0.1 },
+  { id: "o10", t: "Survivor-advocate and artist", d: "Helped pass a state law; a strong communicator and a younger voice.", tags: ["activism"], s: 0.9 },
+  { id: "o11", t: "Founder of an international youth program, retired locally", d: "Decades of building programs with the people they serve.", tags: ["rj"], s: 0.5 },
+  { id: "o12", t: "Someone connected to the Square's own community leaders", d: "The packet says The Openers need at least one member with this link.", tags: ["activism"], s: 1, square: true }
+];
+var VOTERS = [["lead", "Pilot lead"], ["cofounder", "Co-founder who carries the model"], ["facil", "Facilitator"], ["uk", "UK director"], ["openers", "The Openers"]];
+
+var RUNGS = [
+  { id: "analyze", t: "Analyze the issue", d: "What is actually happening?", v: 1 },
+  { id: "values", t: "Explore values", d: "Why should people care?", v: 0.7 },
+  { id: "vision", t: "Create the vision", d: "What does success look like?", v: 0.35 },
+  { id: "strategy", t: "Develop strategy", d: "What's the concrete plan?", v: 0 }
+];
+var CC = [
+  { id: "c1", t: "Construction began before the city and community agreed on stewardship" },
+  { id: "c2", t: "The city's appointed Co-Creation Team dissolved" },
+  { id: "c3", t: "Small businesses lost traffic while the intersection was closed" },
+  { id: "c4", t: "A 2025 dispute over the mayor's veto of community-led planning" },
+  { id: "c5", t: "The development-rights vote on the Peoples' Way parcel is contested" },
+  { id: "c6", t: "Residents drew their own layout for the streets" }
+];
+var CC_BINS = [["cause", "Cause"], ["consequence", "Consequence"], ["both", "Both"]];
+var WHO_Q = [["a", "A. Who is affected, and how?"], ["b", "B. Who gains from the current situation?"], ["c", "C. Who loses?"], ["d", "D. Who actually sees this as a problem?"], ["e", "E. Who is doing something about it, and what?"]];
+var SOLUTION_WORDS = ["should", "must", "needs to", "need to", "ought", "reopen", "re-open", "close", "closed", "build", "create", "install", "preserve", "remove", "fund", "hire", "redesign", "convert", "turn into", "make it", "ban", "require", "give", "hand over", "let the"];
+var SCOPE = {
+  q: "Your group's draft sentence holds six good ideas. What now?",
+  opts: [
+    { v: 0, t: "Keep all six, so everyone sees their idea in it.", r: "You chose inclusion." },
+    { v: 1, t: "Cut to what the group can realistically affect, and say why.", r: "You chose focus." }
+  ],
+  model: "Step 7: don't try to include everyone's idea. That produces something too vague to move on. Name what you can realistically affect, and be ready to say why."
+};
+
+var FR_ITEMS = [
+  { id: "f1", t: "Write one shared problem sentence with stakeholders", m: "b" },
+  { id: "f2", t: "Test which metaphor shifts how the public reasons about an issue", m: "f" },
+  { id: "f3", t: "Map who gains and who loses", m: "b" },
+  { id: "f4", t: "Choose who should deliver a message to funders", m: "f" },
+  { id: "f5", t: "Run a session in one afternoon with a flip chart", m: "b" },
+  { id: "f6", t: "Check whether a message triggers individual blame", m: "f" },
+  { id: "f7", t: "Build volunteer roles from the group's own knowledge", m: "b" },
+  { id: "f8", t: "Shift how a whole community understands an issue over years", m: "f" }
+];
+var FR_BINS = [["b", "In the room (Blandin)"], ["f", "Out in public (FrameWorks)"]];
+var BACKFIRE = [
+  { id: "k1", t: "“That corner will never heal, whatever anyone does.”", m: "fatal", why: "Fatalism. It tells listeners nothing can be done." },
+  { id: "k2", t: "“If neighbors had shown up to more meetings, the Square wouldn't still be stuck.”", m: "blame", why: "Individual blame. It turns a governance impasse into a story about lazy neighbors." },
+  { id: "k3", t: "“Fairness means the people who kept the memorial alive help decide what happens to it.”", m: "ok", why: "Holds up. It leads with a value, fairness, before any facts." },
+  { id: "k4", t: "“The city and the community have fought for years and always will.”", m: "fatal", why: "Fatalism. It presents the impasse as permanent." },
+  { id: "k5", t: "“Business owners chose to stay open on a closed street, so the losses are on them.”", m: "blame", why: "Individual blame. It hides the decisions that closed the street." }
+];
+var BF_BINS = [["blame", "Blame"], ["fatal", "Fatalism"], ["ok", "Holds up"]];
+
+var GIFT_ITEMS = [
+  { id: "g1", t: "A former grant writer who turns practice into funder language", m: "ind" },
+  { id: "g2", t: "A circle keeper for a Monday-night youth group", m: "ind" },
+  { id: "g3", t: "A retired Peace Corps program director", m: "ind" },
+  { id: "g4", t: "Circle of Peace Movement", m: "assoc" },
+  { id: "g5", t: "MayDay Parade and the Powderhorn puppet makers", m: "assoc" },
+  { id: "g6", t: "A neighborhood mutual aid network", m: "assoc" },
+  { id: "g7", t: "Twin Cities Friends Meeting", m: "assoc" },
+  { id: "g8", t: "Penumbra Center for Racial Healing", m: "inst" },
+  { id: "g9", t: "Restorative Justice Community Action", m: "inst" },
+  { id: "g10", t: "McKnight Foundation", m: "inst" }
+];
+var GIFT_BINS = [["ind", "Individual gift"], ["assoc", "Association"], ["inst", "Institution"]];
+var FIRSTCALL = {
+  q: "For the pilot, which layer do you call first?",
+  opts: [
+    { v: 0, t: "An institution", r: "You reached for formal standing first." },
+    { v: 0.5, t: "An individual", r: "You reached for a person's gifts first." },
+    { v: 1, t: "An association", r: "You reached for the informal networks first." }
+  ],
+  model: "McKnight argues associations are the most undervalued layer and the one most often left off formal asset maps. The inventory treats institutions as one layer among three."
+};
+var RIFT = {
+  q: "Two groups you'd want are publicly at odds over how violence interruption is run. How do you start?",
+  opts: [
+    { t: "Approach both, and tell each that the other is invited." },
+    { t: "Start with whichever is closer to your own network." },
+    { t: "Hold off until you understand the dispute." }
+  ],
+  model: "The inventory's advice: step into a divide like this knowingly, before you find yourself in the middle of it. Early relationship choices signal whom Peaceable listens to first."
+};
+
+var SQUARE_Q = {
+  q: "What is the issue at the center of the pilot?",
+  opts: [
+    { ok: false, t: "Whether the street reopens to traffic" },
+    { ok: false, t: "The design of the memorial" },
+    { ok: true, t: "The unresolved relationship between the city and the community over the Square's future" }
+  ],
+  model: "The street design is approved and under construction. What remains open is who stewards the memorial, who governs the Peoples' Way parcel, and whether community voice keeps shaping the Square as construction proceeds."
+};
+
+/* ---------- state ---------- */
+var KEY = "who-holds-the-pen-v1";
+function blank() {
+  return { seen: {}, pen: { sort: {}, move: null }, phases: { order: [], handoff: null }, fn: { consulted: [], approached: null, offer: null, no: null }, op: { seats: [], votes: {}, checked: false }, fr: { start: null, cc: {}, who: {}, sentence: "", scope: null }, tf: { sort: {}, bf: {} }, gi: { sort: {}, first: null, rift: null }, sq: { q: null } };
+}
+var st = blank();
+try { var raw = localStorage.getItem(KEY); if (raw) { var parsed = JSON.parse(raw); st = Object.assign(blank(), parsed); } } catch (e) {}
+function save() { try { localStorage.setItem(KEY, JSON.stringify(st)); } catch (e) {} }
+
+function esc(s) { return String(s).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); }
+function $(sel, root) { return (root || document).querySelector(sel); }
+
+/* ---------- axes ---------- */
+function solutionHits(s) {
+  var low = " " + s.toLowerCase() + " ";
+  return SOLUTION_WORDS.filter(function (w) { return new RegExp("[^a-z]" + w.replace(/[-]/g, "\\-") + "[^a-z]").test(low); });
+}
+function axes() {
+  var out = [];
+  // 1 pen
+  var penVals = [];
+  var dev = 0, n = 0;
+  PEN_ITEMS.forEach(function (it) { if (it.m !== "clear" && st.pen.sort[it.id]) { n++; if (st.pen.sort[it.id] === "clear") dev++; } });
+  if (n) penVals.push(1 - dev / n);
+  if (st.pen.move !== null) { penVals.push(PEN_MOVE.opts[st.pen.move].v); penVals.push(PEN_MOVE.opts[st.pen.move].v); }
+  out.push({ id: "pen", l: "Offer what you know", r: "Leave the answer to them", v: avg(penVals), model: 1, from: "The pen" });
+  // 2 diligence
+  var dil = null;
+  if (st.fn.approached !== null) dil = Math.min(1, st.fn.approached / 4);
+  out.push({ id: "dil", l: "Keep momentum", r: "Hear more voices first", v: dil, model: 1, from: "The first name" });
+  // 3 openers
+  var sv = st.op.seats.map(function (id) { return seatById(id).s; });
+  out.push({ id: "seat", l: "Institutional standing", r: "Grassroots reach", v: sv.length >= 3 ? avg(sv) : null, model: null, modelNote: "The roster asks for both: civic standing and credibility with the community.", from: "The Openers" });
+  // 4 name vs solve
+  var nm = [];
+  if (st.fr.start) nm.push(RUNGS.filter(function (r) { return r.id === st.fr.start; })[0].v);
+  if (st.fr.sentence.trim().length > 15) nm.push(solutionHits(st.fr.sentence).length ? 0 : 1);
+  out.push({ id: "name", l: "Reach for solutions", r: "Name the problem first", v: avg(nm), model: 1, from: "Name it first" });
+  // 5 scope
+  out.push({ id: "scope", l: "Include every idea", r: "Focus on what you can affect", v: st.fr.scope === null ? null : SCOPE.opts[st.fr.scope].v, model: 1, from: "Name it first" });
+  // 6 consent
+  out.push({ id: "consent", l: "Persist past a no", r: "Take the no as an answer", v: st.fn.no === null ? null : NO.opts[st.fn.no].v, model: 1, from: "The first name" });
+  // 7 stay
+  out.push({ id: "stay", l: "Step back", r: "Stay in the room", v: st.phases.handoff === null ? null : HANDOFF.opts[st.phases.handoff].v, model: 1, from: "Six phases" });
+  // 8 formal
+  out.push({ id: "formal", l: "Formal institutions", r: "Informal associations", v: st.gi.first === null ? null : FIRSTCALL.opts[st.gi.first].v, model: null, modelNote: "No fixed answer. McKnight's warning leans right.", from: "Map of gifts" });
+  return out;
+}
+function avg(a) { return a.length ? a.reduce(function (x, y) { return x + y; }, 0) / a.length : null; }
+function seatById(id) { return SEATS.filter(function (s) { return s.id === id; })[0]; }
+function ax(id) { return axes().filter(function (a) { return a.id === id; })[0].v; }
+function markCount() { return axes().filter(function (a) { return a.v !== null; }).length; }
+
+function pulls() {
+  var A = {}; axes().forEach(function (a) { A[a.id] = a.v; });
+  function hi(k) { return A[k] !== null && A[k] >= 0.66; }
+  function lo(k) { return A[k] !== null && A[k] <= 0.34; }
+  var p = [];
+  var sentHasSolution = st.fr.sentence.trim().length > 15 && solutionHits(st.fr.sentence).length > 0;
+  if (hi("pen") && lo("dil")) p.push("You keep your hands off the answer. You also went to the first name you heard. Deciding whose voice comes first is a way of holding the pen.");
+  if (hi("pen") && lo("seat")) p.push("You would leave the answer to the community, and you seated a table weighted toward institutional standing. The Openers decide whether the pilot holds up, so their mix shapes everything after.");
+  if (hi("pen") && lo("stay")) p.push("You stepped away once the group had its direction, out of respect for their ownership. The model asks for a harder pairing: stay in the room and keep the pen down.");
+  if (hi("pen") && sentHasSolution) p.push("You said the people closest to the issue should author the answer. Your problem sentence already carries one.");
+  if (hi("pen") && lo("consent")) p.push("You'd let the group author its own answer, and you'd press past a no at the door. Ownership at the table and consent at the door come from the same value.");
+  if (lo("pen") && hi("consent")) p.push("You'd accept a no and walk away, and inside the room you'd put your own compromise on the table. You trust people to refuse you, and you trust yourself to supply the answer.");
+  if (hi("dil") && lo("formal")) p.push("You heard many voices at the Square before approaching anyone, and your first call for the pilot goes to an institution. The inventory warns that associations are the layer most often left off the map.");
+  if (lo("scope") && hi("name")) p.push("You start with analysis and resist solutions, and you kept every idea in the sentence so no one is left out. Inclusion and clarity trade against each other at Step 7.");
+  if (hi("seat") && lo("dil")) p.push("You seated a grassroots table, then approached the most visible leader after hearing few voices. Grassroots reach at the table and a quick approach outside it pull in different directions.");
+  return p;
+}
+function partings() {
+  var q = {
+    pen: "The model never offers an answer. You lean toward offering what you know. Where would you draw that line for Peaceable?",
+    dil: "The model does its homework before approaching anyone. You lean toward momentum. What does the delay cost the community?",
+    name: "The model names the problem before anyone reaches for solutions. You lean toward solutions. When is a proposed fix the fastest way to surface the real problem?",
+    scope: "Step 7 cuts to what the group can affect. You lean toward keeping every idea. Who gets left out when the sentence narrows?",
+    consent: "The model takes a no and looks for another pilot. You lean toward persisting. When is persistence a form of respect?",
+    stay: "The model stays engaged through implementation. You lean toward stepping back. At what point would staying start to look like control?"
+  };
+  return axes().filter(function (a) { return a.v !== null && a.model !== null && Math.abs(a.v - a.model) >= 0.45 && q[a.id]; }).map(function (a) { return q[a.id]; });
+}
+
+/* ---------- rendering helpers ---------- */
+function optsHtml(group, cfg, chosen, kind) {
+  return '<div class="opts">' + cfg.opts.map(function (o, i) {
+    return '<button type="button" class="opt" data-act="' + group + '" data-i="' + i + '" aria-pressed="' + (chosen === i) + '">' + esc(o.t) + '</button>';
+  }).join("") + '</div>';
+}
+function afterChoice(cfg, chosen, withModel) {
+  if (chosen === null || chosen === undefined) return "";
+  var o = cfg.opts[chosen];
+  var h = "";
+  if (o.r) h += '<p class="note you">' + esc(o.r) + '</p>';
+  if (o.ok !== undefined && !o.r) h += '<p class="note you">' + (o.ok ? "That matches the packet." : "The packet reads it differently.") + '</p>';
+  if (withModel && cfg.model) h += '<p class="note"><b>The model.</b> ' + esc(cfg.model) + '</p>';
+  return h;
+}
+function sortHtml(group, items, bins, chosenMap, verdictFn) {
+  return '<div class="sort-list">' + items.map(function (it) {
+    var c = chosenMap[it.id];
+    return '<div class="sitem"><div class="txt">' + esc(it.t) + '</div><div class="bins" role="group" aria-label="Sort">' +
+      bins.map(function (b) { return '<button type="button" class="bin" data-act="' + group + '" data-id="' + it.id + '" data-v="' + b[0] + '" aria-pressed="' + (c === b[0]) + '">' + esc(b[1]) + '</button>'; }).join("") +
+      '</div>' + (c && verdictFn ? '<div class="verdict">' + verdictFn(it, c) + '</div>' : "") + '</div>';
+  }).join("") + '</div>';
+}
+function binLabel(bins, v) { return bins.filter(function (b) { return b[0] === v; })[0][1]; }
+
+/* ---------- views ---------- */
+var app = $("#app");
+var VIEWS = {};
+
+VIEWS.circle = function () {
+  var R = 39;
+  var seenN = CHAIRS.filter(function (c) { return st.seen[c.id]; }).length;
+  var marks = markCount();
+  var chairs = CHAIRS.map(function (c, i) {
+    var a = -Math.PI / 2 + i * (2 * Math.PI / CHAIRS.length);
+    var x = 50 + R * Math.cos(a), y = 50 + R * Math.sin(a);
+    return '<button type="button" class="chair' + (st.seen[c.id] ? " seen" : "") + '" style="left:' + x.toFixed(2) + '%;top:' + y.toFixed(2) + '%" data-go="' + c.id + '"><span class="kicker">' + c.kick + '</span><span class="nm">' + esc(c.name) + '</span></button>';
+  }).join("");
+  var spokes = CHAIRS.map(function (c, i) {
+    if (!st.seen[c.id]) return "";
+    var a = -Math.PI / 2 + i * (2 * Math.PI / CHAIRS.length);
+    return '<line class="spoke" x1="' + (50 + 18 * Math.cos(a)).toFixed(2) + '" y1="' + (50 + 18 * Math.sin(a)).toFixed(2) + '" x2="' + (50 + 30 * Math.cos(a)).toFixed(2) + '" y2="' + (50 + 30 * Math.sin(a)).toFixed(2) + '"/>';
+  }).join("");
+  var dots = "";
+  for (var k = 0; k < marks; k++) {
+    var a2 = -Math.PI / 2 + k * (2 * Math.PI / 8);
+    dots += '<circle class="dot-mark" r="1.1" cx="' + (50 + 15.6 * Math.cos(a2)).toFixed(2) + '" cy="' + (50 + 15.6 * Math.sin(a2)).toFixed(2) + '"/>';
+  }
+  app.innerHTML = '<section class="gutter hub">' +
+    '<div class="stack"><span class="kicker">Peaceable CIC · The Clearinghouse Model</span>' +
+    '<h1>Who holds <em>the pen?</em></h1>' +
+    '<p class="dek">Peaceable’s clearinghouse clears the path for people with real standing. It never builds the path and never chooses where it ends. Each chair puts you in a decision the model makes at George Floyd Square. The center keeps what you chose and shows where your own values pull against each other.</p></div>' +
+    '<div class="circle"><svg viewBox="0 0 100 100" aria-hidden="true"><circle class="ring" cx="50" cy="50" r="39"/>' + spokes + dots + '</svg>' + chairs +
+    '<button type="button" class="center" data-go="mirror"><span class="nm">Your reflection</span><span class="ct">' + marks + ' of 8 marks</span></button></div>' +
+    '<p class="hub-foot">Drawn from <i>The Clearinghouse Model</i>, a first full draft by Lois Yellowthunder and Louise Wolfgramm for discussion among Peaceable’s co-founders. No one named in the packet has been contacted, and this lesson uses roles in place of names. ' + (seenN ? seenN + " of 8 chairs visited." : "") + '</p>' +
+    '<div class="row"><button type="button" class="btn ghost" data-act="terms">Terms used in the model</button></div>' +
+    '</section>';
+};
+
+function stationShell(c, lede, body) {
+  app.innerHTML = '<section class="gutter station"><header><span class="kicker">' + c.kick + '</span><h2>' + esc(c.name) + '</h2><p class="lede">' + lede + '</p></header>' + body + '</section>';
+}
+function chair(id) { return CHAIRS.filter(function (c) { return c.id === id; })[0]; }
+
+VIEWS.pen = function () {
+  var sorted = Object.keys(st.pen.sort).length;
+  var verdict = function (it, c) {
+    var agree = (c === it.m) || (it.m !== "clear" && c !== "clear");
+    return (agree ? "<b>Matches the packet.</b> " : "<b>The packet reads it as " + esc(binLabel(PEN_BINS, it.m).toLowerCase()) + ".</b> ") + esc(it.why);
+  };
+  stationShell(chair("pen"), "Louise’s decades at Amicus were described as helping people clear the path. Sort each move by what it does to the path.",
+    '<div class="card">' + sortHtml("pen", PEN_ITEMS, PEN_BINS, st.pen.sort, verdict) +
+    '<p class="muted" style="font-size:.88rem">' + sorted + ' of ' + PEN_ITEMS.length + ' sorted.</p></div>' +
+    '<div class="card"><p class="q">' + esc(PEN_MOVE.q) + '</p>' + optsHtml("penmove", PEN_MOVE, st.pen.move) + afterChoice(PEN_MOVE, st.pen.move, true) + '</div>');
+};
+
+VIEWS.phases = function () {
+  var order = st.phases.order;
+  var done = order.length === 6;
+  var slots = "";
+  for (var i = 0; i < 6; i++) {
+    var pid = order[i];
+    var ph = pid ? PHASES.filter(function (p) { return p.n === pid; })[0] : null;
+    var cls = "slot" + (ph ? " filled" : "") + (done && ph ? (ph.n === i + 1 ? " right" : " wrong") : "");
+    slots += '<div class="' + cls + '"><span class="n">Position ' + (i + 1) + (done && ph && ph.n !== i + 1 ? " · packet places this at " + ph.n : "") + '</span>' + (ph ? '<span class="t">' + esc(ph.t) + '</span>' : '') + '</div>';
+  }
+  var pool = PHASES.slice().sort(function (a, b) { return (a.t.length * 7 % 11) - (b.t.length * 7 % 11); }).filter(function (p) { return order.indexOf(p.n) < 0; })
+    .map(function (p) { return '<button type="button" class="chip" data-act="phase" data-n="' + p.n + '">' + esc(p.t) + '</button>'; }).join("");
+  var right = done ? order.filter(function (n, i) { return n === i + 1; }).length : 0;
+  var reveal = done ? '<p class="note"><b>' + right + ' of 6 in the packet’s order.</b> Peaceable stays engaged as facilitator across all six phases.</p>' +
+    '<div class="slots">' + PHASES.map(function (p) { return '<div class="slot filled"><span class="n">Phase ' + p.n + '</span><span class="t">' + esc(p.t) + '</span><div class="dd"><div class="does"><span>Does</span> ' + esc(p.does) + '</div><div class="doesnt"><span>Does not</span> ' + esc(p.dont) + '</div></div></div>'; }).join("") + '</div>' : "";
+  stationShell(chair("phases"), "Six phases carry the model from a small trusted team to funded implementation. Tap them into the order you’d run them.",
+    '<div class="card"><div class="slots">' + slots + '</div>' + (pool ? '<div class="pool">' + pool + '</div>' : '') +
+    (order.length ? '<div class="row"><button type="button" class="btn ghost" data-act="phasereset">Clear the order</button></div>' : '') + reveal + '</div>' +
+    '<div class="card"><p class="q">' + esc(HANDOFF.q) + '</p>' + optsHtml("handoff", HANDOFF, st.phases.handoff) + afterChoice(HANDOFF, st.phases.handoff, true) + '</div>');
+};
+
+VIEWS.firstname = function () {
+  var cons = st.fn.consulted;
+  var W = 400, H = 300, cx = 200, cy = 150;
+  var lines = "", nodes = "";
+  SOURCES.forEach(function (s, i) {
+    var a = -Math.PI / 2 + i * (2 * Math.PI / SOURCES.length);
+    var x = cx + 128 * Math.cos(a), y = cy + 108 * Math.sin(a);
+    var on = cons.indexOf(s.id) >= 0;
+    lines += '<line class="n-line" x1="' + cx + '" y1="' + cy + '" x2="' + x.toFixed(1) + '" y2="' + y.toFixed(1) + '"' + (on ? '' : ' style="opacity:.35"') + '/>';
+    var anchor = Math.cos(a) > 0.3 ? "start" : Math.cos(a) < -0.3 ? "end" : "middle";
+    var lx = x + (anchor === "start" ? 13 : anchor === "end" ? -13 : 0);
+    var ly = y + (anchor === "middle" ? (Math.sin(a) < 0 ? -15 : 22) : 4);
+    nodes += '<circle class="' + (on ? "n-node" : "n-ghost") + '" cx="' + x.toFixed(1) + '" cy="' + y.toFixed(1) + '" r="9"/>' +
+      '<text class="n-lbl' + (on ? "" : " dim") + '" x="' + lx.toFixed(1) + '" y="' + ly.toFixed(1) + '" text-anchor="' + anchor + '">' + (on ? esc(s.lbl) : "?") + '</text>';
+  });
+  var svg = '<svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="Stakeholders revealed so far: ' + (cons.length + 1) + '">' + lines + nodes +
+    '<circle class="n-hub" cx="' + cx + '" cy="' + cy + '" r="16"/><text class="n-lbl" x="' + cx + '" y="' + (cy + 32) + '" text-anchor="middle">' + esc(HUB_NODE.lbl) + '</text></svg>';
+  var approached = st.fn.approached !== null;
+  var src = SOURCES.map(function (s) { return '<button type="button" class="chip" data-act="consult" data-id="' + s.id + '"' + (cons.indexOf(s.id) >= 0 || approached ? ' disabled' : '') + '>' + esc(s.btn) + '</button>'; }).join("");
+  var facts = '<ul><li>' + esc(HUB_NODE.full) + '</li>' + cons.map(function (id) { return '<li>' + esc(SOURCES.filter(function (s) { return s.id === id; })[0].fact) + '</li>'; }).join("") + '</ul>';
+  var n = st.fn.approached;
+  var approachNote = approached ? '<p class="note you">' + (n === 0 ? "You approached after hearing one voice, the one everyone names first." : n === 1 ? "You approached after one other source. The map had " + (n + 1) + " points on it." : "You consulted " + n + " sources first. The map had " + (n + 1) + " points on it when you knocked.") + '</p>' +
+    '<p class="note"><b>The model.</b> Before approaching anyone, the team learns who all the potential leaders and stakeholders are, asks whether there are competing leaders or other groups, and only then looks for a credible introduction through The Openers’ combined networks.</p>' : "";
+  var offer = approached ? '<div class="card"><p class="q">' + esc(OFFER.q) + '</p>' + optsHtml("offer", OFFER, st.fn.offer) + afterChoice(OFFER, st.fn.offer, false) + '</div>' : "";
+  var no = approached && st.fn.offer !== null ? '<div class="card"><p class="q">' + esc(NO.q) + '</p>' + optsHtml("no", NO, st.fn.no) + afterChoice(NO, st.fn.no, true) + '</div>' : "";
+  stationShell(chair("firstname"), "Everyone names the same leader for the Square, and she may well be the right person. Ask around, or knock now.",
+    '<div class="card"><div class="net-wrap"><div class="net">' + svg + '</div><div class="facts">' + facts + '</div></div>' +
+    '<span class="kicker">Ask</span><div class="src">' + src + '</div>' +
+    (approached ? "" : '<div class="row"><button type="button" class="btn" data-act="approach">Approach the first name now</button></div>') + approachNote + '</div>' + offer + no);
+};
+
+VIEWS.openers = function () {
+  var seats = st.op.seats;
+  var cov = {}; AREAS.forEach(function (a) { cov[a[0]] = 0; });
+  var hasSquare = false;
+  seats.forEach(function (id) { var s = seatById(id); s.tags.forEach(function (t) { cov[t]++; }); if (s.square) hasSquare = true; });
+  var grid = SEATS.map(function (s) {
+    var on = seats.indexOf(s.id) >= 0;
+    return '<button type="button" class="seat" data-act="seat" data-id="' + s.id + '" aria-pressed="' + on + '"' + (!on && seats.length >= 6 ? ' disabled style="opacity:.5"' : '') + '><span class="t">' + esc(s.t) + '</span><span class="d">' + esc(s.d) + '</span><span class="tags">' + s.tags.map(function (t) { return '<span class="tag">' + esc(AREAS.filter(function (a) { return a[0] === t; })[0][1]) + '</span>'; }).join("") + '</span></button>';
+  }).join("");
+  var bars = AREAS.map(function (a) { return '<div class="cov"><span>' + esc(a[1]) + '</span><span class="track"><i style="width:' + Math.min(100, cov[a[0]] * 50) + '%"></i></span><span class="num">' + cov[a[0]] + '</span></div>'; }).join("");
+  var missing = AREAS.filter(function (a) { return !cov[a[0]]; }).map(function (a) { return a[1].toLowerCase(); });
+  var status = seats.length === 0 ? "" : '<p class="note you">' + seats.length + ' of 6 seats filled. ' +
+    (missing.length ? "Not yet covered: " + esc(missing.join(", ")) + ". " : "All five areas covered. ") +
+    (hasSquare ? "One seat connects to the Square’s own community." : "No seat connects to the Square’s own community yet. The packet says The Openers need at least one.") + '</p>';
+  var g = seats.length >= 3 ? avg(seats.map(function (id) { return seatById(id).s; })) : null;
+  var lean = g === null ? "" : '<p class="note">' + (g < 0.4 ? "Your table leans on institutional standing." : g > 0.6 ? "Your table leans on grassroots reach." : "Your table mixes institutional standing and grassroots reach.") + ' The packet’s criteria ask for both: sensitivity to community issues, civic standing and gravitas, an engaged-neutral stance, and credibility with the community served.</p>';
+  var votes = VOTERS.map(function (v) {
+    var on = !!st.op.votes[v[0]];
+    var mark = st.op.checked ? ((v[0] === "openers") === on ? " ✓" : " ✗") : "";
+    return '<div class="vote"><span>' + esc(v[1]) + mark + '</span><button type="button" class="toggle" data-act="vote" data-id="' + v[0] + '" aria-pressed="' + on + '">' + (on ? "Votes" : "Does not vote") + '</button></div>';
+  }).join("");
+  stationShell(chair("openers"), "The Openers decide whether George Floyd Square holds up as a pilot, and they can say no. Seat up to six. These are roles drawn from the kinds of people on the working roster, none of whom has been contacted.",
+    '<div class="card"><div class="seat-grid">' + grid + '</div></div>' +
+    '<div class="card"><h3>What your table covers</h3><div class="cover">' + bars + '</div>' + status + lean + '</div>' +
+    '<div class="card"><h3>Who votes?</h3><div class="votes">' + votes + '</div><div class="row"><button type="button" class="btn ghost" data-act="votecheck">Check against the packet</button></div>' +
+    (st.op.checked ? '<p class="note"><b>The packet.</b> Only The Openers vote. The pilot lead, the co-founder, the facilitator and the UK director lead, facilitate and support the work. The facilitator holds the process so The Openers can focus on the conversation, without becoming another voice in it.</p>' : '') + '</div>');
+};
+
+VIEWS.framing = function () {
+  var rung = RUNGS.map(function (r) { return '<button type="button" class="rung" data-act="rung" data-id="' + r.id + '" aria-pressed="' + (st.fr.start === r.id) + '"><b>' + esc(r.t) + '</b><small>' + esc(r.d) + '</small></button>'; }).join("");
+  var rungNote = st.fr.start ? '<p class="note you">' + (st.fr.start === "analyze" ? "You start where the packet starts." : "You start at “" + esc(RUNGS.filter(function (r) { return r.id === st.fr.start; })[0].t.toLowerCase()) + ".”") + '</p><p class="note"><b>The guide.</b> Work through the four components in order: analyze, values, vision, strategy. Each builds the foundation for the next. Resist jumping straight to strategy.</p>' : "";
+  var ccDone = CC.every(function (c) { return st.fr.cc[c.id]; });
+  var cols = ccDone ? '<div class="tally">' + ["cause", "consequence", "both"].map(function (b) { return '<div><strong>' + binLabel(CC_BINS, b) + '</strong>' + (CC.filter(function (c) { return st.fr.cc[c.id] === b; }).map(function (c) { return esc(c.t); }).join("<br>") || '<span class="muted">None</span>') + '</div>'; }).join("") + '</div><p class="note">No answer key. In Step 3 the group records every card in two columns, and many land in both.</p>' : "";
+  var who = WHO_Q.map(function (w) { return '<label for="who-' + w[0] + '">' + esc(w[1]) + '<input type="text" id="who-' + w[0] + '" data-who="' + w[0] + '" value="' + esc(st.fr.who[w[0]] || "") + '"></label>'; }).join("");
+  stationShell(chair("framing"), "“The way a problem is defined determines the types of solutions that will be developed.” The working-session guide, adapted from Blandin, stays with the problem before anyone reaches for an answer.",
+    '<div class="card"><p class="q">Where does your group start?</p><div class="ladder">' + rung + '</div>' + rungNote + '</div>' +
+    '<div class="card"><h3>Causes and consequences</h3><p class="muted" style="font-size:.92rem">Facts from the packet’s account of the Square.</p>' + sortHtml("cc", CC, CC_BINS, st.fr.cc, null) + cols + '</div>' +
+    '<div class="card"><h3>Who is involved</h3><p class="muted" style="font-size:.92rem">A, B and C first, then D and E. Your notes stay in this browser.</p><div class="who">' + who + '</div></div>' +
+    '<div class="card"><h3>The problem in one sentence</h3><label for="sentence" class="muted" style="font-size:.92rem">Write it the way every party at the table would recognize it.</label><textarea id="sentence" rows="3" placeholder="The city and the community have no shared way to decide...">' + esc(st.fr.sentence) + '</textarea><div id="readback"></div></div>' +
+    '<div class="card"><p class="q">' + esc(SCOPE.q) + '</p>' + optsHtml("scope", SCOPE, st.fr.scope) + afterChoice(SCOPE, st.fr.scope, true) + '</div>');
+  renderReadback();
+};
+function renderReadback() {
+  var el = $("#readback"); if (!el) return;
+  var s = st.fr.sentence;
+  if (s.trim().length < 6) { el.innerHTML = '<p class="note">The packet’s version: “the unresolved relationship between the city and the community over the Square’s future, now that construction on the street redesign is already underway.”</p>'; return; }
+  var hits = solutionHits(s);
+  var html = esc(s);
+  hits.forEach(function (w) { html = html.replace(new RegExp("(^|[^a-z])(" + w.replace(/[-]/g, "\\-") + ")(?=[^a-z]|$)", "gi"), "$1<mark>$2</mark>"); });
+  el.innerHTML = '<div class="stack" style="gap:.6rem"><p class="readback">' + html + '</p>' +
+    (hits.length ? '<p class="note you">This sentence already holds a solution (' + esc(hits.join(", ")) + '). A problem stated as its fix closes off every other fix.</p>' : '<p class="note">No solution words found. The sentence names a problem and leaves the answer open.</p>') +
+    '<p class="note">The packet’s version: “the unresolved relationship between the city and the community over the Square’s future, now that construction on the street redesign is already underway.”</p></div>';
+}
+
+VIEWS.frames = function () {
+  var v1 = function (it, c) { return c === it.m ? "<b>Matches the comparison note.</b>" : "<b>The note places this " + (it.m === "b" ? "in the room" : "out in public") + ".</b>"; };
+  var v2 = function (it, c) { return (c === it.m ? "<b>Agreed.</b> " : "<b>FrameWorks would call it " + esc(binLabel(BF_BINS, it.m).toLowerCase()) + ".</b> ") + esc(it.why); };
+  stationShell(chair("frames"), "Two tools solve two problems. Blandin lets a room define its own problem. FrameWorks tests how to talk about an issue so it lands with the public. Peaceable uses both, at different moments.",
+    '<div class="card"><h3>Which tool does the job?</h3>' + sortHtml("tf", FR_ITEMS, FR_BINS, st.tf.sort, v1) + '</div>' +
+    '<div class="card"><h3>Backfire check</h3><p class="muted" style="font-size:.92rem">Public-facing sentences someone might write once the group has its direction. Flag the ones that would trigger blame or fatalism.</p>' + sortHtml("bf", BACKFIRE, BF_BINS, st.tf.bf, v2) +
+    (Object.keys(st.tf.bf).length === BACKFIRE.length ? '<p class="note"><b>FrameWorks principles the packet borrows.</b> Lead with values before data. Watch for frames that backfire into blame or fatalism. Give the full explanatory chain from cause to solution. Choose messengers and metaphors deliberately.</p>' : '') + '</div>');
+};
+
+VIEWS.gifts = function () {
+  var v = function (it, c) { return c === it.m ? "<b>Matches the inventory.</b>" : "<b>The inventory lists this as " + esc(binLabel(GIFT_BINS, it.m).toLowerCase()) + ".</b>"; };
+  stationShell(chair("gifts"), "The packet’s asset inventory follows John McKnight’s three layers: individual gifts, associations, institutions. Sort what the Twin Cities already has.",
+    '<div class="card">' + sortHtml("gi", GIFT_ITEMS, GIFT_BINS, st.gi.sort, v) + '</div>' +
+    '<div class="card"><p class="q">' + esc(FIRSTCALL.q) + '</p>' + optsHtml("first", FIRSTCALL, st.gi.first) + afterChoice(FIRSTCALL, st.gi.first, true) + '</div>' +
+    '<div class="card"><p class="q">' + esc(RIFT.q) + '</p>' + optsHtml("rift", RIFT, st.gi.rift) + (st.gi.rift !== null ? '<p class="note"><b>No answer key.</b> ' + esc(RIFT.model) + '</p>' : '') + '</div>');
+};
+
+VIEWS.square = function () {
+  var TL = [
+    ["May 25, 2020", "George Floyd, a 46-year-old Black man, was murdered by Minneapolis police officer Derek Chauvin, who knelt on his neck and upper body for about nine and a half minutes during an arrest outside a corner store at 38th Street and Chicago Avenue. Floyd was handcuffed, face-down, and repeatedly said he could not breathe. A bystander, then 17, filmed it, and the video was seen around the world."],
+    ["Summer 2020", "Protests spread across the United States and to cities worldwide, among the largest mass-protest movements in U.S. history. In Minneapolis, the Third Police Precinct building burned."],
+    ["2020 onward", "Community members barricaded the intersection and made it a self-organized memorial and protest space, sometimes called the Free State of George Floyd. Volunteers ran mutual aid, a community library and informal security. Murals, flowers, art and a large raised fist sculpture gathered at the center. It remains a place of pilgrimage and mourning."],
+    ["April 20, 2021", "A jury found Chauvin guilty on all state counts. He was sentenced that June to 22.5 years, and later convicted on federal civil-rights charges. The three other officers at the scene were convicted on charges of failing to intervene or provide medical aid."],
+    ["2023", "The city bought the former gas station on one corner, now called the Peoples’ Way. Its future is still contested."],
+    ["December 2025", "The City Council approved a “flexible-open” redesign of the intersection."],
+    ["June 2026", "Construction began. A city vote granting exclusive development rights for the Peoples’ Way parcel is itself contested."],
+    ["Now", "The city and the community, including Rise & Remember and the resident-led Community Visioning Council, have not reached consensus over memorial stewardship, governance of the Peoples’ Way, and whether community voice keeps shaping the Square."]
+  ];
+  stationShell(chair("square"), "The pilot only makes sense with this history in view. Facts as the packet’s background briefing gives them.",
+    '<div class="card"><div class="timeline">' + TL.map(function (t) { return '<div class="tl"><span class="when">' + esc(t[0]) + '</span><p>' + esc(t[1]) + '</p></div>'; }).join("") + '</div></div>' +
+    '<div class="card"><p class="q">' + esc(SQUARE_Q.q) + '</p>' + optsHtml("sq", SQUARE_Q, st.sq.q) + (st.sq.q !== null ? '<p class="note you">' + (SQUARE_Q.opts[st.sq.q].ok ? "That is the packet’s framing." : "The packet frames it differently.") + '</p><p class="note"><b>The packet.</b> ' + esc(SQUARE_Q.model) + '</p>' : '') + '</div>');
+};
+
+VIEWS.mirror = function () {
+  var A = axes();
+  var rails = A.map(function (a) {
+    var you = a.v !== null ? '<span class="mk you" style="left:' + (a.v * 100).toFixed(1) + '%" title="You"></span>' : "";
+    var model = a.model !== null ? '<span class="mk model" style="left:' + (a.model * 100).toFixed(1) + '%" title="The model"></span>' : "";
+    return '<div class="axis' + (a.v === null ? " empty" : "") + '"><div class="poles"><span>' + esc(a.l) + '</span><span>' + esc(a.r) + '</span></div><div class="rail">' + model + you + '</div><span class="src-l">' + (a.v === null ? "Visit " + esc(a.from) + " to place this mark." : "From " + esc(a.from) + (a.modelNote ? ". " + esc(a.modelNote) : "") + "") + '</span></div>';
+  }).join("");
+  var P = pulls(), Q = partings();
+  var pullsHtml = P.length ? '<div class="pulls">' + P.map(function (p) { return '<p class="pull">' + esc(p) + '</p>'; }).join("") + '</div>' : '<p class="muted">' + (markCount() < 3 ? "Pulls appear once you have marks from a few chairs." : "No pulls between your choices so far.") + '</p>';
+  var partsHtml = Q.length ? '<div class="pulls">' + Q.map(function (p) { return '<p class="pull" style="border-color:var(--sage)">' + esc(p) + '</p>'; }).join("") + '</div>' : '<p class="muted">Where your marks sit far from the model, a question for the co-founders appears here.</p>';
+  var summary = buildSummary(A, P, Q);
+  app.innerHTML = '<section class="gutter station"><header><span class="kicker">center</span><h2>Your reflection</h2><p class="lede">Each line runs between two things worth valuing. Your mark shows where your choices put you. The ring shows where the model stands. The model is a first draft, so treat a gap as a question to bring.</p></header>' +
+    '<div class="card"><div class="legend"><span><i style="background:var(--amber)"></i>You</span><span><i style="border:2.5px solid var(--sage)"></i>The model</span></div><div class="axes">' + rails + '</div></div>' +
+    '<div class="card"><h3>Where your choices pull against each other</h3>' + pullsHtml + '</div>' +
+    '<div class="card"><h3>Questions for the co-founders</h3><p class="muted" style="font-size:.92rem">Lois asks three things of the packet: does it match your sense of a clearinghouse, what would you change, and what comes next.</p>' + partsHtml + '</div>' +
+    '<div class="card"><h3>Take it with you</h3><pre class="summary" id="summary">' + esc(summary) + '</pre><div class="row"><button type="button" class="btn" data-act="copy">Copy my reflection</button><span class="muted" id="copied" aria-live="polite" style="font-size:.88rem"></span></div>' +
+    '<div class="row"><button type="button" class="btn ghost" data-act="reset" id="resetBtn">Start over</button></div></div></section>';
+};
+function buildSummary(A, P, Q) {
+  var lines = ["My reflection on the Clearinghouse Model", ""];
+  A.forEach(function (a) {
+    if (a.v === null) return;
+    var pos = a.v < 0.34 ? "toward " + a.l.toLowerCase() : a.v > 0.66 ? "toward " + a.r.toLowerCase() : "between " + a.l.toLowerCase() + " and " + a.r.toLowerCase();
+    lines.push("- " + a.l + " / " + a.r + ": " + pos);
+  });
+  if (st.fr.sentence.trim()) { lines.push("", "My problem sentence:", st.fr.sentence.trim()); }
+  if (st.gi.rift !== null) lines.push("", "On two groups at odds, I'd: " + RIFT.opts[st.gi.rift].t);
+  if (P.length) { lines.push("", "Where my choices pull against each other:"); P.forEach(function (p) { lines.push("- " + p); }); }
+  if (Q.length) { lines.push("", "Questions I'd bring:"); Q.forEach(function (q) { lines.push("- " + q); }); }
+  if (lines.length === 2) lines.push("No marks yet.");
+  return lines.join("\n");
+}
+
+/* ---------- routing ---------- */
+var current = "circle";
+function route() {
+  var h = (location.hash || "").replace("#", "");
+  current = VIEWS[h] ? h : "circle";
+  if (current !== "circle" && current !== "mirror" && !st.seen[current]) { st.seen[current] = true; save(); }
+  render(true);
+}
+function render(scrollTop) {
+  var y = window.scrollY;
+  VIEWS[current]();
+  var bar = $("#bar");
+  bar.hidden = current === "circle";
+  $("#pills").innerHTML = CHAIRS.map(function (c) { return '<button type="button" class="pill' + (st.seen[c.id] ? " seen" : "") + '" data-go="' + c.id + '"' + (current === c.id ? ' aria-current="page"' : '') + '>' + esc(c.name) + '</button>'; }).join("") +
+    '<button type="button" class="pill" data-go="mirror"' + (current === "mirror" ? ' aria-current="page"' : '') + '>Your reflection</button>';
+  if (scrollTop) window.scrollTo(0, 0); else window.scrollTo(0, y);
+}
+function go(id) { if (id === "circle") { if (location.hash) location.hash = ""; else route(); } else location.hash = id; }
+
+/* ---------- events ---------- */
+document.addEventListener("click", function (e) {
+  var g = e.target.closest("[data-go]");
+  if (g) { go(g.getAttribute("data-go")); return; }
+  var b = e.target.closest("[data-act]");
+  if (!b || b.disabled) return;
+  var act = b.getAttribute("data-act"), id = b.getAttribute("data-id"), v = b.getAttribute("data-v"), i = b.hasAttribute("data-i") ? +b.getAttribute("data-i") : null;
+  var keepFocus = { act: act, id: id, v: v, i: i };
+  switch (act) {
+    case "pen": st.pen.sort[id] = v; break;
+    case "penmove": st.pen.move = i; break;
+    case "phase": if (st.phases.order.length < 6) st.phases.order.push(+b.getAttribute("data-n")); break;
+    case "phasereset": st.phases.order = []; break;
+    case "handoff": st.phases.handoff = i; break;
+    case "consult": if (st.fn.consulted.indexOf(id) < 0) st.fn.consulted.push(id); break;
+    case "approach": st.fn.approached = st.fn.consulted.length; break;
+    case "offer": st.fn.offer = i; break;
+    case "no": st.fn.no = i; break;
+    case "seat": var k = st.op.seats.indexOf(id); if (k >= 0) st.op.seats.splice(k, 1); else if (st.op.seats.length < 6) st.op.seats.push(id); break;
+    case "vote": st.op.votes[id] = !st.op.votes[id]; st.op.checked = false; break;
+    case "votecheck": st.op.checked = true; break;
+    case "rung": st.fr.start = id; break;
+    case "cc": st.fr.cc[id] = v; break;
+    case "scope": st.fr.scope = i; break;
+    case "tf": st.tf.sort[id] = v; break;
+    case "bf": st.tf.bf[id] = v; break;
+    case "gi": st.gi.sort[id] = v; break;
+    case "first": st.gi.first = i; break;
+    case "rift": st.gi.rift = i; break;
+    case "sq": st.sq.q = i; break;
+    case "copy": copySummary(); return;
+    case "terms": $("#termsBtn").click(); return;
+    case "reset":
+      if (b.getAttribute("data-armed") !== "1") { b.setAttribute("data-armed", "1"); b.textContent = "Tap again to erase every choice"; return; }
+      st = blank(); save(); go("circle"); return;
+    default: return;
+  }
+  save(); render(false); restoreFocus(keepFocus);
+});
+function restoreFocus(k) {
+  var sel = '[data-act="' + k.act + '"]' + (k.id ? '[data-id="' + k.id + '"]' : '') + (k.v ? '[data-v="' + k.v + '"]' : '') + (k.i !== null ? '[data-i="' + k.i + '"]' : '');
+  var el = document.querySelector(sel);
+  if (el && !el.disabled) el.focus({ preventScroll: true });
+}
+document.addEventListener("input", function (e) {
+  var t = e.target;
+  if (t.id === "sentence") { st.fr.sentence = t.value; save(); renderReadback(); }
+  else if (t.hasAttribute && t.hasAttribute("data-who")) { st.fr.who[t.getAttribute("data-who")] = t.value; save(); }
+});
+function copySummary() {
+  var txt = $("#summary").textContent, out = $("#copied");
+  function fallback() { var r = document.createRange(); r.selectNodeContents($("#summary")); var s = window.getSelection(); s.removeAllRanges(); s.addRange(r); out.textContent = "Selected. Copy it with your keyboard or menu."; }
+  try { navigator.clipboard.writeText(txt).then(function () { out.textContent = "Copied."; }, fallback); } catch (e) { fallback(); }
+}
+var dlg = $("#terms");
+$("#termsList").innerHTML = TERMS.map(function (t) { return '<div><dt>' + esc(t[0]) + '</dt><dd>' + esc(t[1]) + '</dd></div>'; }).join("");
+$("#termsBtn").addEventListener("click", function () { if (dlg.showModal) dlg.showModal(); else dlg.setAttribute("open", ""); });
+$("#termsClose").addEventListener("click", function () { if (dlg.close) dlg.close(); else dlg.removeAttribute("open"); });
+$("#home").addEventListener("click", function () { go("circle"); });
+window.addEventListener("hashchange", route);
+route();
+})();
+</script>
+</body></html>
